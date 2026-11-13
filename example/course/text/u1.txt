@@ -1,0 +1,85 @@
+
+=== u1 page 1 ===
+Introduction to Probability
+Unit 1
+Outcomes, Events and Rules
+Lecture slides
+
+=== u1 page 2 ===
+Sample spaces and events
+Introduction to Probability - Unit 1
+An experiment is any process with an uncertain result
+The sample space S is the set of all possible outcomes
+Example: one die gives S = {1, 2, 3, 4, 5, 6}
+An event is a subset of S, e.g. A = "even" = {2, 4, 6}
+A ∪ B: A or B happens;  A ∩ B: both happen
+A' (complement): A does not happen
+Disjoint events: A ∩ B is empty (cannot happen together)
+
+=== u1 page 3 ===
+The axioms of probability
+Introduction to Probability - Unit 1
+Axiom 1: P(A) ≥ 0 for every event A
+Axiom 2: P(S) = 1
+Axiom 3: if A and B are disjoint, P(A ∪ B) = P(A) + P(B)
+Consequences:
+0 ≤ P(A) ≤ 1
+P(empty set) = 0
+If A ⊆ B then P(A) ≤ P(B)
+
+=== u1 page 4 ===
+Two rules you will use every time
+Introduction to Probability - Unit 1
+Complement rule
+P(A') = 1 - P(A)
+Addition rule (any two events)
+P(A ∪ B) = P(A) + P(B) - P(A ∩ B)
+Subtract the overlap, otherwise it is counted twice.
+For disjoint events P(A ∩ B) = 0, so the rule becomes Axiom 3.
+
+=== u1 page 5 ===
+Picturing events: the Venn diagram
+Introduction to Probability - Unit 1
+S
+A only
+A ∩ B
+B only
+Region A ∩ B is
+inside both circles.
+Outside both circles:
+(A ∪ B)'
+P(A ∪ B) adds the
+two circles once each.
+
+=== u1 page 6 ===
+Equally likely outcomes: two dice
+Introduction to Probability - Unit 1
+If all n outcomes are equally likely:  P(A) = (outcomes in A) / n
+Sum
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+Ways
+1
+2
+3
+4
+5
+6
+5
+4
+3
+2
+1
+Two fair dice give 6 x 6 = 36 equally likely ordered pairs
+P(sum = 7) = 6/36 = 1/6, the most likely sum
+P(sum = 2) = P(sum = 12) = 1/36
+The ways add up to 36, as they must

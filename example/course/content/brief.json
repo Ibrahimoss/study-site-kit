@@ -1,0 +1,98 @@
+{
+ "title": "What the exam usually looks like",
+ "intro": "Short written questions, each worth 2 or 3 marks, where most marks go to **showing the rule you used**.",
+ "scope": "Units 1 and 2: events, the axioms, the complement and addition rules, counting, conditional probability, independence, trees and Bayes' rule.",
+ "blocks": [
+  {
+   "heading": "The paper",
+   "aside": "about 10 marks · 30 min",
+   "jump": "Paper"
+  },
+  {
+   "p": "Two questions, one per unit, each split into short parts. Practice paper 1 has this shape."
+  },
+  {
+   "heading": "What comes up most",
+   "jump": "Topics"
+  },
+  {
+   "grid": [
+    {
+     "title": "Addition rule",
+     "link": {
+      "unit": "u1",
+      "sec": 3
+     },
+     "blocks": [
+      {
+       "p": "Almost every paper. Know it both ways round."
+      },
+      {
+       "code": "P(A ∪ B) = P(A) + P(B) - P(A ∩ B)",
+       "lang": "text"
+      }
+     ]
+    },
+    {
+     "title": "Conditional probability",
+     "link": {
+      "unit": "u2",
+      "sec": 2
+     },
+     "blocks": [
+      {
+       "code": "P(A | B) = P(A ∩ B) / P(B)",
+       "lang": "text"
+      }
+     ]
+    },
+    {
+     "title": "Independence",
+     "link": {
+      "unit": "u2",
+      "sec": 3
+     },
+     "blocks": [
+      {
+       "p": "Use the product test, and say in words what it shows."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "heading": "Where marks are lost",
+   "jump": "Traps"
+  },
+  {
+   "grid": [
+    {
+     "title": "Adding for independent events",
+     "tone": "warn",
+     "link": {
+      "deck": "paper-a",
+      "page": 2
+     },
+     "blocks": [
+      {
+       "p": "Independent means multiply. Adding is only for disjoint events (and only for the union)."
+      }
+     ]
+    },
+    {
+     "title": "Unordered dice pairs",
+     "tone": "warn",
+     "link": {
+      "unit": "u1",
+      "sec": 4
+     },
+     "blocks": [
+      {
+       "p": "Two dice have 36 ordered outcomes, not 21."
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

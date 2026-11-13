@@ -1,0 +1,23 @@
+{
+ "about": "Example of course/pronunciations.json, from a parallel-computing course. Copy the idea, not the words: list the terms of YOUR subject that the voice must say right. 'spell' is the easy way (plain words, matched exactly as written). 'words' gives exact sounds as Kokoro phonemes ('us' for American voices, 'gb' for British ones), matched as whole words ignoring case. Any all-capital word not listed is read letter by letter, which is right for most acronyms (DNA, ATP); list the ones said as a word (NASA, CUDA) or with their own sounds.",
+ "words": {
+  "CUDA": {"us": "kˈudə", "gb": "kˈuːdə"},
+  "SIMD": {"us": "ˈɛs ˈI ˈɛm dˈi", "gb": "ˈɛs ˈI ˈɛm dˈiː"},
+  "MISD": {"us": "ˈɛm ˈI ˈɛs dˈi", "gb": "ˈɛm ˈI ˈɛs dˈiː"},
+  "MIMD": {"us": "ˈɛm ˈI ˈɛm dˈi", "gb": "ˈɛm ˈI ˈɛm dˈiː"},
+  "SISD": {"us": "ˈɛs ˈI ˈɛs dˈi", "gb": "ˈɛs ˈI ˈɛs dˈiː"},
+  "UMA": {"us": "jˈumə", "gb": "jˈuːmə"},
+  "NUMA": {"us": "nˈumə", "gb": "njˈuːmə"}
+ },
+ "spell": {
+  "threadIdx.x": "thread index x",
+  "blockIdx.x": "block index x",
+  "blockDim.x": "block dim x",
+  "gridDim.x": "grid dim x",
+  "cudaMalloc": "cuda malloc",
+  "cudaMemcpy": "cuda mem copy",
+  "__syncthreads()": "sync threads",
+  "CH2.1": "chapter 2 point 1",
+  "QD": "querying the device"
+ }
+}

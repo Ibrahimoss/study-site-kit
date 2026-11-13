@@ -1,0 +1,18 @@
+{
+  "site": { "title": "Biology Midterm Lab", "subtitle": "Introduction to Biology", "url": "" },
+  "exam": { "name": "Midterm", "at": "2027-03-14T10:00:00+03:00", "covers": "Units 1 to 3" },
+  "code": { "language": "none" },
+  "decks": [
+    { "id": "u1", "file": "materials/Unit 1 - Cells.pdf", "short": "Unit 1 slides", "title": "Unit 1 - Cells", "first": 2 },
+    { "id": "t-u1", "file": "materials/Tutorial 1.pdf", "short": "Tutorial 1", "title": "Tutorial 1 (solved)" }
+  ],
+  "units": [
+    { "id": "u1", "code": "U1", "title": "Cells", "deck": "u1", "tutorials": ["t-u1"] }
+  ],
+  "papers": [],
+  "features": { "audio": false, "shorts": false, "mockExam": true, "studyPlan": true },
+  "audio": { "engine": "kokoro-local", "voice": "af_heart", "speed": 0.96, "units": {} },
+  "shorts": { "engine": "kokoro-local", "background": "gameplay", "backgroundFile": "shorts/backgrounds/minecraft-parkour.mp4" },
+  "voicePC": { "host": "", "key": "" },
+  "hosting": { "target": "artifact" }
+}

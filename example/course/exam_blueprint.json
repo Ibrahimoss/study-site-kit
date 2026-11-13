@@ -1,0 +1,37 @@
+{
+ "title": "Mock exam",
+ "questions": [
+  {
+   "title": "Question 1",
+   "parts": [
+    {
+     "slot": [
+      "u1-rules",
+      "u1-defs"
+     ],
+     "maxMarks": 2
+    },
+    {
+     "slot": "u1-count",
+     "maxMarks": 2
+    }
+   ]
+  },
+  {
+   "title": "Question 2",
+   "parts": [
+    {
+     "slot": "u2-cond",
+     "maxMarks": 2
+    },
+    {
+     "slot": [
+      "u2-indep",
+      "u2-bayes"
+     ],
+     "maxMarks": 3
+    }
+   ]
+  }
+ ]
+}

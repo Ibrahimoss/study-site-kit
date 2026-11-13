@@ -1,0 +1,4 @@
+# music files stay on this computer; only the README is shared
+*
+!.gitignore
+!README.md

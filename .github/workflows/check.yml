@@ -1,0 +1,27 @@
+# Builds the example course from scratch and checks that no private details slipped into the repo.
+name: check
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r engine/requirements.txt
+      - name: Extract the example slides
+        run: python -I engine/tools/extract.py --root example
+      - name: Build the example site
+        run: python -I engine/build.py --root example --target artifact
+      - name: Privacy check
+        run: |
+          if git grep -n -i -E 'csccuda|duckdns|csc ?453|king saud|100\.94\.|aalhm|ibrahim147|spicysauce' -- . ':!.github/workflows/check.yml'; then
+            echo "Private details found in tracked files (listed above)."
+            exit 1
+          fi
+          echo "privacy check OK"

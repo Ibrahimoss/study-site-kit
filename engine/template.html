@@ -1,0 +1,2549 @@
+<title>__SITE_TITLE__</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Atkinson+Hyperlegible+Next:ital,wght@0,400;0,700;1,400&family=Atkinson+Hyperlegible+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a unit rail of "blocks" on the left, a working pane on the right; lesson text held near 68ch.
+   Palette: cool solder-mask paper, PCB-green ink, one copper accent for everything you can press. */
+:root{
+  --bg:#F1F4F1;
+  --surface:#FFFFFF;
+  --surface-2:#E6EBE6;
+  --ink:#14211B;
+  --ink-2:#4C5A53;
+  --ink-3:#77857E;
+  --line:#D2DAD4;
+  --pcb:#18402F;
+  --copper:#A4501C;
+  --copper-ink:#FFFFFF;
+  --copper-soft:#F4E3D7;
+  --ok:#1D774A;
+  --ok-soft:#DCEFE3;
+  --bad:#B33030;
+  --bad-soft:#F6DFDF;
+  --tip:#7A5A0E;
+  --tip-soft:#F6EDCF;
+  --code-bg:#13231C;
+  --code-fg:#DCE8E1;
+  --code-dim:#7F9A8C;
+  --code-kw:#F0A46E;
+  --code-cu:#F2C14E;
+  --code-bi:#8FD3B0;
+  --code-api:#9CC4F0;
+  --code-num:#E79A9A;
+  --code-str:#C6D98A;
+  --scrim:rgba(8,16,12,.86);
+  --shadow:0 1px 2px rgba(20,33,27,.06),0 6px 18px rgba(20,33,27,.06);
+  --f-display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --f-body:"Atkinson Hyperlegible Next","Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"Atkinson Hyperlegible Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0C1411;--surface:#121D18;--surface-2:#192822;--ink:#E2EBE6;--ink-2:#A2B1A9;--ink-3:#71827A;--line:#25362E;
+  --pcb:#9FD3B9;--copper:#E58B52;--copper-ink:#1A0E06;--copper-soft:#3A2416;--ok:#57C892;--ok-soft:#123222;
+  --bad:#F07A7A;--bad-soft:#3B1818;--tip:#E8C46A;--tip-soft:#33290F;--code-bg:#08100C;--scrim:rgba(0,0,0,.88);
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 22px rgba(0,0,0,.25);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0C1411;--surface:#121D18;--surface-2:#192822;--ink:#E2EBE6;--ink-2:#A2B1A9;--ink-3:#71827A;--line:#25362E;
+  --pcb:#9FD3B9;--copper:#E58B52;--copper-ink:#1A0E06;--copper-soft:#3A2416;--ok:#57C892;--ok-soft:#123222;
+  --bad:#F07A7A;--bad-soft:#3B1818;--tip:#E8C46A;--tip-soft:#33290F;--code-bg:#08100C;--scrim:rgba(0,0,0,.88);
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 22px rgba(0,0,0,.25);color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px;
+  -webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--copper);outline-offset:2px;border-radius:6px}
+code,pre,.mono{font-family:var(--f-mono)}
+:not(pre) > code{overflow-wrap:anywhere}
+p,li,dd,dt,td,.txt{overflow-wrap:break-word}
+.blocks,.quiz,.cards,.tut,.sres{grid-template-columns:minmax(0,1fr)}
+h1,h2,h3{text-wrap:balance;margin:0}
+p{margin:0}
+.wrap{max-width:1380px;margin:0 auto}
+
+/* top bar */
+/* the header scrolls away; the unit strip row below it (with the section stopwatch) is what stays pinned */
+.top{position:static;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:12px;padding-block:10px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;background:none;border:0;padding:0;cursor:pointer;text-align:left}
+.brand .glyph{display:grid;grid-template-columns:repeat(3,7px);gap:2px}
+.brand .glyph i{width:7px;height:7px;background:var(--pcb);border-radius:1px;opacity:.85}
+.brand .glyph i:nth-child(5){background:var(--copper);opacity:1}
+.brand b{font:800 22px/1 var(--f-display);letter-spacing:.02em;text-transform:uppercase;color:var(--ink)}
+.brand small{display:block;font:12px/1.2 var(--f-mono);color:var(--ink-3);margin-top:2px}
+.topnav{display:flex;gap:6px;margin-left:auto;align-items:center;flex-wrap:wrap}
+.search{position:relative;min-width:0}
+.search input{width:230px;max-width:100%;font:14px var(--f-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);
+  border-radius:999px;padding:7px 12px 7px 32px}
+.search input::placeholder{color:var(--ink-3)}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:14px;height:14px;stroke:var(--ink-3)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  border-radius:999px;padding:7px 14px;font-size:14px;cursor:pointer;white-space:nowrap;text-decoration:none}
+.btn:hover{border-color:var(--copper)}
+.btn.primary{background:var(--copper);border-color:var(--copper);color:var(--copper-ink);font-weight:700}
+.btn.primary:hover{filter:brightness(1.06)}
+.btn.ghost{background:transparent}
+.btn.sm{padding:4px 10px;font-size:13px}
+.btn[disabled]{opacity:.45;cursor:default}
+.btn.on{background:var(--copper-soft);border-color:var(--copper);color:var(--ink)}
+.actions .btn{white-space:normal;max-width:100%;text-align:left}
+
+/* sticky nav row: the section stopwatch at its left end, the unit chips scrolling beside it */
+.striprow{display:flex;align-items:center;gap:10px;position:sticky;top:env(safe-area-inset-top,0px);z-index:30;
+  background:var(--bg);border-bottom:1px solid var(--line);padding-block:7px}
+body.shorts-on .striprow{display:none}
+.strip{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1 1 auto;min-width:0}
+.strip::-webkit-scrollbar{display:none}
+.strip button{flex:0 0 auto}
+
+/* shell */
+.shell{display:grid;grid-template-columns:268px minmax(0,1fr);gap:28px;padding-top:20px;align-items:start}
+.shell.full{grid-template-columns:minmax(0,1fr)}
+.shell.full .rail{display:none}
+.rail{scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--toph,46px) + 12px);display:flex;flex-direction:column;gap:6px;
+  max-height:calc(100vh - 100px);overflow-y:auto;padding-bottom:12px}
+.rail h4{font:600 11px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:6px 4px 4px}
+.ublock{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 10px;text-align:left;border:1px solid transparent;background:transparent;
+  border-radius:var(--r);padding:9px 10px;cursor:pointer;color:var(--ink)}
+.ublock:hover{background:var(--surface);border-color:var(--line)}
+.ublock.cur{background:var(--surface);border-color:var(--copper);box-shadow:var(--shadow)}
+.ublock .code{font:800 19px/1 var(--f-display);color:var(--pcb);align-self:center;min-width:46px}
+.ublock .t{font-size:14px;line-height:1.3;font-weight:700}
+
+
+main{min-width:0}
+
+/* home */
+.hero{display:grid;gap:14px;padding-block:18px 26px;border-bottom:1px solid var(--line)}
+.hero h1{font:800 clamp(44px,7vw,84px)/.92 var(--f-display);text-transform:uppercase;letter-spacing:.01em}
+.hero p.lede{max-width:64ch;color:var(--ink-2);font-size:17px}
+.stats{display:flex;flex-wrap:wrap;gap:6px 22px;font:14px var(--f-mono);color:var(--ink-2)}
+.stats b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+.resume{font-size:14px;color:var(--ink-2)}
+.ugrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding-top:24px}
+@media (max-width:760px){.ugrid{grid-template-columns:minmax(0,1fr)}}
+.ucard{display:flex;flex-direction:column;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;min-width:0}
+.ucard .head{display:flex;align-items:baseline;gap:10px;justify-content:space-between}
+.ucard .code{font:800 30px/1 var(--f-display);color:var(--pcb)}
+.ucard .idx{font:12px var(--f-mono);color:var(--ink-3)}
+.ucard h3{font-size:17px;line-height:1.3}
+.ucard p{font-size:14px;color:var(--ink-2);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.ucard .meta{font:12px var(--f-mono);color:var(--ink-3);margin-top:auto}
+.ucard .go{display:flex;flex-wrap:wrap;gap:6px}
+
+/* unit header + tabs */
+.uhead{display:grid;gap:10px;padding-bottom:4px}
+.uhead .row{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.uhead .code{font:800 44px/1 var(--f-display);color:var(--pcb)}
+.uhead h2{font:700 clamp(22px,3vw,30px)/1.15 var(--f-body)}
+.uhead p{color:var(--ink-2);max-width:72ch}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-top:14px;overflow-x:auto;scrollbar-width:none;
+  position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--toph,46px));background:var(--bg);z-index:10}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:0;background:transparent;padding:10px 14px;font-size:15px;color:var(--ink-2);cursor:pointer;border-bottom:3px solid transparent;
+  white-space:nowrap;margin-bottom:-1px}
+.tab:hover{color:var(--ink)}
+.tab.cur{color:var(--ink);border-bottom-color:var(--copper);font-weight:700}
+.tab .n{font:12px var(--f-mono);color:var(--ink-3);margin-left:4px}
+.pane{padding-top:22px}
+
+/* lesson */
+.learn{display:grid;grid-template-columns:minmax(0,68ch) minmax(0,220px);gap:40px;justify-content:start}
+@media (max-width:1100px){.learn{grid-template-columns:minmax(0,1fr)}.toc{display:none}}
+.objectives{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 18px}
+.objectives h4,.toc h4{font:600 11px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:0 0 8px}
+.objectives ul{margin:0;padding-left:18px}
+.lsec{padding-top:30px;scroll-margin-top:calc(var(--toph,62px) + 60px)}
+.lsec h3{font-size:21px;line-height:1.25;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.lsec h3 .num{font:600 13px var(--f-mono);color:var(--ink-3)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{display:inline-flex;align-items:center;gap:5px;font:12px/1 var(--f-mono);color:var(--ink-2);background:var(--surface);
+  border:1px solid var(--line);border-radius:999px;padding:5px 9px;cursor:pointer}
+.chip:hover{border-color:var(--copper);color:var(--ink)}
+.chip svg{width:12px;height:12px;stroke:currentColor}
+.blocks{display:grid;gap:14px;margin-top:14px}
+.blocks ul,.blocks ol{margin:0;padding-left:22px;display:grid;gap:4px}
+.blocks code,.q code,.opt code,.explain code,.face code,.sres code{font-size:.9em;background:var(--surface-2);border-radius:4px;padding:.05em .3em}
+pre.code code{font-size:inherit;background:none;border-radius:0;padding:0}
+pre.code{margin:0;background:var(--code-bg);color:var(--code-fg);border-radius:var(--r);padding:14px 16px;overflow-x:auto;
+  font-size:13.5px;line-height:1.55;tab-size:4}
+pre.code .c{color:var(--code-dim);font-style:italic}
+pre.code .kw{color:var(--code-kw)}
+pre.code .cu{color:var(--code-cu);font-weight:600}
+pre.code .bi{color:var(--code-bi)}
+pre.code .api{color:var(--code-api)}
+pre.code .nm{color:var(--code-num)}
+pre.code .st{color:var(--code-str)}
+pre.code .pp{color:var(--code-kw)}
+pre.code .ln{color:var(--code-cu);font-weight:600}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+.tbl table{border-collapse:collapse;width:100%;font-size:14px}
+.tbl th,.tbl td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl th{font:600 12px var(--f-mono);letter-spacing:.04em;color:var(--ink-2);background:var(--surface-2)}
+.tbl tr:last-child td{border-bottom:0}
+dl.defs{margin:0;display:grid;grid-template-columns:minmax(0,max-content) minmax(0,1fr);gap:8px 16px}
+dl.defs dt{font-weight:700}
+dl.defs dd{margin:0;color:var(--ink-2)}
+@media (max-width:560px){dl.defs{grid-template-columns:minmax(0,1fr)}dl.defs dd{margin-bottom:6px}}
+.callout{border-radius:var(--r);padding:11px 14px;font-size:15px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px}
+.callout .lab{font:600 11px/1.9 var(--f-mono);letter-spacing:.1em;text-transform:uppercase}
+.callout.tip{background:var(--tip-soft)} .callout.tip .lab{color:var(--tip)}
+.callout.note{background:var(--surface-2)} .callout.note .lab{color:var(--ink-2)}
+figure.fig{margin:0;display:grid;gap:6px}
+figure.fig > button{border:1px solid var(--line);border-radius:var(--r);padding:0;background:#fff;cursor:zoom-in;overflow:hidden;display:block;width:100%}
+figure.fig img{display:block;width:100%;height:auto;max-height:min(620px,75vh);object-fit:contain;background:#fff}
+figure.fig figcaption{font-size:13px;color:var(--ink-2)}
+.toc{position:sticky;top:calc(var(--toph,62px) + 70px);align-self:start;font-size:13px;max-height:calc(100vh - 170px);overflow-y:auto}
+.toc a{display:block;color:var(--ink-2);text-decoration:none;padding:4px 0 4px 10px;border-left:2px solid var(--line);line-height:1.35}
+.toc a:hover{color:var(--ink);border-left-color:var(--copper)}
+
+/* slides */
+.viewer{display:grid;gap:12px}
+.vbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.vbar .sp{flex:1}
+.stage{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
+  display:flex;justify-content:center;align-items:center}
+.stage img{display:block;max-width:100%;height:auto;max-height:calc(100vh - 290px);width:auto;cursor:zoom-in;background:#fff}
+.stage .nav{position:absolute;top:0;bottom:0;width:18%;border:0;background:transparent;cursor:pointer;opacity:0;display:flex;align-items:center;padding:0 10px}
+.stage .nav:hover,.stage .nav:focus-visible{opacity:1}
+.stage .nav span{background:var(--scrim);color:#fff;border-radius:999px;width:38px;height:38px;display:grid;place-items:center;font-size:20px}
+.stage .nav.l{left:0;justify-content:flex-start}.stage .nav.r{right:0;justify-content:flex-end}
+.pager{display:flex;align-items:center;gap:8px;font:14px var(--f-mono);font-variant-numeric:tabular-nums}
+.pager input{width:56px;font:14px var(--f-mono);text-align:center;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:4px}
+.thumbs{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px}
+.thumbs button{flex:0 0 auto;border:2px solid transparent;border-radius:6px;padding:0;background:var(--surface);cursor:pointer;position:relative;overflow:hidden}
+.thumbs button.cur{border-color:var(--copper)}
+.thumbs img{display:block;height:62px;width:auto;background:#fff}
+.thumbs span{position:absolute;right:2px;bottom:2px;font:10px var(--f-mono);background:var(--scrim);color:#fff;border-radius:3px;padding:0 3px}
+.inlesson{font-size:14px;color:var(--ink-2);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* lightbox */
+.lb{position:fixed;inset:0;z-index:50;background:var(--scrim);display:flex;flex-direction:column;
+  padding:calc(env(safe-area-inset-top,0px) + 10px) max(10px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 10px) max(10px,env(safe-area-inset-left,0px))}
+.lb .bar{display:flex;gap:8px;align-items:center;color:#fff;font:14px var(--f-mono);padding-bottom:8px}
+.lb .bar .sp{flex:1}
+.lb .bar button{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:999px;padding:6px 12px;cursor:pointer}
+.lb .img{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.lb img{max-width:100%;max-height:100%;object-fit:contain;background:#fff;border-radius:4px}
+
+/* tutorial */
+.tut{display:grid;gap:14px;max-width:80ch}
+.titem{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;display:grid;gap:12px}
+.titem .th,.pbody .th{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font:12px var(--f-mono);color:var(--ink-3)}
+.titem .th b{color:var(--pcb);font-weight:600}
+.titem .q{font-size:16px}
+.titem .ans{border-top:1px dashed var(--line);padding-top:12px}
+
+/* quiz */
+.quiz{max-width:76ch;display:grid;gap:16px}
+.qmeta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font:13px var(--f-mono);color:var(--ink-3)}
+.qmeta .sp{flex:1}
+.qbar{height:4px;background:var(--surface-2);border-radius:99px;overflow:hidden}
+.qbar i{display:block;height:100%;background:var(--copper)}
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:grid;gap:16px;box-shadow:var(--shadow)}
+.qcard .q{font-size:18px;line-height:1.5}
+.qcard .tag{font:12px var(--f-mono);color:var(--pcb)}
+.opts{display:grid;gap:8px}
+.opt{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:start;text-align:left;border:1px solid var(--line);background:var(--bg);
+  border-radius:8px;padding:10px 12px;cursor:pointer;font-size:15px;line-height:1.45}
+.opt:hover:not([disabled]){border-color:var(--copper)}
+.opt .k{font:600 13px/26px var(--f-mono);width:26px;height:26px;text-align:center;border-radius:6px;background:var(--surface-2);color:var(--ink-2)}
+.opt[disabled]{cursor:default}
+.opt.ok{border-color:var(--ok);background:var(--ok-soft)} .opt.ok .k{background:var(--ok);color:var(--bg)}
+.opt.no{border-color:var(--bad);background:var(--bad-soft)} .opt.no .k{background:var(--bad);color:var(--bg)}
+.opt.dim{opacity:.55}
+.explain{border-radius:8px;padding:12px 14px;display:grid;gap:8px;font-size:15px}
+.explain.ok{background:var(--ok-soft)} .explain.no{background:var(--bad-soft)}
+.explain .verdict{font:700 13px var(--f-mono);letter-spacing:.06em;text-transform:uppercase}
+.explain.ok .verdict{color:var(--ok)} .explain.no .verdict{color:var(--bad)}
+.qnav{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.qnav .sp{flex:1}
+.kbd{font:12px var(--f-mono);color:var(--ink-3)}
+.result{display:grid;gap:14px}
+.score{font:800 clamp(52px,9vw,88px)/1 var(--f-display);color:var(--pcb)}
+.missed{display:grid;gap:8px}
+.missed .mi{background:var(--surface);border:1px solid var(--bad);border-radius:8px;padding:10px 12px;font-size:14px;display:grid;gap:6px}
+
+/* cards */
+.cards{max-width:720px;display:grid;gap:14px}
+.flip{perspective:1400px;cursor:pointer;border:0;background:transparent;padding:0;text-align:left;width:100%}
+.flip .inner{display:grid;transition:transform .5s cubic-bezier(.3,.7,.2,1);transform-style:preserve-3d}
+.flip.on .inner{transform:rotateY(180deg)}
+.face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;min-height:260px;border-radius:14px;padding:26px 28px;
+  display:flex;flex-direction:column;gap:14px;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow)}
+.face.back{transform:rotateY(180deg);background:var(--surface);border-color:var(--copper)}
+.face .lab{font:600 11px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);display:flex;justify-content:space-between;gap:8px}
+.face .txt{font-size:21px;line-height:1.45;margin:auto 0}
+.face.back .txt{font-size:18px}
+.face .hint{font:12px var(--f-mono);color:var(--ink-3)}
+.crow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.crow .sp{flex:1}
+.btn.r-know{border-color:var(--ok);color:var(--ok)} .btn.r-learn{border-color:var(--bad);color:var(--bad)}
+.cstat{font:13px var(--f-mono);color:var(--ink-3);font-variant-numeric:tabular-nums}
+
+/* search */
+.sres{display:grid;gap:18px;max-width:84ch}
+.sres h3{font:600 12px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.hit{display:grid;gap:4px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;width:100%}
+.hit:hover{border-color:var(--copper)}
+.hit .w{font:12px var(--f-mono);color:var(--pcb)}
+.hit .s{font-size:14px;color:var(--ink-2)}
+.hit mark{background:var(--copper-soft);color:var(--ink);border-radius:2px}
+.empty{color:var(--ink-2);padding:20px 0}
+
+/* exam-style practice, marks and self-grading */
+.must{font:600 10.5px/1 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--copper);border:1px solid var(--copper);border-radius:999px;padding:4px 8px;white-space:nowrap}
+.marks{font:600 12px var(--f-mono);color:var(--pcb);white-space:nowrap}
+.grade{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.grade .kbd{margin-right:4px}
+.btn.g1.on{background:var(--ok-soft);border-color:var(--ok);color:var(--ink)}
+.btn.g05.on{background:var(--tip-soft);border-color:var(--tip);color:var(--ink)}
+.btn.g0.on{background:var(--bad-soft);border-color:var(--bad);color:var(--ink)}
+.subh{font:600 12px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);padding-top:14px}
+figure.cells{margin:0;display:grid;gap:6px;min-width:0}
+.cellfig{display:grid;gap:10px;overflow-x:auto;padding-bottom:4px;justify-content:start}
+.cblk{border:1.5px solid var(--ink-3);border-radius:6px;padding:6px;background:var(--surface)}
+.cblk .bl{font:600 12px var(--f-mono);color:var(--ink-2);margin-bottom:5px}
+.cblk table{border-collapse:collapse}
+.cblk td{border:1px solid var(--line);padding:3px 6px;font:12px/1.4 var(--f-mono);text-align:center;min-width:2.8em;background:var(--bg);white-space:nowrap}
+.cblk td.hl{background:var(--copper-soft);border-color:var(--copper);font-weight:700}
+figure.cells figcaption{font-size:13px;color:var(--ink-2)}
+.paper{max-width:84ch;display:grid;gap:18px;grid-template-columns:minmax(0,1fr)}
+.pq{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;display:grid;gap:18px;grid-template-columns:minmax(0,1fr)}
+.pq > h3{display:flex;gap:10px;align-items:baseline;justify-content:space-between;flex-wrap:wrap;font-size:19px}
+.pp{display:grid;grid-template-columns:2em minmax(0,1fr);gap:8px}
+.pp + .pp{border-top:1px dashed var(--line);padding-top:16px}
+.pp .pn{font:600 14px/1.6 var(--f-mono);color:var(--ink-3)}
+.pp.solo{grid-template-columns:minmax(0,1fr)}
+.pbody{display:grid;gap:10px;min-width:0;grid-template-columns:minmax(0,1fr)}
+.pbody .ans{border-top:1px dashed var(--line);padding-top:10px}
+.scorebar{position:sticky;bottom:0;padding-bottom:env(safe-area-inset-bottom,0px);background:var(--bg);border-top:1px solid var(--line);padding-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;z-index:5}
+.scorebar .big{font:800 30px/1 var(--f-display);color:var(--pcb);font-variant-numeric:tabular-nums}
+
+/* ===== one section per page: index, stopwatch, section questions ===== */
+.toc .tocd summary{cursor:pointer;font-weight:700;font-size:13px;padding:4px 0;list-style:none}
+.toc .tocd summary::-webkit-details-marker{display:none}
+.toc .tocd summary::before{content:"\25B8 ";display:inline-block;transition:transform .15s}
+.toc .tocd[open] summary::before{transform:rotate(90deg)}
+.toc ol{list-style:none;margin:8px 0 0;padding:0;position:relative}
+.toc ol li{margin:0}
+.toc ol a{display:grid;grid-template-columns:1.9em minmax(0,1fr) auto;align-items:baseline;gap:8px;padding:6px 8px;border-radius:7px;
+  text-decoration:none;color:inherit;font-size:13px;border-left:2px solid transparent}
+.toc ol a:hover{background:var(--surface-2)}
+.toc ol a.cur{background:var(--surface-2);border-left-color:var(--copper);font-weight:700}
+.toc ol a.done span{opacity:.55;text-decoration:line-through}
+.toc ol a.done i::after,.railsec.done i::after{content:" \2713";color:var(--ok)}
+.toc ol a i,.railsec i{font-style:normal;opacity:.55;font-variant-numeric:tabular-nums;white-space:nowrap}
+.toc ol a em,.railsec em{font-style:normal;opacity:.55;font-size:11px;font-variant-numeric:tabular-nums}
+.toc-sum{margin:9px 0 0;font-size:12px;color:var(--ink-2)}
+.ovlink{font-size:13px;color:var(--ink-2)}
+
+#swslot{flex:0 0 auto;display:flex;align-items:center}
+#swslot:empty{display:none}
+.sw.swc{display:flex;align-items:center;gap:7px;padding:4px 9px 4px 8px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);
+  font:600 12px/1 var(--f-mono);white-space:nowrap}
+.sw .swdot{width:7px;height:7px;border-radius:50%;background:var(--ink-3);flex:none}
+.sw[data-state="run"] .swdot{background:var(--ok)}
+.sw[data-state="idle"] .swdot,.sw[data-state="manual"] .swdot{background:var(--tip)}
+.sw .swt{font-variant-numeric:tabular-nums;font-size:13px;letter-spacing:.02em}
+.sw .swe{color:var(--ink-3);font-weight:400;font-size:11px}
+.sw .sws{display:none}
+.sw[data-state="done"] .swt,.sw[data-state="idle"] .swt,.sw[data-state="manual"] .swt{opacity:.5}
+.sw .swb{display:flex;gap:3px;margin-left:1px}
+.swmini{min-width:22px;height:22px;padding:0 4px;display:grid;place-items:center;border:1px solid var(--line);border-radius:999px;background:transparent;
+  color:inherit;font:600 9px/1 var(--f-mono);cursor:pointer}
+.swmini:hover:not(:disabled){border-color:var(--copper);color:var(--copper)}
+.swmini:disabled{opacity:.3;cursor:default}
+@media (max-width:360px){.sw .swe{display:none}}
+
+.secnav{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:30px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.secnav > span{flex:1}
+.secnav .btn{white-space:normal;text-align:left}
+.secnav .btn.primary{margin-left:auto}
+.secnav .btn.done{border-color:var(--ok);color:var(--ok)}
+
+.tblwrap{overflow-x:auto;margin:18px 0 0}
+table.sectable{border-collapse:collapse;width:100%;font-size:13.5px}
+table.sectable th,table.sectable td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+table.sectable th{font:600 11px var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--ink-3)}
+table.sectable td.code{font-variant-numeric:tabular-nums;color:var(--ink-3);white-space:nowrap}
+table.sectable td.freq{white-space:nowrap;color:var(--ink-2);font-variant-numeric:tabular-nums}
+table.sectable a{color:inherit}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:700;white-space:nowrap;border:1px solid var(--line)}
+.pill.g{background:var(--ok);border-color:var(--ok);color:var(--bg)}
+.pill.m{background:var(--tip);border-color:var(--tip);color:var(--bg)}
+.pill.b{background:var(--bad);border-color:var(--bad);color:var(--bg)}
+.pill.t{color:var(--ink-2);font-variant-numeric:tabular-nums;font-weight:400}
+
+.secqs{margin:34px 0 0;padding-top:18px;border-top:2px solid var(--line);display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
+.secqs > h4{margin:0;font:600 12px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.secqs > h4.recallh{margin-top:14px;padding-top:16px;border-top:1px solid var(--line)}
+.secqs .shaped{margin-left:8px;padding:2px 8px;border-radius:999px;background:var(--copper-soft);color:var(--copper);font-size:10px;letter-spacing:.03em;text-transform:none}
+.secqs .dimh{margin-left:8px;font-size:11px;text-transform:none;letter-spacing:0}
+.sq{padding:13px 15px;border:1px solid var(--line);border-radius:11px;background:var(--surface);display:grid;gap:10px;grid-template-columns:minmax(0,1fr)}
+.sq .q{font-weight:600}
+.sq .opts{display:grid;gap:6px}
+.sq .opt{grid-template-columns:1.6em minmax(0,1fr);gap:8px;align-items:baseline;padding:8px 11px;background:var(--surface-2);color:inherit;font:inherit}
+.sq .opt .ol{color:var(--ink-3);font-weight:700;font-variant-numeric:tabular-nums}
+.sq .opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.sq .opt.picked{border-color:var(--bad);background:var(--bad-soft)}
+.sq .exp{padding:10px 12px;border-radius:8px;font-size:14px;line-height:1.5;display:grid;gap:6px}
+.sq .exp b{display:block}
+.sq .exp.ok{background:var(--ok-soft)} .sq .exp.ok b{color:var(--ok)}
+.sq .exp.no{background:var(--bad-soft)} .sq .exp.no b{color:var(--bad)}
+@media (max-width:900px){.secnav{gap:8px}.secnav .btn{flex:1 1 auto;justify-content:center;text-align:center}}
+.unat{color:var(--ink-2)}
+.lnk{background:none;border:0;padding:0;font:inherit;color:var(--copper);text-decoration:underline;cursor:pointer;text-align:left}
+
+/* the left rail is the unit's section index while a unit is open */
+.railhead{display:flex;flex-direction:column;align-items:flex-start;gap:7px;margin-bottom:6px}
+.railhead h4{margin:4px 4px 0}
+ol.railsecs{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.railsec{display:grid;grid-template-columns:2.6em minmax(0,1fr) auto;gap:7px;align-items:baseline;width:100%;text-align:left;padding:7px 9px;
+  border:0;border-left:2px solid transparent;border-radius:7px;background:none;color:inherit;font:inherit;font-size:13px;cursor:pointer;line-height:1.3}
+.railsec:hover{background:var(--surface)}
+.railsec.cur{background:var(--surface);border-left-color:var(--copper);font-weight:700}
+.railsec.done span{opacity:.55;text-decoration:line-through}
+.railsec.inplan i::before{content:"\2022";color:var(--copper);margin-right:3px;font-weight:700}
+
+/* slide mentions in lesson prose become links */
+.stxt{display:inline-flex;align-items:center;gap:3px;padding:0 3px;border:0;border-radius:4px;background:var(--copper-soft);color:inherit;font:inherit;cursor:pointer;
+  text-decoration:underline;text-decoration-color:var(--copper);text-underline-offset:2px}
+.stxt svg{width:11px;height:11px;stroke:var(--copper);fill:none}
+.stxt:hover{background:var(--copper);color:var(--copper-ink)}
+.stxt:hover svg{stroke:var(--copper-ink)}
+.backsec{margin-left:auto;white-space:normal;text-align:left}
+.kbd.dim{opacity:.7}
+
+/* exam plan */
+.cdbtn{font-variant-numeric:tabular-nums;border-color:var(--copper);color:var(--copper)}
+.planbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0 10px;padding:10px 13px;border:1px dashed var(--line);border-radius:10px}
+.planbar input,.planbar select{font:inherit;padding:4px 7px;border-radius:7px;border:1px solid var(--line);background:var(--surface);color:inherit}
+.planbar .trn,#trbar .trn{color:var(--ink-2)}
+.plantab tr.out{opacity:.5}
+.plantab tr.cut td{padding:10px;text-align:center;font:600 12px var(--f-mono);letter-spacing:.04em;color:var(--copper);border-bottom:0}
+.plantab tr.in td:first-child{box-shadow:inset 2px 0 0 var(--ok)}
+
+/* audio lessons: the Listen page and a player bar that keeps playing while you browse */
+.lcards{display:grid;gap:12px}
+.lcard{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);padding:14px 16px;display:grid;gap:8px}
+.lcard h3{margin:0;font-size:17px}
+.lcard .lmeta{font:12px var(--f-mono);color:var(--ink-3)}
+.lcard .actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.lcard details summary{cursor:pointer;color:var(--ink-2);font-size:13px}
+.lsecs{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:2px}
+.lsecs button{all:unset;cursor:pointer;display:flex;gap:10px;padding:5px 8px;border-radius:8px;font-size:14px}
+.lsecs button:hover,.lsecs button:focus-visible{background:var(--surface-2);outline:2px solid var(--copper);outline-offset:-2px}
+.lsecs .t{font:12px var(--f-mono);color:var(--ink-3);min-width:3.2em}
+.lplayer{position:fixed;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:35;max-width:760px;margin:0 auto;
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 28px rgba(0,0,0,.35);padding:10px 12px;display:grid;gap:6px}
+.lplayer .lrow{display:flex;align-items:center;gap:8px;min-width:0}
+.lplayer .ltitle{flex:1;min-width:0;font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lplayer .lsec{font-size:12px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lplayer audio{width:100%;height:36px}
+.lplayer select.lspeed{max-width:none;flex:0 0 auto;font-weight:700}
+.lplayer select{max-width:46%;font:inherit;font-size:12px;background:var(--surface-2);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:3px 6px}
+body.lp-on main{padding-bottom:150px}
+@media (max-width:640px){.lplayer .lrow{flex-wrap:wrap}.lplayer .ltitle{flex:1 1 calc(100% - 150px)}.lplayer select:not(.lspeed){order:3;flex:1 1 100%;max-width:none}body.lp-on main{padding-bottom:190px}}
+body.shorts-on .lplayer{display:none}
+.srcbadge{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:999px;font:700 11px/1.5 var(--f-body);border:1px solid}
+.srcbadge.ok{background:var(--ok-soft,rgba(88,204,148,.14));color:var(--ok);border-color:var(--ok)}
+.srcbadge.sl{background:var(--tip-soft);color:var(--tip);border-color:var(--tip)}
+.ans .srcbadge{margin-bottom:2px}
+.xmodes{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.xsbadge{padding:2px 8px;border-radius:999px;background:var(--tip-soft);color:var(--tip);border:1px solid var(--tip);font:700 10px/1.5 var(--f-body);
+  letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+
+/* written-answer boxes */
+details.ansbox{margin:0}
+details.ansbox > summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--ink-2);padding:3px 0}
+details.ansbox > summary::-webkit-details-marker{display:none}
+details.ansbox > summary::before{content:"\270E";font-size:13px}
+details.ansbox > summary:hover{color:var(--copper)}
+details.ansbox[open] > summary{margin-bottom:6px}
+.ansbox textarea{width:100%;min-height:60px;resize:vertical;padding:10px 12px;border-radius:9px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);
+  font:15px/1.55 var(--f-body);overflow:hidden;display:block}
+.ansbox textarea:focus{outline:none;border-color:var(--copper);box-shadow:0 0 0 1px var(--copper)}
+.ansbox textarea::placeholder{color:var(--ink-3)}
+.anshint{font:12px var(--f-mono);color:var(--ink-3);margin-top:4px;text-align:right}
+
+/* the section index aside: only below 1101px, where it is the way around a unit (the rail carries it on wide screens) */
+@media (min-width:1101px){.learn{grid-template-columns:minmax(0,72ch)}.toc{display:none}}
+@media (max-width:1100px){
+  .learn{grid-template-columns:minmax(0,1fr)}
+  .toc{display:block;position:static;top:auto;max-height:none;overflow:visible;border:1px solid var(--line);border-radius:12px;padding:11px 14px;
+    background:var(--surface);margin:0 0 20px;align-self:auto}
+  .toc .tocd summary{font-size:14px;padding:2px 0}
+  .toc ol{max-height:46vh;overflow-y:auto}
+}
+
+/* final revision page */
+.scope{font-size:14px;color:var(--ink-2);border-left:2px solid var(--copper);padding-left:12px}
+.rjump{display:flex;gap:6px;flex-wrap:wrap}
+.rpart{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:34px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--line);
+  font:700 19px/1.2 var(--f-body);scroll-margin-top:calc(var(--toph,46px) + 16px)}
+.rpart .mono{font:400 12px/1.3 var(--f-mono);color:var(--ink-3)}
+.rgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(310px,100%),1fr));gap:12px;align-items:start}
+.rcard{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--surface);display:grid;gap:10px;grid-template-columns:minmax(0,1fr)}
+.rcard h3{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font:700 15px/1.3 var(--f-body)}
+.rcard ul{margin:0;padding-left:17px;display:grid;gap:6px;font-size:14px;line-height:1.5}
+.rcard p{font-size:14px;color:var(--ink-2)}
+.rcard table{font-size:13px}
+.rcard.warn{border-color:var(--bad);background:var(--bad-soft)}
+.rcard.warn > h3{color:var(--bad)}
+.rpage .rpart:first-child{margin-top:8px}
+.rcard code{font-size:.9em;background:var(--surface-2);border-radius:4px;padding:.05em .3em}
+.rlink{flex:none;background:none;border:0;padding:0;cursor:pointer;font:600 12px/1 var(--f-mono);color:var(--copper);white-space:nowrap}
+.rlink:hover{text-decoration:underline}
+.rformula{white-space:pre-wrap;font:13px/1.6 var(--f-mono);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-x:auto}
+
+/* time estimate and frequency beside a section title */
+.lsec h3 .secest{display:inline-block;padding:3px 9px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);
+  font:600 11px/1 var(--f-mono);color:var(--ink-2);letter-spacing:.02em;white-space:nowrap}
+.fbadge{display:inline-block;padding:3px 9px;border-radius:999px;font:700 10px/1 var(--f-body);letter-spacing:.05em;text-transform:uppercase;
+  white-space:nowrap;border:1px solid transparent}
+.fbadge.f3{background:var(--copper);color:var(--copper-ink)}
+.fbadge.f2{background:var(--copper-soft);color:var(--copper);border-color:var(--copper)}
+.fbadge.f1,.fbadge.f0{background:transparent;color:var(--ink-2);border-color:var(--line)}
+.fdot{margin-left:6px;font-size:7px;letter-spacing:1px;vertical-align:middle;white-space:nowrap}
+.fdot.f3,.fdot.f2{color:var(--copper)}
+.fdot.f1{color:var(--ink-3)}
+.fdot.f0{color:var(--ink-3);opacity:.6}
+
+/* symbol glossary */
+.gl{border-bottom:1px dotted var(--copper);cursor:help}
+#glpop{position:fixed;z-index:70;max-width:min(310px,calc(100vw - 16px));padding:9px 11px;border-radius:9px;background:var(--surface);color:var(--ink);
+  border:1px solid var(--line);font:13px/1.45 var(--f-body);box-shadow:0 8px 26px rgba(0,0,0,.25);opacity:0;transform:translateY(3px);pointer-events:none;
+  transition:opacity .12s ease,transform .12s ease}
+#glpop.on{opacity:1;transform:none}
+#glpop b{display:block;font-family:var(--f-mono);margin-bottom:3px;color:var(--copper)}
+#glpop i{display:block;margin-top:5px;font-style:normal;color:var(--ink-2);font-size:12px}
+
+/* recommended triage on the Practice tab */
+.rec{padding:2px 8px;border-radius:999px;background:var(--copper);color:var(--copper-ink);font:700 10px/1.5 var(--f-body);letter-spacing:.05em;text-transform:uppercase;cursor:help}
+.titem.dimmed{opacity:.55}
+.titem.dimmed:hover,.titem.dimmed:focus-within{opacity:1}
+#trbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:9px 12px;border-radius:10px;border:1px dashed var(--line);font-size:14px}
+#trbar select{font:inherit;padding:3px 6px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:inherit}
+@media (prefers-reduced-motion: reduce){#glpop,.toc .tocd summary::before{transition:none}}
+
+
+/* shorts feed */
+body.shorts-on{padding-block:0}
+.sfeed{display:grid;gap:10px;grid-template-columns:minmax(0,1fr);padding-top:4px}
+.schips{display:none;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.schips::-webkit-scrollbar{display:none}
+.schips .btn{flex:0 0 auto}
+.sscroll{overflow-y:auto;scroll-snap-type:y mandatory;overscroll-behavior:contain;scrollbar-width:none;outline:none}
+.sscroll::-webkit-scrollbar{display:none}
+.sitem{scroll-snap-align:start;scroll-snap-stop:always;display:flex;flex-direction:column;gap:8px;padding-bottom:10px}
+.sstage{position:relative;flex:1;min-height:0;display:flex;justify-content:center;align-items:flex-end;gap:14px}
+.sframe{position:relative;height:100%;aspect-ratio:9/16;max-width:100%;background:#000;border-radius:16px;overflow:hidden;cursor:pointer;box-shadow:var(--shadow)}
+.sframe video{width:100%;height:100%;object-fit:contain;display:block;background:#000}
+.spaused{position:absolute;inset:0;display:none;place-items:center;pointer-events:none}
+.sframe.paused .spaused{display:grid}
+.spaused svg{width:76px;height:76px;fill:rgba(255,255,255,.88);filter:drop-shadow(0 2px 8px rgba(0,0,0,.6))}
+.ssoundhint{position:absolute;top:7.5%;right:10px;display:none;font:600 13px var(--f-body);color:#fff;background:rgba(0,0,0,.62);border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:6px 12px;pointer-events:none;white-space:nowrap}
+.sframe.muted .ssoundhint{display:block}
+.sprog{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.18)}
+.sprog i{display:block;height:100%;width:0;background:var(--copper)}
+.sacts{display:flex;flex-direction:column;gap:14px;align-items:center;padding-bottom:10px}
+.sact{display:grid;justify-items:center;gap:4px;background:none;border:0;cursor:pointer;color:var(--ink);padding:0;font:600 12px var(--f-mono)}
+.sact .sic{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow)}
+.sact .sic svg{width:26px;height:26px;fill:var(--ink)}
+.sact:hover .sic{border-color:var(--copper)}
+.sact .sn{font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.sact.act .sic{border-color:var(--copper);background:var(--copper-soft)}.sact.act .sic svg{fill:var(--copper)}
+.scrambtn{margin-top:12px}.scrambtn svg{width:15px;height:15px;fill:currentColor}.scrambtn span{color:var(--ink-2);font-size:13px;margin-left:4px}
+.spl{display:inline-flex;align-items:center;gap:8px;margin-right:auto;padding:4px 6px 4px 12px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:14px}
+.splpos{font:600 13px var(--f-mono);color:var(--copper)}
+.splx{width:28px;height:28px;border-radius:50%;border:0;background:var(--surface-2);color:var(--ink);font-size:18px;line-height:1;cursor:pointer}
+.splmode .schips{display:flex;align-items:center;max-width:640px;width:100%;margin:0 auto}
+/* chapter picker: always shown above the feed on desktop; a scrolling row over the video on phones */
+.schips{display:flex;align-items:center;max-width:640px;width:100%;margin:0 auto}
+.schaps{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1 1 auto;min-width:0;margin-right:auto}
+.schaps::-webkit-scrollbar{display:none}
+.schaps .btn{flex:0 0 auto}
+.send{display:grid;place-items:center}
+.sendbox{max-width:420px;padding:24px;text-align:center;display:grid;gap:12px;justify-items:center}
+.sendt{font:800 28px/1.1 var(--f-display);color:var(--ink)}
+.sgaps{list-style:none;display:grid;gap:6px;padding:0;margin:0}
+.sspeed{flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:4px 14px;border-radius:999px;background:rgba(10,16,13,.5);color:#fff;border:1px solid rgba(255,255,255,.16);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.sspeed label{font:600 13px var(--f-body);flex:0 0 auto}
+.sspeed input{flex:1;min-width:0;height:24px;margin:0;accent-color:var(--copper)}
+.sspeed output{font:600 13px var(--f-mono);min-width:4.2ch;text-align:right;flex:0 0 auto}
+body.music-playing .smusbtn .sic svg{animation:mpulse 1.1s ease-in-out infinite}@keyframes mpulse{0%,100%{transform:none}50%{transform:scale(1.14) rotate(-6deg)}}
+.sinfo{display:flex;align-items:center;gap:10px;min-width:0;max-width:640px;width:100%;margin:0 auto}
+.sinfo p{flex:1;min-width:0;font-size:14px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sbtns{display:flex;gap:8px;flex:0 0 auto}
+.schip{font:800 15px var(--f-display);color:var(--pcb);background:var(--surface-2);border-radius:6px;padding:3px 7px;flex:0 0 auto}
+.slesson svg{width:15px;height:15px;fill:currentColor}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.toast{position:fixed;z-index:60;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 28px);background:var(--ink);color:var(--bg);font:600 14px var(--f-body);padding:10px 16px;border-radius:999px;box-shadow:var(--shadow)}
+.linkbox{flex:1;display:flex;align-items:center;justify-content:center;padding:20px}
+.linkbox input{width:min(560px,100%);font:14px var(--f-mono);padding:10px;border-radius:8px;border:0}
+/* no blue tap flash on phones, and no double-tap zoom on the shorts controls */
+html,button,a,input,textarea,summary,[data-act]{-webkit-tap-highlight-color:transparent}
+.sframe,.sacts,.schips,.sinfo{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
+.btn{transition:transform .12s ease,background-color .15s ease,border-color .15s ease}
+.btn:active{transform:scale(.96)}
+.sback{display:none;width:36px;height:36px;flex:0 0 auto;place-items:center;border-radius:50%;border:1px solid rgba(255,255,255,.22);background:rgba(20,20,20,.55);color:#fff;cursor:pointer;padding:0}
+.sback svg{width:20px;height:20px;fill:currentColor}
+/* motion: buttons press in and pop, toasts ease in */
+.sact .sic{position:relative;transition:transform .14s ease,background-color .2s ease,border-color .2s ease}
+.sact:active .sic{transform:scale(.86)}
+.sact.pop .sic{animation:sactpop .45s cubic-bezier(.2,.9,.3,1.35)}
+@keyframes sactpop{0%{transform:scale(.8)}45%{transform:scale(1.24)}100%{transform:scale(1)}}
+.sact .sn{display:inline-block}
+.sframe.paused .spaused{animation:sfade .2s ease-out}
+@keyframes sfade{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
+.toast:not([hidden]){animation:tin .26s cubic-bezier(.2,.8,.2,1)}
+@keyframes tin{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
+.lb:not([hidden]) .linkbox{animation:sfade .22s ease-out}
+/* phones: the short fills the screen from the very top and edge to edge; controls float over it */
+@media (max-width:640px){
+  body.shorts-on{overflow:hidden}
+  body.shorts-on .top{display:none}
+  .sfeed{position:fixed;inset:0;z-index:40;display:block;padding:0;background:#000}
+  .schips{display:flex;position:absolute;z-index:4;top:0;left:0;right:0;max-width:none;margin:0;align-items:center;justify-content:flex-end;gap:6px;padding:calc(env(safe-area-inset-top,0px) + 8px) 10px 10px;pointer-events:none}
+  .schips>*{pointer-events:auto}
+  .spl{background:rgba(20,20,20,.55);border-color:rgba(255,255,255,.22);color:#fff;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .splx{background:rgba(255,255,255,.16);color:#fff}
+  .send{background:var(--bg)}
+  .schips .btn{background:rgba(20,20,20,.55);border-color:rgba(255,255,255,.22);color:#fff;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .schips .btn.on{background:var(--copper);border-color:var(--copper);color:#1b0f06}
+  .sback{display:grid}
+  .sscroll{height:100dvh}
+  .sitem{position:relative;display:block;padding:0}
+  .sstage{position:absolute;inset:0;display:block}
+  .sframe{position:absolute;top:0;left:50%;transform:translateX(-50%);width:min(100%,calc(var(--h,100dvh) * 9 / 16));height:auto;aspect-ratio:9/16;border-radius:0;box-shadow:none}
+  .sframe video{object-fit:cover}
+  .ssoundhint{top:calc(env(safe-area-inset-top,0px) + 60px)}
+  .sacts{position:absolute;z-index:3;right:6px;bottom:calc(env(safe-area-inset-bottom,0px) + 104px);gap:12px;padding:0}
+  .sact .sic{width:46px;height:46px;background:rgba(0,0,0,.45);border-color:rgba(255,255,255,.25);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+  .sact .sic svg{fill:#fff;width:23px;height:23px}
+  .sact.act .sic{background:rgba(229,139,82,.4);border-color:#E58B52}.sact.act .sic svg{fill:#fff}
+  .sact .sn{color:#fff;text-shadow:0 0 2px #000,0 0 4px rgba(0,0,0,.9),0 1px 3px rgba(0,0,0,.9)}
+  .sinfo{position:absolute;z-index:3;left:0;right:0;bottom:0;max-width:none;margin:0;align-items:center;flex-wrap:nowrap;gap:6px;padding:32px 8px calc(env(safe-area-inset-bottom,0px) + 12px);background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.78) 42%)}
+  .sinfo p{flex:1 1 0;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;color:rgba(255,255,255,.94);text-shadow:0 1px 2px rgba(0,0,0,.6)}
+  .sbtns{flex:0 0 auto;gap:6px}.sbtns .btn{padding-inline:9px}
+  .sspeed{padding:4px 10px;gap:6px}
+  .sinfo .slesson{background:rgba(20,20,20,.6);border-color:rgba(255,255,255,.25);color:#fff}
+}
+/* very narrow phones: the video already shows the chapter at the top, so the speed slider gets the chip's room */
+@media (max-width:359px){.sinfo .schip{display:none}}
+@media (prefers-reduced-motion: reduce){
+  body.music-playing .smusbtn .sic svg,.sact.pop .sic,.sframe.paused .spaused,.toast:not([hidden]),.lb:not([hidden]) .linkbox{animation:none}
+  .btn,.sact .sic{transition:none}
+}
+
+@media (max-width:900px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .rail{display:none}
+  .lsec{scroll-margin-top:110px}
+  .search input{width:100%}
+  .search{flex:1 1 160px}
+}
+@media (max-width:560px){
+  .topnav{margin-left:0;width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .topnav .btn{min-width:0;padding-inline:8px;white-space:normal;text-align:center}
+  .topnav .search,.topnav .cdbtn{grid-column:1/-1}
+  .topnav .search{order:-2}.topnav .cdbtn{order:-1}
+  .topnav .btn{justify-content:center}
+  .face{padding:20px;min-height:220px}.face .txt{font-size:18px}
+  .pq{padding:14px}
+  .pp{grid-template-columns:1.6em minmax(0,1fr)}
+  .stage img{max-height:none}
+}
+@media (prefers-reduced-motion: reduce){.flip .inner{transition:none}*{scroll-behavior:auto!important}}
+</style>
+<div class="wrap">
+  <header class="top">
+    <button class="brand" data-act="home" aria-label="Home">
+      <span class="glyph" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+      <span><b>__SITE_TITLE__</b><small>__SITE_SUBTITLE__</small></span>
+    </button>
+    <div class="topnav">
+      <label class="search" for="q">
+        <svg viewBox="0 0 16 16" fill="none" stroke-width="2" aria-hidden="true"><circle cx="7" cy="7" r="5"/><path d="M11 11l3.5 3.5"/></svg>
+        <input id="q" type="search" placeholder="Search slides, lessons, cards" autocomplete="off">
+      </label>
+      <button class="btn primary" data-act="revise" data-need="revise" title="The whole exam on one page">Final revision</button>
+      <button class="btn primary" data-act="shorts" data-need="shorts">Shorts</button>
+      <button class="btn" data-act="brief" data-need="brief" title="What the exam usually looks like">Exam brief</button>
+      <button class="btn" data-act="listen" data-need="audio" title="Audio lessons you can play or download">Listen</button>
+      <button class="btn cdbtn" data-act="plan" data-need="studyPlan" id="cdbtn" title="Your study plan: what to cover before the exam">Study plan</button>
+      <button class="btn" data-act="exam" data-need="mockExam">Mock exam</button>
+      <button class="btn" data-act="quick">Quick quiz</button>
+      <button class="btn" data-act="allcards">Flashcards</button>
+    </div>
+  </header>
+  <div class="striprow" id="striprow">
+    <span id="swslot"></span>
+    <nav class="strip" id="strip" aria-label="Units"></nav>
+  </div>
+  <div class="shell" id="shell">
+    <aside class="rail" id="rail" aria-label="Units"></aside>
+    <main id="main"></main>
+  </div>
+</div>
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Slide viewer" hidden></div>
+<div class="lplayer" id="lplayer" role="region" aria-label="Audio lesson player" hidden></div>
+
+<script>window.STUDY=/*DATA*/null;</script>
+<script>
+(function(){
+"use strict";
+const S = window.STUDY;
+const U = S.units, D = S.decks;
+const UM = Object.fromEntries(U.map(u => [u.id, u]));
+/* everything that names the subject comes from course.json through the data blob */
+const C = S.course || {};
+const TITLE = C.title || "Study Lab", EXAM = (C.exam && C.exam.name) || "Exam", EXAM_L = EXAM.toLowerCase();
+const FEAT = Object.assign({ audio: false, shorts: false, mockExam: true, studyPlan: true }, C.features || {});
+const HAS = { audio: !!FEAT.audio, shorts: !!FEAT.shorts, mockExam: !!FEAT.mockExam, studyPlan: !!FEAT.studyPlan, brief: !!S.brief, revise: !!S.revise };
+const LANG = C.language || "none";
+const LS = (C.slug || "study-lab") + "-";           /* prefix of every localStorage key */
+const KEY = (C.slug || "study-lab") + ":v2";
+document.title = TITLE;
+document.querySelectorAll("[data-need]").forEach(b => { if (!HAS[b.dataset.need]) b.remove(); });
+if (LANG === "none") document.body.classList.add("nocode");
+/* read: sections marked done ("unit:index"), sw: stopwatch ms per section ("sw:unit:index"), ans: written answers */
+let store = {quiz:{}, cards:{}, practice:{}, read:{}, sw:{}, ans:{}, last:null};
+try { const raw = localStorage.getItem(KEY); if (raw) store = Object.assign(store, JSON.parse(raw)); } catch(e) {}
+["read", "sw", "ans"].forEach(k => { if (!store[k] || typeof store[k] !== "object") store[k] = {}; });
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e) {} }
+
+const $ = (s, el=document) => el.querySelector(s);
+const main = $("#main"), rail = $("#rail"), strip = $("#strip"), shell = $("#shell"), lb = $("#lb");
+/* the header scrolls away; sticky things (rail, tabs) sit just under the pinned strip row */
+function measureTop(){ const t = $("#striprow"); if (t && t.offsetHeight) document.documentElement.style.setProperty("--toph", t.offsetHeight + "px"); }
+window.addEventListener("resize", measureTop); measureTop();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureTop);
+
+const ICON_SLIDE = '<svg viewBox="0 0 16 16" fill="none" stroke-width="1.6" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="9" rx="1.5"/><path d="M5 14h6"/></svg>';
+
+/* ---------- text helpers ---------- */
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function inl(s){
+  if (s == null) return "";
+  const codes = [];
+  let t = String(s).replace(/`([^`]+)`/g, (m, c) => { codes.push(c); return "\u0000" + (codes.length - 1) + "\u0000"; });
+  t = esc(t)
+    .replace(/\*\*((?:[^*]|\*(?!\*))+?)\*\*/g, "<strong>$1</strong>")   /* a lone * (N*M) may sit inside bold */
+    .replace(/(^|[^*\w])\*([^*\s][^*]*?)\*(?![\w*])/g, "$1<em>$2</em>");
+  return t.replace(/\u0000(\d+)\u0000/g, (m, i) => "<code>" + esc(codes[+i]) + "</code>");
+}
+/* Code highlighting, keyed on the language. S.hl holds only the languages this course uses (the build picks them):
+   {lang: {kw, q (qualifiers), bi (built-ins), api (regex source), line (comment start), block, pp, launch, triple, tpl, ci}} */
+const HL = {};
+Object.keys(S.hl || {}).forEach(k => {
+  const d = S.hl[k], set = s => new Set((s || "").split(" ").filter(Boolean));
+  const ci = !!d.ci, cmt = [];
+  if (d.line) cmt.push(d.line.replace(/[.*+?^${}()|[\]\\\/-]/g, "\\$&") + "[^\\n]*");
+  if (d.block) cmt.push("\\/\\*[\\s\\S]*?\\*\\/");
+  const str = (d.triple ? ['"""[\\s\\S]*?"""', "'''[\\s\\S]*?'''"] : []).concat(['"(?:\\\\.|[^"\\\\\\n])*"', "'(?:\\\\.|[^'\\\\\\n])*'"], d.tpl ? ["`(?:\\\\.|[^`\\\\])*`"] : []);
+  const re = "(" + (cmt.join("|") || "(?!)") + ")|(" + str.join("|") + ")|(" + (d.pp ? "^[ \\t]*#[ \\t]*\\w+" : "(?!)") + ")|(" + (d.launch ? "<<<|>>>" : "(?!)") + ")|(\\b\\d+(?:\\.\\d+)?[fFuUlL]*\\b)|([A-Za-z_]\\w*)";
+  HL[k] = { re, ci, kw: set(ci ? (d.kw || "").toLowerCase() : d.kw), q: set(d.q), bi: set(d.bi), api: d.api ? new RegExp(d.api, ci ? "i" : "") : null };
+});
+function hl(src, lang){
+  const L = HL[lang];
+  if (!L) return esc(src);
+  const re = new RegExp(L.re, "gm");
+  let out = "", last = 0, m;
+  while ((m = re.exec(src))) {
+    if (!m[0]) { re.lastIndex++; continue; }
+    out += esc(src.slice(last, m.index)); last = re.lastIndex;
+    const t = esc(m[0]);
+    if (m[1]) out += '<span class="c">' + t + "</span>";
+    else if (m[2]) out += '<span class="st">' + t + "</span>";
+    else if (m[3]) out += '<span class="pp">' + t + "</span>";
+    else if (m[4]) out += '<span class="ln">' + t + "</span>";
+    else if (m[5]) out += '<span class="nm">' + t + "</span>";
+    else {
+      const w = m[6];
+      if (L.q.has(w)) out += '<span class="cu">' + t + "</span>";
+      else if (L.bi.has(w)) out += '<span class="bi">' + t + "</span>";
+      else if (L.kw.has(L.ci ? w.toLowerCase() : w)) out += '<span class="kw">' + t + "</span>";
+      else if (L.api && L.api.test(w)) out += '<span class="api">' + t + "</span>";
+      else out += t;
+    }
+  }
+  return out + esc(src.slice(last));
+}
+/* a block's own "lang" wins ("text": no colours); otherwise the course language */
+function codeBlock(src, lang){ return '<pre class="code"><code>' + hl(String(src).replace(/\t/g, "    ").replace(/\s+$/, ""), lang || LANG) + "</code></pre>"; }
+function pad3(n){ return String(n).padStart(3, "0"); }
+function slideSrc(deck, page){ return "slides/" + deck + "/p" + pad3(page) + ".webp"; }
+/* 200 px copies (tools/make_thumbs.py); the artifact target has none, so the strip scales the full images */
+function thumbSrc(deck, page){ return S.thumbs ? "slides/" + deck + "/t/p" + pad3(page) + ".webp" : slideSrc(deck, page); }
+/* a deck can start after page 1 (a removed title slide); pages keep their printed numbers */
+function first(d){ return d.first || 1; }
+function nPages(d){ return d.pages - first(d) + 1; }
+function deckName(id){ return D[id] ? D[id].short : id; }
+function refChip(ref, label){
+  if (!ref || !D[ref.deck] || D[ref.deck].hidden) return "";     /* a deck with "publish": false ships no images, so no link */
+  return '<button class="chip" data-act="slide" data-deck="' + esc(ref.deck) + '" data-page="' + (+ref.page || 1) + '">' + ICON_SLIDE +
+    esc(label || (deckName(ref.deck) + " · p." + ref.page)) + "</button>";
+}
+function rangeLabel(arr){
+  if (!arr || !arr.length) return "";
+  const a = arr.slice().sort((x, y) => x - y);
+  return a.length === 1 ? "Slide " + a[0] : "Slides " + a[0] + "–" + a[a.length - 1];
+}
+
+/* a link from a revision card: {unit, sec} opens a lesson section, {deck, page} a slide */
+function cardLink(l){
+  if (!l) return "";
+  if (l.unit && UM[l.unit]) return '<button class="rlink" data-act="sec" data-unit="' + esc(l.unit) + '" data-sec="' + (+l.sec || 0) + '">' + (l.sec ? "§" + (+l.sec) : esc(UM[l.unit].code)) + " →</button>";
+  if (l.deck && D[l.deck] && !D[l.deck].hidden) return '<button class="rlink" data-act="slide" data-deck="' + esc(l.deck) + '" data-page="' + (+l.page || 1) + '">' + esc(deckName(l.deck)) + " p." + (+l.page || 1) + " →</button>";
+  return "";
+}
+/* a heading's anchor: its own "id", or "h-" and the heading's words */
+function headId(b){ return b.id || "h-" + String(b.heading).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+function blocks(bs, inCard){
+  return (bs || []).map(b => {
+    if (b.p != null) return "<p>" + inl(b.p) + "</p>";
+    if (b.list) return "<ul>" + b.list.map(x => "<li>" + inl(x) + "</li>").join("") + "</ul>";
+    if (b.steps) return "<ol>" + b.steps.map(x => "<li>" + inl(x) + "</li>").join("") + "</ol>";
+    if (b.code != null) return inCard && b.lang === "text" ? '<div class="rformula">' + esc(b.code) + "</div>" : codeBlock(b.code, b.lang);
+    if (b.heading != null) return '<h3 class="rpart" id="' + esc(headId(b)) + '" tabindex="-1"><span>' + inl(b.heading) + "</span>" + (b.aside ? '<span class="mono">' + inl(b.aside) + "</span>" : "") + "</h3>";
+    if (b.grid) return '<div class="rgrid">' + b.grid.map(c => '<article class="rcard' + (c.tone === "warn" ? " warn" : "") + '">' +
+      (c.title || c.link ? "<h3><span>" + inl(c.title || "") + "</span>" + cardLink(c.link) + "</h3>" : "") + blocks(c.blocks, true) + "</article>").join("") + "</div>";
+    if (b.table) return '<div class="tbl"><table><thead><tr>' + (b.table.head || []).map(h => "<th>" + inl(h) + "</th>").join("") +
+      "</tr></thead><tbody>" + (b.table.rows || []).map(r => "<tr>" + r.map(c => "<td>" + inl(c) + "</td>").join("") + "</tr>").join("") + "</tbody></table></div>";
+    if (b.defs) return '<dl class="defs">' + b.defs.map(d => "<dt>" + inl(d[0]) + "</dt><dd>" + inl(d[1]) + "</dd>").join("") + "</dl>";
+    if (b.tip) return '<div class="callout tip"><span class="lab">Exam tip</span><div>' + inl(b.tip) + "</div></div>";
+    if (b.note) return '<div class="callout note"><span class="lab">Note</span><div>' + inl(b.note) + "</div></div>";
+    if (b.cells) {
+      const c = b.cells, hl = new Set((c.hl || []).map(String));
+      return '<figure class="cells"><div class="cellfig" style="grid-template-columns:repeat(' + (+c.cols || 1) + ',max-content)">' +
+        (c.blocks || []).map(bk => '<div class="cblk"><div class="bl">' + inl(bk.label || "") + "</div><table>" +
+          (bk.rows || []).map(r => "<tr>" + r.map(v => '<td' + (hl.has(String(v)) ? ' class="hl"' : "") + ">" + esc(v) + "</td>").join("") + "</tr>").join("") +
+          "</table></div>").join("") + "</div>" + (c.caption ? "<figcaption>" + inl(c.caption) + "</figcaption>" : "") + "</figure>";
+    }
+    if (b.figure && D[b.figure.deck] && !D[b.figure.deck].hidden) {
+      const f = b.figure;
+      return '<figure class="fig"><button data-act="zoom" data-deck="' + esc(f.deck) + '" data-page="' + f.page + '" aria-label="Open slide ' + f.page + ' full size">' +
+        '<img loading="lazy" src="' + slideSrc(f.deck, f.page) + '" alt="' + esc(f.caption || ("Slide " + f.page)) + '" width="' + D[f.deck].w + '" height="' + D[f.deck].h + '"></button>' +
+        "<figcaption>" + inl(f.caption || "") + " " + refChip(f, deckName(f.deck) + " · p." + f.page) + "</figcaption></figure>";
+    }
+    return "";
+  }).join("");
+}
+
+/* ---------- state ---------- */
+/* sec: the 1-based section open on the Learn tab (null: the unit overview) */
+const st = { view: "home", unit: null, tab: "learn", sec: null, deck: null, page: 1, quiz: null, cards: null, query: "", openSol: {}, ansOpen: {}, secPick: {} };
+const TABS = [["learn", "Learn"], ["slides", "Slides"], ["practice", "Practice"], ["quiz", "Quiz"], ["cards", "Flashcards"]];
+
+
+function renderRail(){
+  /* on a unit the rail is that unit's section index; elsewhere it lists the units */
+  const cu = st.view === "unit" ? UM[st.unit] : null;
+  if (cu && cu.sections.length) {
+    const cur = st.tab === "learn" && st.sec != null ? st.sec : 0, P = plan().set;
+    rail.innerHTML =
+      '<div class="railhead"><button class="btn sm" data-act="home">← All units</button>' +
+      "<h4>" + esc(cu.code) + " · " + readCount(cu) + "/" + cu.sections.length + " done</h4></div>" +
+      '<ol class="railsecs"><li><button class="railsec' + (st.tab === "learn" && cur === 0 ? " cur" : "") + '" data-act="sec" data-unit="' + cu.id + '" data-sec="0"><i></i><span>Unit overview</span><em></em></button></li>' +
+      cu.sections.map((sec, i) => {
+        const m = SEC(cu, i), inPlan = P.has(secKey(cu, i));
+        return '<li><button class="railsec' + (isRead(cu, i) ? " done" : "") + (cur === i + 1 ? " cur" : "") + (inPlan ? " inplan" : "") +
+          '" data-act="sec" data-unit="' + cu.id + '" data-sec="' + (i + 1) + '"' + (cur === i + 1 ? ' aria-current="page"' : "") +
+          (inPlan ? ' title="In your study plan"' : "") + ">" +
+          "<i>" + m.num + "</i><span>" + inl(sec.title) + freqDot(cu, i) + (isRead(cu, i) ? '<span class="vh">, done</span>' : "") + "</span><em>" + m.min + "′</em></button></li>";
+      }).join("") + "</ol>" +
+      '<p class="toc-sum">' + fmtH(unitMinLeft(cu)) + " left</p>";
+  } else {
+    rail.innerHTML = "<h4>" + esc(EXAM) + " units</h4>" + U.map(u =>
+      '<button class="ublock' + (st.unit === u.id && st.view === "unit" ? " cur" : "") + '" data-act="unit" data-unit="' + u.id + '">' +
+      '<span class="code">' + esc(u.code) + '</span><span class="t">' + esc(u.title) + "</span></button>").join("");
+  }
+  strip.innerHTML = '<button class="btn sm' + (st.view === "home" ? " on" : "") + '" data-act="home">Overview</button>' + U.map(u =>
+    '<button class="btn sm' + (st.unit === u.id && st.view === "unit" ? " on" : "") + '" data-act="unit" data-unit="' + u.id + '">' + esc(u.code) + "</button>").join("");
+}
+
+function setHash(){
+  let h = st.view === "unit" ? st.unit + "." + (st.tab === "learn" && st.sec != null ? "s" + st.sec : st.tab) : st.view === "home" ? "" : st.view;
+  try { history.replaceState(null, "", h ? "#" + h : location.pathname + location.search); } catch(e) {}
+}
+
+function go(view, opts){
+  opts = opts || {};
+  st.view = view;
+  if (view === "unit") {
+    if (opts.unit && opts.unit !== st.unit) { st.unit = opts.unit; st.quiz = null; st.cards = null; st.deck = null; st.page = 1; st.sec = null; }
+    if (opts.tab) st.tab = opts.tab;
+    if (opts.sec !== undefined) st.sec = opts.sec;
+    store.last = { unit: st.unit, tab: st.tab, sec: st.tab === "learn" ? st.sec : null }; save();
+  }
+  render();
+  if (!opts.keepScroll) window.scrollTo(0, 0);
+}
+
+/* ---------- views ---------- */
+function totals(){
+  let q = 0, c = 0, t = 0, s = 0;
+  U.forEach(u => { q += u.quiz.length; c += u.cards.length; t += u.tutorial.length + (u.practice || []).length; });
+  Object.values(D).forEach(d => s += nPages(d));
+  return { q, c, t, s };
+}
+function homeLede(){
+  const bits = ["a lesson for every unit built around what you will be asked to define, explain and work out", "the original slides", "practice problems with model answers"];
+  if (HAS.mockExam && S.exam) bits.push("a mock exam in the real format");
+  if (HAS.shorts && (S.shorts || []).length) bits.push("short videos");
+  if (HAS.audio && (S.audio || []).length) bits.push("audio lessons");
+  bits.push("quizzes and flashcards");
+  return "Everything for the " + esc(EXAM_L) + " in one place: " + bits.slice(0, -1).join(", ") + " and " + bits[bits.length - 1] + "." +
+    (C.exam && C.exam.covers ? " Covers " + esc(C.exam.covers) + "." : "");
+}
+function viewHome(){
+  const T = totals();
+  const lastU = store.last && UM[store.last.unit];
+  const tabName = lastU ? (TABS.find(x => x[0] === store.last.tab) || TABS[0])[1] : "";
+  return '<section class="hero">' +
+    "<h1>" + esc(TITLE) + "</h1>" +
+    '<p class="lede">' + homeLede() + "</p>" +
+    '<div class="stats"><span><b>' + U.length + "</b> unit" + (U.length === 1 ? "" : "s") + "</span><span><b>" + T.s + "</b> original pages</span><span><b>" + T.t + "</b> practice problems</span><span><b>" + T.q + "</b> quiz questions</span><span><b>" + T.c + "</b> flashcards</span></div>" +
+    '<div class="actions">' + (HAS.revise ? '<button class="btn primary" data-act="revise">Final revision</button>' : "") + (HAS.shorts ? '<button class="btn primary" data-act="shorts">Watch shorts</button>' : "") +
+      (HAS.mockExam ? '<button class="btn" data-act="exam">Take a mock exam</button>' : "") + '<button class="btn" data-act="quick">Quick quiz</button>' + Shorts.weakButton() + '<button class="btn" data-act="allcards">Review all flashcards</button>' +
+    (lastU ? (store.last.tab === "learn" && store.last.sec && lastU.sections[store.last.sec - 1]
+      ? '<button class="btn ghost" data-act="sec" data-unit="' + lastU.id + '" data-sec="' + (+store.last.sec) + '">Continue ' + esc(lastU.code) + " · §" + (+store.last.sec) + " " + esc(lastU.sections[store.last.sec - 1].title) + "</button>"
+      : '<button class="btn ghost" data-act="unit" data-unit="' + lastU.id + '" data-tab="' + esc(store.last.tab) + '">Continue ' + esc(lastU.code) + " · " + esc(tabName) + "</button>") : "") +
+    "</div></section>" +
+    '<section class="ugrid">' + U.map((u, i) =>
+      '<article class="ucard"><div class="head"><span class="code">' + esc(u.code) + '</span><span class="idx">' + (i + 1) + " of " + U.length + "</span></div>" +
+      "<h3>" + esc(u.title) + "</h3><p>" + inl(u.summary) + "</p>" +
+      '<div class="meta">' + nPages(D[u.deck]) + " slides · " + (u.tutorial.length + (u.practice || []).length) + " practice · " + u.quiz.length + " quiz · " + u.cards.length + " cards</div>" +
+      '<div class="go"><button class="btn sm primary" data-act="unit" data-unit="' + u.id + '" data-tab="learn">Learn</button>' +
+      '<button class="btn sm" data-act="unit" data-unit="' + u.id + '" data-tab="slides">Slides</button>' +
+      '<button class="btn sm" data-act="unit" data-unit="' + u.id + '" data-tab="practice">Practice</button>' +
+      '<button class="btn sm" data-act="unit" data-unit="' + u.id + '" data-tab="quiz">Quiz</button>' +
+      '<button class="btn sm" data-act="unit" data-unit="' + u.id + '" data-tab="cards">Cards</button></div></article>').join("") +
+    "</section>";
+}
+
+function viewUnit(){
+  const u = UM[st.unit];
+  const counts = { learn: u.sections.length, slides: unitDecks(u).reduce((a, d) => a + nPages(D[d]), 0), practice: u.tutorial.length + (u.practice || []).length, quiz: u.quiz.length, cards: u.cards.length };
+  let body = "";
+  if (st.tab === "learn") body = viewLearn(u);
+  else if (st.tab === "slides") body = viewSlides(u);
+  else if (st.tab === "practice") body = viewPractice(u);
+  else if (st.tab === "quiz") body = viewQuiz();
+  else if (st.tab === "cards") body = viewCards();
+  return '<section class="uhead"><div class="row"><span class="code">' + esc(u.code) + "</span><h2>" + esc(u.title) + "</h2></div>" +
+    (st.tab === "learn" ? "<p>" + inl(u.summary) + "</p>" : "") + Shorts.cramButton(u.id) + Listen.button(u.id) + "</section>" +
+    '<nav class="tabs" role="tablist">' + TABS.map(t => '<button role="tab" aria-selected="' + (st.tab === t[0]) + '" class="tab' + (st.tab === t[0] ? " cur" : "") +
+      '" data-act="tab" data-tab="' + t[0] + '">' + t[1] + '<span class="n">' + counts[t[0]] + "</span></button>").join("") + "</nav>" +
+    '<div class="pane">' + body + "</div>";
+}
+
+/* ---------- Learn: one section per page ----------
+   A unit's Learn tab opens on an overview table of its sections; each section then gets a page of its own with a
+   numbered index (the rail on wide screens, a collapsible list above the text below 1101 px), prev/next, a
+   "mark as done" toggle, a stopwatch and the questions that belong to it. */
+
+/* minutes for one written practice problem, by kind; marks break ties */
+function pracMinutes(p){
+  const t = (p.topic || "").toLowerCase(), m = p.marks || 2;
+  if (/index|figure|diagram|draw/.test(t)) return 6;
+  if (/code|program|loop|write a|implement/.test(t)) return 10;
+  if (/calculat|compute|work out/.test(t)) return 4;
+  if (/definition|terms|give the|enumerate|list/.test(t)) return 3;
+  return Math.max(3, Math.min(10, Math.round(m * 1.8)));
+}
+
+/* per-section derived data: number, minutes, and the quiz, practice and card items that belong to it */
+const SEC = (() => {
+  const cache = new Map();
+  function words(bs){
+    let n = 0;
+    const add = v => { if (typeof v === "string") n += v.split(/\s+/).length; };
+    (bs || []).forEach(b => Object.keys(b).forEach(k => {
+      const v = b[k];
+      if (typeof v === "string") add(v);
+      else if (Array.isArray(v)) v.forEach(x => { if (typeof x === "string") add(x); else if (x && typeof x === "object") Object.keys(x).forEach(kk => add(x[kk])); });
+      else if (v && typeof v === "object") Object.keys(v).forEach(kk => { const w = v[kk]; if (typeof w === "string") add(w); else if (Array.isArray(w)) w.forEach(r => Array.isArray(r) ? r.forEach(add) : add(r)); });
+    }));
+    return n;
+  }
+  function build(u, i){
+    const s = u.sections[i], pages = new Set(s.slides || []);
+    /* an item may name its section outright (sec, 1-based); otherwise it belongs to the section whose slides
+       include the page it refers to. Sections without slide pages can only be reached through sec. */
+    const on = it => it.sec != null ? +it.sec === i + 1 : !!(it.ref && it.ref.deck === u.deck && pages.has(+it.ref.page));
+    const quiz = (u.quiz || []).filter(on), prac = (u.practice || []).filter(on), cards = (u.cards || []).filter(on);
+    /* one careful read at 170 words a minute, every question attempted, extra dwell on tables and must-know
+       sections, and a buffer (6 min on must-know sections, 2 otherwise) */
+    const read = words(s.blocks) / 170;
+    const qmin = quiz.length + prac.reduce((a, p) => a + pracMinutes(p), 0);
+    const hard = s.priority === "high";
+    const memHeavy = hard || (s.blocks || []).some(b => b.table);
+    const min = Math.max(3, Math.round(read + qmin + (memHeavy ? 0.8 * read : 0) + (hard ? 6 : 2)));
+    const types = [];
+    if (prac.length) types.push(prac.length + " written");
+    if (quiz.length) types.push(quiz.length + " MCQ");
+    if (cards.length) types.push(cards.length + " cards");
+    return { num: String(i + 1), min, quiz, prac, cards, types: types.join(" · ") || "-" };
+  }
+  return (u, i) => { const k = u.id + ":" + i; if (!cache.has(k)) cache.set(k, build(u, i)); return cache.get(k); };
+})();
+const secKey = (u, i) => u.id + ":" + i;
+const isRead = (u, i) => !!store.read[secKey(u, i)];
+const readCount = u => u.sections.reduce((n, s, i) => n + (isRead(u, i) ? 1 : 0), 0);
+const unitMinLeft = u => u.sections.reduce((n, s, i) => n + (isRead(u, i) ? 0 : SEC(u, i).min), 0);
+const fmtH = m => m < 60 ? Math.round(m) + " min" : (Math.round(m / 6) / 10).toFixed(1).replace(/\.0$/, "") + " h";
+function secScore(u, i){
+  const ids = SEC(u, i).quiz.map(q => q.id), done = ids.filter(id => store.quiz[id] != null);
+  if (!done.length) return null;
+  const right = done.filter(id => store.quiz[id] === 1).length;
+  return { n: done.length, of: ids.length, pct: Math.round(100 * right / done.length) };
+}
+
+/* ---------- section stopwatch ----------
+   Runs while a section page is open. Pauses after 3 minutes without scrolling, pointer movement, touch or typing
+   (the idle stretch is rolled back, not counted), while the tab is hidden, when you leave the section, and for
+   good once the section is marked done. Stored per section in store.sw. */
+const SW = (() => {
+  const IDLE = 180000;
+  let cur = null, running = false, last = 0, lastAct = Date.now(), timer = 0, resetArm = 0;
+  const key = () => "sw:" + secKey(cur.u, cur.i);
+  const saved = () => store.sw[key()] || 0;
+  const total = () => saved() + (running ? Date.now() - last : 0);
+  const fmt = ms => {
+    const t = Math.floor(ms / 1000), h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), s = t % 60, p = n => String(n).padStart(2, "0");
+    return h ? h + ":" + p(m) + ":" + p(s) : p(m) + ":" + p(s);
+  };
+  function commit(until){
+    if (!running) return;
+    const end = until || Date.now();
+    store.sw[key()] = Math.max(0, saved() + (end - last));
+    last = end; save();
+  }
+  function why(){
+    if (!cur) return "off";
+    if (isRead(cur.u, cur.i)) return "done";
+    if (cur.manual) return "manual";
+    if (document.visibilityState !== "visible") return "hidden";
+    if (Date.now() - lastAct >= IDLE) return "idle";
+    return "run";
+  }
+  const MSG = { run: "Timing this section", idle: "Paused: no activity for 3 minutes. Scroll or move to resume", manual: "Paused",
+    hidden: "Paused while the tab is hidden", done: "Section done: timer stopped. Mark it not done to resume" };
+  function tick(){
+    if (!cur) return;
+    if (!cur.el.isConnected) { stop(); return; }
+    const w = why();
+    if (w === "run" && !running) { running = true; last = Date.now(); }
+    else if (w !== "run" && running) { commit(w === "idle" ? lastAct : Date.now()); running = false; }
+    else if (running && Date.now() - last > 15000) commit();
+    paint(w);
+  }
+  function paint(w){
+    const el = cur.el, est = SEC(cur.u, cur.i).min;
+    el.querySelector(".swt").textContent = fmt(total());
+    el.dataset.state = w;
+    el.querySelector(".sws").textContent = MSG[w] || "";
+    el.querySelector(".swe").textContent = "/ " + est + "′";
+    const b = el.querySelector("[data-swp]");
+    b.textContent = cur.manual ? "▶" : "❚❚";
+    b.setAttribute("aria-label", cur.manual ? "Resume the section timer" : "Pause the section timer");
+    b.title = cur.manual ? "Resume" : "Pause";
+    b.disabled = w === "done";
+    el.title = MSG[w] + " · estimate " + est + " min";
+  }
+  const act = () => { const was = Date.now() - lastAct >= IDLE; lastAct = Date.now(); if (was && cur) tick(); };
+  ["scroll", "wheel", "mousemove", "pointerdown", "keydown", "touchstart", "input"].forEach(ev => addEventListener(ev, act, { passive: true, capture: true }));
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") lastAct = Date.now(); tick(); });
+  addEventListener("pagehide", () => { if (cur) commit(); });
+  function start(u, i, el){
+    stop(true);
+    if (!el) return;
+    cur = { u, i, el, manual: false };
+    running = false; lastAct = Date.now();
+    el.querySelector("[data-swp]").addEventListener("click", () => { cur.manual = !cur.manual; tick(); });
+    el.querySelector("[data-swr]").addEventListener("click", e => {
+      const b = e.currentTarget;
+      if (!resetArm) {
+        resetArm = setTimeout(() => { resetArm = 0; b.textContent = "↺"; b.setAttribute("aria-label", "Reset the section timer"); }, 3000);
+        b.textContent = "Reset?"; b.setAttribute("aria-label", "Press again to reset the section timer");
+        return;
+      }
+      clearTimeout(resetArm); resetArm = 0;
+      b.textContent = "↺"; b.setAttribute("aria-label", "Reset the section timer");
+      running = false; delete store.sw[key()]; save(); tick();
+    });
+    timer = setInterval(tick, 1000);
+    tick();
+  }
+  function stop(keepSlot){
+    if (cur) commit(Date.now() - lastAct >= IDLE ? lastAct : Date.now());
+    running = false; cur = null; clearInterval(timer);
+    if (resetArm) { clearTimeout(resetArm); resetArm = 0; }
+    if (!keepSlot) { const slot = document.getElementById("swslot"); if (slot) slot.innerHTML = ""; }
+  }
+  return { start, stop, fmt, get: (u, i) => store.sw["sw:" + secKey(u, i)] || 0 };
+})();
+function swHTML(){
+  return '<div class="sw swc" data-state="run" role="group" aria-label="Section timer">' +
+    '<span class="swdot" aria-hidden="true"></span><span class="swt">00:00</span><span class="swe"></span>' +
+    '<span class="swb"><button type="button" class="swmini" data-swp aria-label="Pause the section timer">❚❚</button>' +
+    '<button type="button" class="swmini" data-swr aria-label="Reset the section timer" title="Reset (press twice)">↺</button></span>' +
+    '<span class="sws vh"></span></div>';
+}
+function mountSW(){
+  const u = UM[st.unit], slot = document.getElementById("swslot");
+  if (!u || st.view !== "unit" || st.tab !== "learn" || st.sec == null || !u.sections.length) { SW.stop(); return; }
+  const i = Math.min(Math.max(0, st.sec - 1), u.sections.length - 1);
+  if (slot) { slot.innerHTML = swHTML(); SW.start(u, i, slot.firstElementChild); }
+}
+
+/* ---------- section index ---------- */
+const isDesk = () => matchMedia("(min-width: 901px)").matches;
+function tocHTML(u, cur){
+  return '<aside class="toc" aria-label="Sections"><details class="tocd"' + (isDesk() || !cur ? " open" : "") + ">" +
+    "<summary>Sections · " + readCount(u) + "/" + u.sections.length + " done</summary><ol>" +
+    '<li><a href="#' + u.id + '.learn" data-act="sec" data-unit="' + u.id + '" data-sec="0"' + (cur ? "" : ' class="cur" aria-current="page"') + "><i></i><span>Unit overview</span><em></em></a></li>" +
+    u.sections.map((s, i) => {
+      const m = SEC(u, i);
+      return '<li><a href="#' + u.id + ".s" + (i + 1) + '" data-act="sec" data-unit="' + u.id + '" data-sec="' + (i + 1) + '" class="' +
+        (isRead(u, i) ? "done" : "") + (cur === i + 1 ? " cur" : "") + '"' + (cur === i + 1 ? ' aria-current="page"' : "") + ">" +
+        "<i>" + m.num + "</i><span>" + inl(s.title) + freqDot(u, i) + (isRead(u, i) ? '<span class="vh">, done</span>' : "") + "</span><em>" + m.min + "′</em></a></li>";
+    }).join("") + "</ol>" +
+    '<p class="toc-sum">' + fmtH(unitMinLeft(u)) + " left in " + esc(u.code) + "</p></details></aside>";
+}
+/* questions from the tutorial decks have no page correspondence with the unit's slides, so they stay on the
+   Practice and Quiz tabs rather than being guessed into a section */
+function unattached(u){
+  const tied = new Set();
+  u.sections.forEach((s, i) => { const m = SEC(u, i); m.quiz.forEach(x => tied.add("q" + x.id)); m.prac.forEach(x => tied.add("p" + x.id)); });
+  return { quiz: (u.quiz || []).filter(x => !tied.has("q" + x.id)).length, prac: (u.practice || []).filter(x => !tied.has("p" + x.id)).length };
+}
+function viewChapter(u){
+  if (!u.sections.length) return '<p class="empty">The lesson for this unit is still being written.</p>';
+  const nextI = u.sections.findIndex((s, i) => !isRead(u, i)), startI = nextI < 0 ? 0 : nextI;
+  const obj = u.objectives && u.objectives.length ? '<div class="objectives"><h4>After this unit you can</h4><ul>' + u.objectives.map(o => "<li>" + inl(o) + "</li>").join("") + "</ul></div>" : "";
+  const hasF = unitHasFreq(u);
+  const rows = u.sections.map((s, i) => {
+    const m = SEC(u, i), sc = secScore(u, i), t = SW.get(u, i);
+    return "<tr><td class='code'>" + m.num + "</td>" +
+      '<td><a href="#' + u.id + ".s" + (i + 1) + '" data-act="sec" data-unit="' + u.id + '" data-sec="' + (i + 1) + '">' + inl(s.title) + "</a></td>" +
+      (hasF ? "<td>" + freqBadge(u, i) + "</td>" : "") + "<td class='freq'>" + m.min + " min</td><td class='freq'>" + esc(m.types) + "</td>" +
+      "<td>" + (isRead(u, i) ? '<span class="pill g">Done</span>' : "") +
+        (sc ? ' <span class="pill ' + (sc.pct >= 85 ? "g" : sc.pct >= 60 ? "m" : "b") + '">' + sc.n + "/" + sc.of + " Qs · " + sc.pct + "%</span>" : "") +
+        (t ? ' <span class="pill t" title="Time on this section">' + SW.fmt(t) + "</span>" : "") + "</td></tr>";
+  }).join("");
+  const left = u.sections.length - readCount(u), o = unattached(u), bits = [];
+  if (o.prac) bits.push(o.prac + " written");
+  if (o.quiz) bits.push(o.quiz + " MCQ");
+  return '<div class="chov">' + obj +
+    '<div class="actions" style="padding-top:16px"><button class="btn primary" data-act="sec" data-unit="' + u.id + '" data-sec="' + (startI + 1) + '">' +
+      (nextI < 0 ? "Review" : "Start") + " §" + SEC(u, startI).num + " " + inl(u.sections[startI].title) + "</button>" +
+      '<button class="btn" data-act="tab" data-tab="practice">Practice</button>' +
+      '<button class="btn" data-act="tab" data-tab="quiz">Take the ' + esc(u.code) + " quiz</button></div>" +
+    '<div class="tblwrap"><table class="sectable"><thead><tr><th scope="col">§</th><th scope="col">Section</th>' + (hasF ? '<th scope="col">How often</th>' : "") + '<th scope="col">Time</th><th scope="col">Questions</th><th scope="col">Status</th></tr></thead><tbody>' + rows + "</tbody></table></div>" +
+    '<p class="toc-sum">' + fmtH(unitMinLeft(u)) + " left across " + left + " unread section" + (left === 1 ? "" : "s") +
+      (bits.length ? '. <span class="unat">' + bits.join(" and ") + " come from the tutorial sheets and are not tied to a section: " +
+        '<button class="lnk" data-act="tab" data-tab="practice">see Practice</button>.</span>' : "") + "</p></div>";
+}
+
+/* ---------- one section ---------- */
+/* where a model answer comes from: an answer marked correct when graded, or one worked from the slides */
+function srcBadge(p){
+  if (p.answerSource === "marked") return '<span class="srcbadge ok" title="This is the answer that was marked correct when graded">&#10003; Answer marked correct</span>';
+  if (p.answerSource === "slides") return '<span class="srcbadge sl" title="No answer marked correct was available, so this one is worked from the slides">Answer from the slides, not confirmed</span>';
+  return "";
+}
+/* 0..n-1 in an order fixed by the seed string (a small hash driving a Fisher-Yates shuffle) */
+function seededOrder(n, seed){
+  let h = 2166136261;
+  for (const ch of String(seed)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619) >>> 0; }
+  const a = Array.from({ length: n }, (x, k) => k);
+  for (let i = n - 1; i > 0; i--) { h = (Math.imul(h, 1103515245) + 12345) >>> 0; const j = h % (i + 1); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function xsBadge(p){ return p.examstyle ? '<span class="xsbadge" title="Written like a full exam question, with a full-marks checklist in the model answer">Exam-style</span>' : ""; }
+function secQuestionsHTML(u, i){
+  const m = SEC(u, i);
+  if (!m.quiz.length && !m.prac.length) return "";
+  let h = '<div class="secqs">';
+  if (m.prac.length) h += '<h4>Written practice <span class="shaped">the shape of the exam</span></h4>' + m.prac.map(p =>
+    '<article class="titem"><div class="th"><b>' + esc(p.topic || "Problem") + "</b>" +
+    (p.marks ? '<span class="marks">' + fmtMarks(p.marks) + " mark" + (p.marks === 1 ? "" : "s") + "</span>" : "") + xsBadge(p) +
+    "</div>" + practiceBody(p, "sp:" + p.id, store.practice, "pgrade") + "</article>").join("");
+  if (m.quiz.length) h += '<h4 class="recallh">Quick recall <span class="dimh">not exam-shaped, but fast to check</span></h4>' + m.quiz.map(q => {
+    const v = store.quiz[q.id], open = v != null, pick = st.secPick[q.id];
+    const tf = q.kind === "tf" || !Array.isArray(q.options);
+    /* true/false items store a boolean answer: True is option 1, False option 0 */
+    /* options are shuffled here too (a fixed order per question, so a re-render does not move them) */
+    const opts = tf ? [{ label: "True", i: 1 }, { label: "False", i: 0 }] : seededOrder(q.options.length, q.id).map(oi => ({ label: q.options[oi], i: oi }));
+    const correct = tf ? (q.answer === true || q.answer === "True" ? 1 : 0) : q.answer;
+    const letters = tf ? ["T", "F"] : ["A", "B", "C", "D", "E", "F", "G"];
+    return '<article class="sq" data-qid="' + esc(q.id) + '">' +
+      '<div class="q">' + inl(q.q) + "</div>" + (q.code ? codeBlock(q.code) : "") +
+      '<div class="opts">' + opts.map((o, n) =>
+        '<button class="opt' + (open ? (o.i === correct ? " right" : v === 0 && pick === o.i ? " picked" : " dim") : "") +
+        '" data-act="secq" data-qid="' + esc(q.id) + '" data-i="' + o.i + '"' + (open ? " disabled" : "") + ">" +
+        '<span class="ol">' + letters[n] + "</span><span>" + inl(String(o.label)) + "</span></button>").join("") + "</div>" +
+      (open ? '<div class="exp ' + (v === 1 ? "ok" : "no") + '" tabindex="-1"><b>' + (v === 1 ? "Correct" : "Not quite") + "</b><div>" + inl(q.explain) + "</div>" +
+        (q.ref ? "<div>" + refChip(q.ref, "Taught on " + deckName(q.ref.deck) + " · p." + q.ref.page) + "</div>" : "") + "</div>" : "") +
+      "</article>";
+  }).join("");
+  return h + "</div>";
+}
+function viewSection(u, i){
+  const s = u.sections[i], m = SEC(u, i);
+  const prev = i > 0 ? i - 1 : null, next = i + 1 < u.sections.length ? i + 1 : null;
+  const body =
+    '<section class="lsec" id="s-' + u.id + "-" + i + '">' +
+      "<h3 tabindex=\"-1\"><span class='num'>§" + m.num + "</span>" + inl(s.title) + freqBadge(u, i) +
+      '<span class="secest" title="Estimated time for one careful pass, including its questions">' + m.min + " min</span></h3>" +
+      (s.slides && s.slides.length ? '<div class="chips">' + refChip({ deck: u.deck, page: Math.min.apply(null, s.slides) }, rangeLabel(s.slides)) + "</div>" : "") +
+      '<div class="blocks">' + blocks(s.blocks) + "</div>" + secQuestionsHTML(u, i) +
+    "</section>" +
+    '<nav class="secnav" aria-label="Section navigation">' +
+      (prev != null ? '<button class="btn" data-act="sec" data-unit="' + u.id + '" data-sec="' + (prev + 1) + '">← §' + SEC(u, prev).num + "</button>" : "<span></span>") +
+      '<button class="btn' + (isRead(u, i) ? " done" : "") + '" data-act="secread" data-unit="' + u.id + '" data-sec="' + (i + 1) + '" aria-pressed="' + isRead(u, i) + '">' +
+        (isRead(u, i) ? "Done ✓" : "Mark as done") + "</button>" +
+      (next != null
+        ? '<button class="btn primary" data-act="sec" data-unit="' + u.id + '" data-sec="' + (next + 1) + '">§' + SEC(u, next).num + " " + inl(u.sections[next].title) + " →</button>"
+        : '<button class="btn primary" data-act="tab" data-tab="quiz">Take the ' + esc(u.code) + " quiz →</button>") +
+    "</nav>";
+  return '<div class="learn">' + tocHTML(u, i + 1) + '<div class="reading">' + body + "</div></div>";
+}
+function viewLearn(u){
+  if (st.sec == null || !u.sections.length) return '<div class="learn learn-ov">' + (u.sections.length ? tocHTML(u, 0) : "") + '<div class="reading">' + viewChapter(u) + "</div></div>";
+  const i = Math.min(Math.max(0, st.sec - 1), u.sections.length - 1);
+  st.sec = i + 1;
+  return viewSection(u, i);
+}
+
+/* "Slide 12" or "slides 4-6" in lesson prose becomes a button that opens that slide */
+function linkSlides(root, u){
+  const re = /\b([Ss]lides?)\s+(\d+)((?:\s*[–-]\s*\d+)?)/g, d = D[u.deck];
+  if (!d) return;
+  root.querySelectorAll(".lsec .blocks p, .lsec .blocks li, .sq .q").forEach(pr => {
+    const walker = document.createTreeWalker(pr, NodeFilter.SHOW_TEXT, { acceptNode: t => {
+      re.lastIndex = 0;
+      return re.test(t.nodeValue) && !t.parentElement.closest("a,button,code,pre,.chip,.tag") ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    } });
+    const nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(t => {
+      const frag = document.createDocumentFragment(), v = t.nodeValue;
+      let lastEnd = 0, m; re.lastIndex = 0;
+      while ((m = re.exec(v))) {
+        const n = +m[2];
+        if (n < first(d) || n > d.pages) continue;
+        frag.append(v.slice(lastEnd, m.index));
+        const a = document.createElement("button");
+        a.className = "stxt"; a.type = "button"; a.dataset.act = "slideto"; a.dataset.deck = u.deck; a.dataset.page = n; a.title = "Open slide " + n;
+        a.innerHTML = ICON_SLIDE; a.append(m[0]);
+        frag.append(a); lastEnd = m.index + m[0].length;
+      }
+      frag.append(v.slice(lastEnd));
+      t.replaceWith(frag);
+    });
+  });
+}
+/* the first section that discusses a slide page, for the "back to section" button on the Slides tab */
+function sectionForSlide(u, page){ return u.sections.findIndex(s => (s.slides || []).includes(page)); }
+
+/* ---------- how often each section comes up ----------
+   One number per section (its "freq"), 0 (rare) to 5 (comes up nearly every time), set only from past-paper
+   evidence. It drives the badges, the index dots and the study-plan ordering. A section without it is unknown:
+   no badge, no dots, and a neutral place in the plan. */
+/* sections[].freq in the unit's content file (0 to 5); null when it is missing */
+function secFreq(u, i){ const v = (u.sections[i] || {}).freq; if (v == null || v === "" || isNaN(+v)) return null; return Math.min(5, Math.max(0, +v)); }
+const FREQ_UNKNOWN = 2.5;            /* the plan's weight for a section with no freq: the middle of 0 to 5 */
+function freqTier(f){ return f >= 4 ? 3 : f === 3 ? 2 : f >= 1 ? 1 : 0; }
+const FREQ_NAME = ["Rare", "Sometimes", "Common", "Very common"];
+function unitHasFreq(u){ return u.sections.some((s, i) => secFreq(u, i) != null); }
+function anyFreq(){ return U.some(unitHasFreq); }
+function freqBadge(u, i){
+  const f = secFreq(u, i); if (f == null) return "";
+  const t = freqTier(f);
+  return '<span class="fbadge f' + t + '" title="How often this topic comes up">' + FREQ_NAME[t] + "</span>";
+}
+function freqDot(u, i){
+  const f = secFreq(u, i); if (f == null) return "";
+  const t = freqTier(f);
+  return '<span class="fdot f' + t + '" title="How often this topic comes up: ' + FREQ_NAME[t].toLowerCase() + '" aria-hidden="true">' +
+    (t ? "●".repeat(t) : "○") + '</span><span class="vh">, ' + FREQ_NAME[t].toLowerCase() + "</span>";
+}
+
+/* ---------- study plan and countdown ----------
+   The exam is at a fixed time and the lab holds more than fits, so the plan ranks what is left and draws a line
+   where the hours you have run out. */
+const EXAM_AT = C.exam && C.exam.at ? new Date(C.exam.at) : null;
+function msToExam(){ return EXAM_AT && !isNaN(EXAM_AT) ? EXAM_AT - Date.now() : 0; }
+function fmtCountdown(ms){
+  const h = Math.floor(ms / 3600000), m = Math.floor(ms % 3600000 / 60000);
+  return h >= 24 ? Math.floor(h / 24) + "d " + (h % 24) + "h" : h + "h " + m + "m";
+}
+function countdownText(){ const ms = msToExam(); return ms > 0 ? "Exam in " + fmtCountdown(ms) : "Study plan"; }
+/* how much a unit weighs: the marks its own written practice carries */
+function unitWeight(u){ return (u.practice || []).reduce((a, p) => a + (p.marks || 2), 0); }
+function planRows(){
+  const mw = Math.max.apply(null, U.map(unitWeight)) || 1, rows = [];
+  U.forEach(u => {
+    const w = unitWeight(u) / mw;
+    u.sections.forEach((s, i) => {
+      const m = SEC(u, i);
+      const asked = m.quiz.filter(q => store.quiz[q.id] != null).length, wrong = m.quiz.filter(q => store.quiz[q.id] === 0).length;
+      /* how often the topic comes up dominates, then must-know, the unit's weight and your wrong answers */
+      const f = secFreq(u, i);
+      const score = (f == null ? FREQ_UNKNOWN : f) * 4 +(s.priority === "high" ? 1 : 0) + w * 1.5 + wrong * 1.5 + (m.prac.length ? 1 : 0) + (asked === 0 ? 0.5 : 0);
+      rows.push({ u, i, m, s, score, done: isRead(u, i), wrong });
+    });
+  });
+  rows.sort((a, b) => b.score - a.score || a.m.min - b.m.min);
+  return rows;
+}
+const PLAN_HOURS = [1, 2, 3, 4, 5, 6, 8, 10, 12, 14, 16, 20];
+function planHours(){
+  let v = null;
+  try { v = localStorage.getItem(LS + "plan-hours"); } catch(e) {}
+  if (v != null && +v > 0) return +v;
+  const d = Math.max(1, Math.min(14, Math.round(Math.max(0, msToExam()) / 3600000 / 3)));     // default: a third of the time left, up to 14 h
+  return PLAN_HOURS.reduce((a, b) => Math.abs(b - d) < Math.abs(a - d) ? b : a);
+}
+let PLAN = null;
+function plan(){
+  if (PLAN) return PLAN;
+  const cap = planHours() * 60, set = new Set();
+  let used = 0;
+  planRows().forEach(r => { if (r.done || used + r.m.min > cap) return; used += r.m.min; set.add(secKey(r.u, r.i)); });
+  return (PLAN = { set, used, cap });
+}
+function planReset(){ PLAN = null; }
+function viewPlan(){
+  const rows = planRows(), hrs = planHours(), cap = hrs * 60, left = rows.filter(r => !r.done);
+  const totalLeft = left.reduce((a, r) => a + r.m.min, 0), doneMin = rows.filter(r => r.done).reduce((a, r) => a + r.m.min, 0);
+  let used = 0, cutAt = -1;
+  const marked = left.map((r, n) => { const fits = used + r.m.min <= cap; if (fits) used += r.m.min; else if (cutAt < 0) cutAt = n; return { r, fits }; });
+  const body = marked.map((x, n) => { const r = x.r;
+    return (n === cutAt ? '<tr class="cut"><td colspan="5">everything below this line does not fit in ' + hrs + " h</td></tr>" : "") +
+      '<tr class="' + (x.fits ? "in" : "out") + '"><td class="code">' + esc(r.u.code) + " §" + r.m.num + "</td>" +
+      '<td><button class="lnk" data-act="sec" data-unit="' + r.u.id + '" data-sec="' + (r.i + 1) + '">' + inl(r.s.title) + "</button> " + freqBadge(r.u, r.i) +
+        (r.s.priority === "high" ? ' <span class="must">Must know</span>' : "") + "</td>" +
+      '<td class="freq">' + r.m.min + " min</td><td class=\"freq\">" + (r.m.quiz.length + r.m.prac.length || "-") + "</td>" +
+      "<td>" + (r.wrong ? '<span class="pill b">' + r.wrong + " wrong</span>" : "") + "</td></tr>";
+  }).join("");
+  const ms = msToExam();
+  return '<section class="uhead"><div class="row"><span class="code">Plan</span><h2>What to cover before the exam</h2></div>' +
+      "<p>" + (ms > 0 ? "The " + esc(EXAM_L) + " is on " + EXAM_AT.toLocaleString("en-GB", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }) +
+        ", <b>" + fmtCountdown(ms) + "</b> from now. " : "") +
+      "The lab holds " + fmtH(totalLeft) + " of unread material" + (doneMin ? " (" + fmtH(doneMin) + " already marked done)" : "") +
+      ", so this orders it and cuts where your hours run out. Sections in the plan carry a copper dot in a unit's section index.</p></section>" +
+    '<div class="planbar"><label for="plh"><b>Hours I can actually study</b></label>' +
+      '<select id="plh" data-act="plh">' + PLAN_HOURS.concat(PLAN_HOURS.includes(hrs) ? [] : [hrs]).sort((a, b) => a - b).map(h => '<option value="' + h + '"' + (h === hrs ? " selected" : "") + ">" + h + " h</option>").join("") + "</select>" +
+      '<span class="trn">fills ' + fmtH(Math.min(used, cap)) + " of " + fmtH(cap) + "</span></div>" +
+    '<p class="subh">Ranked by ' + (anyFreq() ? "how often the topic comes up, then " : "") + "must-know, the marks the unit carries, and questions you got wrong</p>" +
+    (left.length ? '<div class="tblwrap"><table class="sectable plantab"><thead><tr><th scope="col">Where</th><th scope="col">Section</th><th scope="col">Time</th><th scope="col">Qs</th><th scope="col"><span class="vh">Wrong answers</span></th></tr></thead><tbody>' + body + "</tbody></table></div>"
+      : '<p class="empty">Every section is marked done. Try the mock exam.</p>');
+}
+
+/* ---------- audio lessons ---------- */
+const AU = S.audio || [], AUM = Object.fromEntries(AU.map(a => [a.id, a]));
+const UNIT_AUDIO = C.audioUnits || {};            /* unit id -> audio lesson id (course.json audio.units) */
+const LPLAY = '<svg viewBox="0 0 24 24" aria-hidden="true" width="15" height="15"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>';
+function mmss(t){ t = Math.max(0, Math.round(t)); return Math.floor(t / 60) + ":" + String(t % 60).padStart(2, "0"); }
+function lfile(a){ return a.title.replace(/[:\\/*?"<>|]/g, " -") + ".mp3"; }
+const RATES = [0.75, 1, 1.25, 1.5, 1.75, 2];
+/* One audio element for the whole visit: switching lessons only changes its source, so the next chapter can start by
+   itself when one ends (phones allow that for an element that is already playing). Where you were is kept per lesson
+   (<slug>-listen) and as the lesson you were on last (<slug>-listen-last), so "Continue" picks up there. */
+const Listen = {
+  KEY: LS + "listen", LAST: LS + "listen-last", cur: null, au: null,
+  pos(id){ try { return (JSON.parse(localStorage.getItem(this.KEY) || "{}")[id]) || 0; } catch(e) { return 0; } },
+  rate(){ let r = 1; try { r = +localStorage.getItem(LS + "listen-rate") || 1; } catch(e) {} return RATES.includes(r) ? r : 1; },
+  savePos(id, t){ try { const d = JSON.parse(localStorage.getItem(this.KEY) || "{}"); d[id] = Math.round(t); localStorage.setItem(this.KEY, JSON.stringify(d)); localStorage.setItem(this.LAST, id); } catch(e) {} },
+  last(){ let id = null; try { id = localStorage.getItem(this.LAST); } catch(e) {} return AUM[id] ? id : null; },
+  next(id){ const i = AU.findIndex(a => a.id === id); return i >= 0 && i < AU.length - 1 ? AU[i + 1] : null; },
+  secAt(a, t){ let s = a.chapters[0]; a.chapters.forEach(c => { if (c.start <= t + 0.5) s = c; }); return s; },
+  button(uid){
+    const a = HAS.audio && AUM[UNIT_AUDIO[uid]]; if (!a) return "";
+    return '<button class="btn scrambtn" data-act="lplay" data-id="' + esc(a.id) + '">' + LPLAY + "Listen <span>" + Math.round(a.duration / 60) + " min audio lesson</span></button>";
+  },
+  build(){
+    const box = $("#lplayer");
+    box.innerHTML = '<div class="lrow"><span class="ltitle"></span>' +
+      '<select class="lsecsel" aria-label="Jump to a section"></select>' +
+      '<select class="lspeed" aria-label="Playback speed">' + RATES.map(r => '<option value="' + r + '"' + (r === this.rate() ? " selected" : "") + ">" + r + "×</option>").join("") + "</select>" +
+      '<a class="btn sm ldl" download>Download</a>' +
+      '<button class="btn sm" data-act="lclose" aria-label="Close the player">&times;</button></div>' +
+      '<audio controls preload="metadata"></audio><div class="lsec" aria-live="polite"></div>';
+    const au = this.au = box.querySelector("audio"), sel = box.querySelector(".lsecsel"), spd = box.querySelector(".lspeed"), lab = box.querySelector(".lsec");
+    const setRate = r => { au.defaultPlaybackRate = au.playbackRate = r; try { au.preservesPitch = true; } catch(e) {} };
+    setRate(this.rate());
+    au.addEventListener("loadedmetadata", () => setRate(this.rate()));
+    spd.addEventListener("change", () => { const r = +spd.value; try { localStorage.setItem(LS + "listen-rate", String(r)); } catch(e) {} setRate(r); });
+    let last = 0;
+    const keep = () => { const a = AUM[this.cur]; if (a) this.savePos(a.id, au.currentTime > a.duration - 15 ? 0 : au.currentTime); };
+    au.addEventListener("timeupdate", () => {
+      const a = AUM[this.cur]; if (!a) return;
+      const sc = this.secAt(a, au.currentTime), nx = this.next(a.id);
+      lab.textContent = sc.title + " · " + mmss(au.currentTime) + " of " + mmss(a.duration) + (nx ? " · next: " + nx.title : "");
+      if (sel.value !== String(sc.start)) sel.value = String(sc.start);
+      if (Math.abs(au.currentTime - last) > 5) { last = au.currentTime; keep(); }
+    });
+    au.addEventListener("pause", keep);
+    au.addEventListener("ended", () => {                // the whole chapter is done: start the next one
+      const a = AUM[this.cur]; if (!a) return;
+      this.savePos(a.id, 0);
+      const nx = this.next(a.id);
+      if (nx) this.play(nx.id, 0); else lab.textContent = "You have listened to every lesson.";
+    });
+    sel.addEventListener("change", () => { au.currentTime = +sel.value; au.play().catch(() => {}); });
+    if ("mediaSession" in navigator) {
+      try {
+        navigator.mediaSession.setActionHandler("nexttrack", () => { const nx = this.next(this.cur); if (nx) this.play(nx.id, 0); });
+        navigator.mediaSession.setActionHandler("previoustrack", () => { const i = AU.findIndex(a => a.id === this.cur); if (i > 0) this.play(AU[i - 1].id, 0); else au.currentTime = 0; });
+      } catch(e) {}
+    }
+  },
+  load(a){
+    const box = $("#lplayer");
+    this.cur = a.id;
+    box.querySelector(".ltitle").textContent = a.title;
+    box.querySelector(".lsecsel").innerHTML = a.chapters.map(c => '<option value="' + c.start + '">' + esc(c.title) + "</option>").join("");
+    const dl = box.querySelector(".ldl"); dl.href = "audio/" + a.file; dl.setAttribute("download", lfile(a));
+    this.au.src = "audio/" + a.file;
+    if ("mediaSession" in navigator && window.MediaMetadata) {
+      try { navigator.mediaSession.metadata = new MediaMetadata({ title: a.title, artist: TITLE, album: "Audio lessons" }); } catch(e) {}
+    }
+  },
+  play(id, at){
+    const a = AUM[id]; if (!a) return;
+    if (!this.au) this.build();
+    if (this.cur !== id) this.load(a);
+    const box = $("#lplayer"); box.hidden = false; document.body.classList.add("lp-on");
+    const au = this.au, start = at != null ? at : this.pos(id);
+    try { localStorage.setItem(this.LAST, id); } catch(e) {}
+    const go = () => { try { au.currentTime = start; } catch(e) {} au.play().catch(() => {}); };
+    if (au.readyState >= 1) go(); else au.addEventListener("loadedmetadata", go, { once: true });
+    au.play().catch(() => {});                          // start inside the tap so phones allow it; the seek follows
+  },
+  pause(){ if (this.au) { try { this.au.pause(); } catch(e) {} } },
+  close(){ this.pause(); const box = $("#lplayer"); box.hidden = true; box.innerHTML = ""; this.au = null; this.cur = null; document.body.classList.remove("lp-on"); }
+};
+function viewListen(){
+  const cards = AU.length ? AU.map(a => {
+    const p = Listen.pos(a.id);
+    return '<article class="lcard" id="l-' + esc(a.id) + '"><h3>' + esc(a.title) + "</h3>" +
+      '<div class="lmeta">' + Math.round(a.duration / 60) + " min · " + a.chapters.length + " sections · " + (a.bytes / 1048576).toFixed(1) + " MB</div>" +
+      '<div class="actions"><button class="btn primary" data-act="lplay" data-id="' + esc(a.id) + '">' + LPLAY + (p > 5 ? "Resume at " + mmss(p) : "Play") + "</button>" +
+      (p > 5 ? '<button class="btn" data-act="lseek" data-id="' + esc(a.id) + '" data-t="0">From the start</button>' : "") +
+      '<a class="btn" href="audio/' + esc(a.file) + '" download="' + esc(lfile(a)) + '">Download MP3</a></div>' +
+      '<details><summary>Sections</summary><ol class="lsecs">' + a.chapters.map(c =>
+        '<li><button data-act="lseek" data-id="' + esc(a.id) + '" data-t="' + c.start + '"><span class="t">' + mmss(c.start) + "</span>" + esc(c.title) + "</button></li>").join("") + "</ol></details></article>";
+  }).join("") : '<p class="empty">No audio lessons yet.</p>';
+  return '<section class="uhead"><div class="row"><span class="code">Audio</span><h2>Listen</h2></div>' +
+    "<p>Audio lessons for the theory parts of the course. They explain everything in words, so you can listen without looking at a screen, " +
+    "and each section ends with what you need to know. Play them here (the player keeps going while you browse, and when a lesson ends the next one starts) " +
+    "or download them for later.</p>" + (function(){
+      const id = Listen.last(), a = id && AUM[id], p = id ? Listen.pos(id) : 0;
+      const resume = a ? '<button class="btn primary" data-act="lplay" data-id="' + esc(a.id) + '">' + LPLAY + "Continue: " + esc(a.title) + (p > 5 ? " at " + mmss(p) : "") + "</button>" : "";
+      return AU.length ? '<div class="actions">' + resume + '<button class="btn' + (a ? "" : " primary") + '" data-act="lseek" data-id="' + esc(AU[0].id) + '" data-t="0">' + LPLAY + "Play all from the start</button></div>" : "";
+    })() + "</section>" +
+    '<div class="pane"><div class="lcards">' + cards + "</div></div>";
+}
+
+/* ---------- exam brief and final revision: written by the course as blocks (course/content/brief.json, revise.json) ----------
+   {title, intro, scope, blocks}: "heading" blocks become the jump buttons at the top, "grid" blocks the card grids. */
+function viewPage(doc, code, fallback){
+  if (!doc) return '<p class="empty">Nothing here yet.</p>';
+  const bs = doc.blocks || [];
+  const heads = bs.filter(b => b.heading != null).map(b => [headId(b), b.jump || b.heading]);
+  return '<section class="uhead"><div class="row"><span class="code">' + esc(code) + "</span><h2>" + inl(doc.title || fallback) + "</h2></div>" +
+      (doc.intro ? "<p>" + inl(doc.intro) + "</p>" : "") + (doc.scope ? '<p class="scope">' + inl(doc.scope) + "</p>" : "") +
+      (heads.length > 1 ? '<div class="rjump">' + heads.map(h => '<button class="btn sm" data-act="jump" data-jump="' + esc(h[0]) + '">' + inl(h[1]) + "</button>").join("") + "</div>" : "") +
+    '</section><div class="blocks rpage">' + blocks(bs) + "</div>";
+}
+function viewBrief(){ return viewPage(S.brief, "Brief", "What the " + EXAM_L + " usually looks like"); }
+function viewRevise(){ return viewPage(S.revise, "Revision", "Final revision"); }
+
+/* ---------- recommended triage on the Practice tab: one problem per distinct skill, within a time budget ---------- */
+/* skills come from course.json "skills": [[regex, name], ...]; a problem whose topic matches none is its own skill */
+const SKILL = (C.skills || []).map(s => { try { return [new RegExp(s[0], "i"), s[1]]; } catch(e) { return null; } }).filter(Boolean);
+function skillOf(topic){ const t = topic || ""; for (const s of SKILL) if (s[0].test(t)) return s[1]; return t || "Other"; }
+const BUDGETS = [["all", "No limit", Infinity], ["90", "90 min", 90], ["45", "45 min", 45], ["20", "20 min", 20]];
+function budget(){ let b = "all"; try { b = localStorage.getItem(LS + "budget") || "all"; } catch(e) {} return BUDGETS.some(x => x[0] === b) ? b : "all"; }
+function triage(u){
+  const b = budget(), cap = BUDGETS.find(x => x[0] === b)[2];
+  const practised = p => store.practice[p.id] != null, mins = p => Math.max(3, Math.round((p.marks || 2) * 2.5));
+  const order = (a, c) => practised(a) !== practised(c) ? (practised(a) ? 1 : -1) : (c.marks || 0) - (a.marks || 0);   // unpractised first, then heavier
+  const bySkill = {};
+  (u.practice || []).forEach(p => { const k = skillOf(p.topic); (bySkill[k] = bySkill[k] || []).push(p); });
+  const picks = Object.keys(bySkill).map(k => { const list = bySkill[k].slice().sort(order); return { p: list[0], skill: k, more: list.length - 1 }; });
+  picks.sort((x, y) => order(x.p, y.p));
+  const map = {}; let total = 0, n = 0;
+  picks.forEach(x => { const m = mins(x.p); if (total + m > cap) return; total += m; n++; map[x.p.id] = { skill: x.skill, more: x.more, min: m }; });
+  return { budget: b, map, mins: total, n, skills: picks.length };
+}
+function triageBar(res){
+  return '<div id="trbar"><label for="trsel"><b>Time I have</b></label><select id="trsel" data-act="trsel">' +
+    BUDGETS.map(x => '<option value="' + x[0] + '"' + (x[0] === res.budget ? " selected" : "") + ">" + x[1] + "</option>").join("") + "</select>" +
+    '<span class="trn">' + (res.budget === "all" ? res.skills + " distinct skills in this unit"
+      : res.n ? res.n + " problem" + (res.n === 1 ? "" : "s") + " · about " + res.mins + " min · one per skill, unpractised and heaviest first" : "Nothing fits that budget here.") + "</span></div>";
+}
+function recBadge(res, p){
+  const hit = res.map[p.id];
+  return hit ? '<span class="rec" title="' + esc(hit.skill + ", about " + hit.min + " min" + (hit.more ? ". " + hit.more + " other problem" + (hit.more === 1 ? "" : "s") + " in this unit drill the same skill." : "")) + '">Recommended</span>' : "";
+}
+
+/* ---------- glossary: course terms in lesson code spans explain themselves on hover, focus or tap ----------
+   course/content/glossary.json: {"term": ["short meaning", "one-line note"]} */
+const GLOSS = S.glossary || {};
+/* every term, longest first, as one whole-word, case-sensitive pattern: a term also matches inside a longer span
+   (`P(A|B) = P(A and B) / P(B)` finds P(B); `cudaMalloc(&d_a, n)` finds cudaMalloc) */
+const GLOSS_RE = (() => {
+  const ts = Object.keys(GLOSS).filter(Boolean).sort((a, b) => b.length - a.length);
+  if (!ts.length) return null;
+  try { return new RegExp("(?<![A-Za-z0-9_])(?:" + ts.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|") + ")(?![A-Za-z0-9_])", "g"); }
+  catch(e) { return null; }
+})();
+function glMark(el, key, label){
+  el.dataset.gl = key; el.classList.add("gl"); el.tabIndex = 0;
+  el.setAttribute("aria-label", label + ": " + GLOSS[key][0] + ". " + GLOSS[key][1]);
+}
+function markGloss(root){
+  if (!GLOSS_RE) return;
+  root.querySelectorAll("code:not([data-gl]):not(.glno)").forEach(c => {
+    /* codes inside buttons, links and code blocks keep their own job: a tap there must still press the control */
+    if (c.closest("button, a, summary, label, pre, [data-act]")) { c.classList.add("glno"); return; }
+    const t = (c.textContent || "").trim(), key = GLOSS[t] ? t : GLOSS[t.replace(/\(\)$/, "")] ? t.replace(/\(\)$/, "") : null;
+    if (key) { glMark(c, key, t); return; }
+    /* a longer span: mark each term inside it on its own */
+    c.classList.add("glno");
+    if (c.children.length) return;
+    const v = c.textContent || "", frag = document.createDocumentFragment();
+    let last = 0, m, hit = false;
+    GLOSS_RE.lastIndex = 0;
+    while ((m = GLOSS_RE.exec(v))) {
+      if (!m[0]) { GLOSS_RE.lastIndex++; continue; }
+      frag.append(v.slice(last, m.index));
+      const sp = document.createElement("span"); sp.textContent = m[0]; glMark(sp, m[0], m[0]);
+      frag.append(sp); last = m.index + m[0].length; hit = true;
+    }
+    if (!hit) return;
+    frag.append(v.slice(last)); c.textContent = ""; c.append(frag);
+  });
+}
+const Gloss = {
+  pop: null, cur: null, at: 0,
+  show(el){
+    const g = GLOSS[el.dataset.gl]; if (!g) return;
+    if (!this.pop) { this.pop = document.createElement("div"); this.pop.id = "glpop"; this.pop.setAttribute("aria-hidden", "true"); document.body.appendChild(this.pop); }
+    const p = this.pop; p.textContent = "";
+    [["b", el.dataset.gl], ["span", g[0]], ["i", g[1]]].forEach(x => { const n = document.createElement(x[0]); n.textContent = x[1]; p.appendChild(n); });
+    p.classList.add("on"); this.cur = el; this.at = Date.now();
+    const r = el.getBoundingClientRect(); p.style.left = "0px"; p.style.top = "0px";
+    const pw = p.offsetWidth, ph = p.offsetHeight;
+    let top = r.top - ph - 8; if (top < 8) top = r.bottom + 8;
+    p.style.left = Math.min(Math.max(8, r.left), Math.max(8, innerWidth - pw - 8)) + "px"; p.style.top = top + "px";
+  },
+  hide(){ if (this.pop) this.pop.classList.remove("on"); this.cur = null; }
+};
+document.addEventListener("pointerover", e => { if (e.pointerType !== "mouse" || !e.target.closest) return; const el = e.target.closest(".gl"); if (el) Gloss.show(el); });
+document.addEventListener("pointerout", e => { if (e.pointerType !== "mouse" || !e.target.closest) return; const el = e.target.closest(".gl"); if (el && Gloss.cur === el) Gloss.hide(); });
+document.addEventListener("focusin", e => { const el = e.target.closest && e.target.closest(".gl"); if (el) Gloss.show(el); else if (Gloss.cur) Gloss.hide(); });
+document.addEventListener("click", e => {
+  const el = e.target.closest ? e.target.closest(".gl") : null;
+  if (el) { if (Gloss.cur === el && e.pointerType !== "mouse" && Date.now() - Gloss.at > 400) Gloss.hide(); else Gloss.show(el); }   // a tap toggles; the focus that came with it already showed it
+  else if (Gloss.cur) Gloss.hide();
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape" && Gloss.cur) Gloss.hide(); });
+window.addEventListener("scroll", () => { if (Gloss.cur) Gloss.hide(); }, { passive: true });
+
+/* ---------- written answers: saved as you type, boxes grow to fit ---------- */
+let ansTimer = null;
+function growTA(ta){ ta.style.height = "auto"; ta.style.height = Math.max(ta.scrollHeight + 2, 60) + "px"; }
+function growAll(){ main.querySelectorAll("details[open] textarea[data-ans]").forEach(growTA); }
+document.addEventListener("input", e => {
+  const ta = e.target.closest ? e.target.closest("textarea[data-ans]") : null;
+  if (!ta) return;
+  if (ta.value) store.ans[ta.dataset.ans] = ta.value; else delete store.ans[ta.dataset.ans];
+  const hint = ta.parentNode.querySelector(".anshint");
+  if (hint) hint.textContent = "Saving…";
+  clearTimeout(ansTimer);
+  ansTimer = setTimeout(() => { save(); if (hint) hint.textContent = "Saved"; }, 500);
+  growTA(ta);
+});
+addEventListener("pagehide", () => { if (ansTimer) { clearTimeout(ansTimer); save(); } });
+document.addEventListener("toggle", e => {
+  const d = e.target;
+  if (!d.classList || !d.classList.contains("ansbox")) return;
+  st.ansOpen[d.dataset.k] = d.open;
+  if (d.open) { const ta = d.querySelector("textarea"); if (ta) growTA(ta); }
+}, true);
+
+function unitDecks(u){ return [u.deck].concat(u.tutorials || []).filter(id => D[id] && !D[id].hidden); }
+function viewSlides(u){
+  const decks = unitDecks(u);
+  if (!st.deck || !decks.includes(st.deck)) { st.deck = u.deck; st.page = 1; }
+  const d = D[st.deck], p = Math.min(Math.max(first(d), st.page), d.pages); st.page = p;
+  st.page = p;
+  const sec = st.deck === u.deck ? u.sections.map((s, i) => [s, i]).filter(x => (x[0].slides || []).includes(p)) : [];
+  let thumbs = "";
+  for (let i = first(d); i <= d.pages; i++) thumbs += '<button class="' + (i === p ? "cur" : "") + '" data-act="page" data-page="' + i + '" aria-label="Page ' + i + '"><img loading="lazy" src="' + thumbSrc(st.deck, i) + '" alt="" width="200" height="' + Math.round(200 * d.h / d.w) + '"><span>' + i + "</span></button>";
+  return '<div class="viewer">' +
+    '<div class="vbar">' + decks.map(id => '<button class="btn sm' + (id === st.deck ? " on" : "") + '" data-act="deck" data-deck="' + id + '">' + esc(D[id].short) + "</button>").join("") + "</div>" +
+    '<div class="vbar"><span class="pager"><button class="btn sm" data-act="prev" ' + (p <= first(d) ? "disabled" : "") + ' aria-label="Previous page">&larr;</button>' +
+    '<label for="pg" class="kbd">Page</label><input id="pg" type="number" min="' + first(d) + '" max="' + d.pages + '" value="' + p + '"> / ' + d.pages +
+    '<button class="btn sm" data-act="next" ' + (p >= d.pages ? "disabled" : "") + ' aria-label="Next page">&rarr;</button></span><span class="sp"></span>' +
+    '<span class="kbd">' + esc(d.title) + "</span>" + (() => {
+      if (st.deck !== u.deck || !u.sections.length) return "";
+      const si = sectionForSlide(u, p);
+      if (si < 0) return '<span class="kbd dim">No section covers this page</span>';
+      return '<button class="btn sm backsec" data-act="sec" data-unit="' + u.id + '" data-sec="' + (si + 1) + '">← Back to §' + SEC(u, si).num + " " + inl(u.sections[si].title) + "</button>";
+    })() + "</div>" +
+    '<div class="stage"><img id="slideimg" src="' + slideSrc(st.deck, p) + '" alt="' + esc(d.title) + " page " + p + '" width="' + d.w + '" height="' + d.h + '" data-act="zoom" data-deck="' + st.deck + '" data-page="' + p + '">' +
+    (p > first(d) ? '<button class="nav l" data-act="prev" aria-label="Previous page"><span>&lsaquo;</span></button>' : "") +
+    (p < d.pages ? '<button class="nav r" data-act="next" aria-label="Next page"><span>&rsaquo;</span></button>' : "") + "</div>" +
+    (sec.length ? '<div class="inlesson">In the lesson: ' + sec.map(x => '<button class="chip" data-act="tosec" data-i="' + x[1] + '">' + inl(x[0].title) + "</button>").join("") + "</div>" : "") +
+    '<div class="thumbs" id="thumbs">' + thumbs + "</div>" +
+    '<p class="kbd">Arrow keys or a swipe turn pages. Tap the slide to open it full screen.</p></div>';
+}
+
+function fmtMarks(x){ return (Math.round(x * 100) / 100).toString(); }
+function gradeBar(id, graded, act){
+  const v = graded[id];
+  return '<div class="grade"><span class="kbd">Mark yourself:</span>' +
+    [[1, "Full marks", "g1"], [0.5, "Partly", "g05"], [0, "Missed it", "g0"]].map(g =>
+      '<button class="btn sm ' + g[2] + (v === g[0] ? " on" : "") + '" data-act="' + act + '" data-id="' + esc(id) + '" data-v="' + g[0] + '">' + g[1] + "</button>").join("") + "</div>";
+}
+function practiceBody(p, k, graded, act){
+  const open = !!st.openSol[k], txt = store.ans[k] || "", has = !!txt.trim();
+  const boxOpen = st.ansOpen[k] != null ? st.ansOpen[k] : has, tid = "ans-" + k.replace(/[^\w-]/g, "_");
+  return '<div class="q">' + inl(p.q) + "</div>" + (p.qcode ? codeBlock(p.qcode) : "") + (p.qblocks ? '<div class="blocks">' + blocks(p.qblocks) + "</div>" : "") +
+    /* optional answer box, saved as you type in store.ans under the same key as the model-answer toggle */
+    '<details class="ansbox" data-k="' + esc(k) + '"' + (boxOpen ? " open" : "") + "><summary>Write it out" + (has ? " · saved" : "") + "</summary>" +
+      '<label class="vh" for="' + esc(tid) + '">Your answer</label><textarea id="' + esc(tid) + '" data-ans="' + esc(k) + '" rows="3" spellcheck="' + (LANG === "none") + '" ' +
+      'placeholder="Only if you want to. Answering in your head and checking against the model answer is enough for most of these.">' + esc(txt) + "</textarea>" +
+      '<div class="anshint" aria-live="polite">Saves as you type</div></details>' +
+    '<div><button class="btn sm' + (open ? " on" : "") + '" data-act="sol" data-k="' + esc(k) + '">' + (open ? "Hide model answer" : "Show model answer") + "</button></div>" +
+    (open ? '<div class="ans blocks">' + (srcBadge(p) ? "<div>" + srcBadge(p) + "</div>" : "") + blocks(p.a) + (p.ref ? "<div>" + refChip(p.ref) + "</div>" : "") + "</div>" + gradeBar(p.id, graded, act) : "");
+}
+function viewPractice(u){
+  const P = u.practice || [];
+  const got = P.reduce((a, p) => a + (store.practice[p.id] != null ? store.practice[p.id] * (p.marks || 1) : 0), 0);
+  const tot = P.reduce((a, p) => a + (p.marks || 1), 0);
+  let html = '<div class="tut"><div class="actions"><button class="btn sm" data-act="solall" data-v="1">Show all answers</button><button class="btn sm" data-act="solall" data-v="0">Hide all</button>' +
+    (P.length ? '<span class="cstat" style="align-self:center">Self-marked: ' + fmtMarks(got) + " / " + fmtMarks(tot) + " marks</span>" : "") + "</div>";
+  const res = triage(u);
+  if (P.length) html += triageBar(res) + '<p class="subh">Exam-style problems</p>' + P.map((p, i) =>
+    '<article class="titem' + (res.budget !== "all" && !res.map[p.id] ? " dimmed" : "") + '"><div class="th"><b>Problem ' + (i + 1) + "</b>" + (p.marks ? '<span class="marks">' + fmtMarks(p.marks) + " mark" + (p.marks === 1 ? "" : "s") + "</span>" : "") +
+    (p.topic ? "<span>" + esc(p.topic) + "</span>" : "") + xsBadge(p) + srcBadge(p) + recBadge(res, p) + "</div>" + practiceBody(p, "p:" + p.id, store.practice, "pgrade") + "</article>").join("");
+  if (u.tutorial.length) html += '<p class="subh">Tutorial sheet</p>' + u.tutorial.map((t, i) => {
+    const k = u.id + ":" + i, open = !!st.openSol[k];
+    return '<article class="titem"><div class="th"><b>Tutorial ' + (i + 1) + "</b>" + refChip({ deck: t.src, page: t.page }, "Original: " + deckName(t.src) + " · p." + t.page) + "</div>" +
+      '<div class="q">' + inl(t.q) + "</div>" + (t.qcode ? codeBlock(t.qcode) : "") +
+      '<div><button class="btn sm' + (open ? " on" : "") + '" data-act="sol" data-k="' + k + '">' + (open ? "Hide solution" : "Show solution") + "</button></div>" +
+      (open ? '<div class="ans blocks">' + blocks(t.a) + "</div>" : "") + "</article>";
+  }).join("");
+  if (!P.length && !u.tutorial.length) html += '<p class="empty">No practice problems for this unit yet.</p>';
+  return html + "</div>";
+}
+
+/* ---------- written mock exam ---------- */
+function allPractice(){ const a = []; U.forEach(u => (u.practice || []).forEach((p, i) => a.push({ u: u.id, i, p }))); return a; }
+function newPaper(){
+  const pool = allPractice(), used = new Set();
+  const qs = ((S.exam && S.exam.questions) || []).map(q => ({ title: q.title, parts: q.parts.map(part => {
+    const slots = [].concat(part.slot);
+    const c = shuffle(pool.filter(x => slots.includes(x.p.slot) && !used.has(x.p.id) && (!part.maxMarks || (x.p.marks || 1) <= part.maxMarks)));
+    if (!c.length) return null;
+    used.add(c[0].p.id); return { u: c[0].u, i: c[0].i };
+  }).filter(Boolean) })).filter(q => q.parts.length);
+  return { qs, graded: {} };
+}
+function paperItem(x){ return UM[x.u].practice[x.i]; }
+/* a complete paper in its own order: practice items tagged "paper": id, grouped by "pq", ordered by "pp" */
+function fixedPaper(id){
+  const items = allPractice().filter(x => x.p.paper === id).sort((a, b) => (a.p.pq - b.p.pq) || (a.p.pp - b.p.pp));
+  const by = {};
+  items.forEach(x => { (by[x.p.pq] = by[x.p.pq] || []).push({ u: x.u, i: x.i }); });
+  return { kind: id, qs: Object.keys(by).sort((a, b) => a - b).map(n => ({ title: "Question " + n, parts: by[n] })), graded: {} };
+}
+function hasFixedPaper(id){ return allPractice().some(x => x.p.paper === id); }
+/* the fixed papers, in course.json "papers" order; the id is only the internal key (it keeps saved marks stable) */
+const PAPER_NAMES = Object.fromEntries((C.papers || []).map(x => [x.id, x.name]));
+function paperName(id){ return PAPER_NAMES[id] || "Paper " + id; }
+function paperIds(){
+  const have = new Set(allPractice().map(x => x.p.paper).filter(Boolean)), order = Object.keys(PAPER_NAMES);
+  return [...have].sort((a, b) => ((order.indexOf(a) + 1) || 99) - ((order.indexOf(b) + 1) || 99) || a.localeCompare(b));
+}
+function viewExam(){
+  if (!st.paper) st.paper = newPaper();
+  const P = st.paper;
+  let total = 0, got = 0, marked = 0, parts = 0;
+  const qhtml = P.qs.map(q => {
+    const qm = q.parts.reduce((a, x) => a + (paperItem(x).marks || 1), 0);
+    return '<article class="pq"><h3><span>' + esc(q.title) + '</span><span class="marks">' + fmtMarks(qm) + " marks</span></h3>" +
+      q.parts.map((x, n) => {
+        const p = paperItem(x), m = p.marks || 1; total += m; parts++;
+        if (P.graded[p.id] != null) { got += P.graded[p.id] * m; marked++; }
+        /* a question with one part, or a part labelled just with the question number, shows no part label */
+        const solo = q.parts.length === 1 || (!!P.kind && String(p.plabel || "").trim() === String(p.pq));
+        const pn = solo ? "" : P.kind && p.plabel ? esc(p.plabel) : (n + 1) + ".";
+        return '<div class="pp' + (solo ? " solo" : "") + '">' + (solo ? "" : '<span class="pn">' + pn + "</span>") + '<div class="pbody"><div class="th"><span class="marks">' + fmtMarks(m) + " mark" + (m === 1 ? "" : "s") + "</span>" +
+          '<span class="kbd">' + esc(UM[x.u].code) + "</span></div>" + practiceBody(p, "x:" + p.id, P.graded, "xgrade") + "</div></div>";
+      }).join("") + "</article>";
+  }).join("");
+  const fixed = !!P.kind;
+  const ids = paperIds();
+  const modes = ids.length ? '<div class="xmodes" role="group" aria-label="Paper"><button class="btn sm' + (fixed ? "" : " on") + '" data-act="xmode" data-v="" aria-pressed="' + !fixed + '">Random paper</button>' +
+    ids.map(id => '<button class="btn sm' + (P.kind === id ? " on" : "") + '" data-act="xmode" data-v="' + esc(id) + '" aria-pressed="' + (P.kind === id) + '">' + esc(paperName(id)) + "</button>").join("") + "</div>" : "";
+  return '<section class="uhead"><div class="row"><span class="code">Exam</span><h2>' + esc(EXAM) + ' mock exam</h2></div>' +
+    (fixed
+      ? "<p><b>" + esc(paperName(P.kind)) + ".</b> The complete paper, every part in its original order. Answer each part on paper first, then open the model answer and mark yourself. " +
+        (P.qs.some(q => q.parts.some(x => paperItem(x).answerSource)) ? "Each model answer says whether it is " + srcBadge({ answerSource: "marked" }) + " or " + srcBadge({ answerSource: "slides" }) + ". " : "") +
+        "Each part shows its marks.</p>"
+      : "<p>" + (S.exam && S.exam.title ? "<b>" + esc(S.exam.title) + ".</b> " : "") + "A full paper in the shape of the exam: written questions with marks. Answer each part on paper first, then open the model answer and mark yourself. Every new paper draws different problems.</p>") +
+    modes + "</section>" +
+    '<div class="pane"><div class="paper">' + (qhtml || '<p class="empty">No exam-style problems are available yet.</p>') +
+    '<div class="scorebar"><span class="big">' + fmtMarks(got) + " / " + fmtMarks(total) + '</span><span class="cstat">' + marked + " of " + parts + ' parts marked</span><span style="flex:1"></span>' +
+    '<button class="btn sm" data-act="xreveal">Show all answers</button>' + (fixed ? "" : '<button class="btn sm primary" data-act="xnew">New paper</button>') + "</div></div></div>";
+}
+
+/* ---------- quiz ---------- */
+function shuffle(a){ for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function newQuiz(key, items, title){
+  items = items.map(x => { const q = UM[x.u].quiz[x.i]; return { u: x.u, i: x.i, perm: q.kind === "mcq" ? shuffle(q.options.map((o, k) => k)) : [true, false] }; });
+  return { key, items, title, pos: 0, ans: {}, done: false };
+}
+function unitQuiz(u, onlyMissed){
+  let items = u.quiz.map((q, i) => ({ u: u.id, i }));
+  if (onlyMissed) items = items.filter(x => store.quiz[UM[x.u].quiz[x.i].id] !== 1);
+  return newQuiz("unit:" + u.id, items, u.code + " quiz");
+}
+function mockQuiz(){
+  const pool = [];
+  U.forEach(u => { const idx = shuffle(u.quiz.map((q, i) => i)); idx.forEach((i, n) => pool.push({ u: u.id, i, first: n < 2 })); });
+  const firsts = pool.filter(x => x.first), rest = shuffle(pool.filter(x => !x.first));
+  return newQuiz("mock", shuffle(firsts.concat(rest.slice(0, Math.max(0, QUICK_N - firsts.length)))), "Quick quiz");
+}
+const QUICK_N = 25;                  /* the most questions a quick quiz draws */
+/* the quick quiz's line under the title, with the real number of questions it drew */
+function quickIntro(){
+  const n = st.quiz && st.quiz.key === "mock" ? st.quiz.items.length : 0;
+  return n + " short question" + (n === 1 ? "" : "s") + " drawn at random" + (U.length > 1 ? ", from every unit" : "") + ".";
+}
+function isRight(q, a){ return q.kind === "tf" ? a === q.answer : a === q.answer; }
+function viewQuiz(){
+  const Q = st.quiz;
+  if (!Q || !Q.items.length) return '<p class="empty">Every question in this set is already answered correctly. <button class="btn sm" data-act="qrestart" data-all="1">Run the full quiz again</button></p>';
+  if (Q.done) return quizResult(Q);
+  const it = Q.items[Q.pos], u = UM[it.u], q = u.quiz[it.i];
+  const a = Q.ans[Q.pos], answered = a !== undefined;
+  const opts = it.perm;
+  const optHtml = opts.map((val, k) => {
+    const o = q.kind === "tf" ? val : q.options[val];
+    let cls = "opt";
+    if (answered) { if (val === q.answer) cls += " ok"; else if (val === a) cls += " no"; else cls += " dim"; }
+    const label = q.kind === "tf" ? (o ? "True" : "False") : inl(o);
+    return '<button class="' + cls + '" data-act="ans" data-v="' + String(val) + '" ' + (answered ? "disabled" : "") + '><span class="k">' + (q.kind === "tf" ? (o ? "T" : "F") : "ABCDEFG"[k]) + "</span><span>" + label + "</span></button>";
+  }).join("");
+  const right = answered && isRight(q, a);
+  const nCorrect = Object.keys(Q.ans).filter(p => { const x = Q.items[p]; return isRight(UM[x.u].quiz[x.i], Q.ans[p]); }).length;
+  return '<div class="quiz"><div class="qmeta"><span>' + esc(Q.title) + "</span><span>Question " + (Q.pos + 1) + " of " + Q.items.length + '</span><span class="sp"></span><span>' + nCorrect + " correct so far</span></div>" +
+    '<div class="qbar"><i style="width:' + Math.round(100 * Object.keys(Q.ans).length / Q.items.length) + '%"></i></div>' +
+    '<article class="qcard">' + (Q.key === "mock" ? '<span class="tag">' + esc(u.code) + " · " + esc(u.title) + "</span>" : "") +
+    '<div class="q">' + inl(q.q) + "</div>" + (q.code ? codeBlock(q.code) : "") +
+    '<div class="opts">' + optHtml + "</div>" +
+    (answered ? '<div class="explain ' + (right ? "ok" : "no") + '"><span class="verdict">' + (right ? "Correct" : "Not quite") + "</span><div>" + inl(q.explain) + "</div><div>" + refChip(q.ref, "Taught on " + deckName(q.ref.deck) + " · p." + q.ref.page) + "</div></div>" : "") +
+    "</article>" +
+    '<div class="qnav"><button class="btn" data-act="qprev" ' + (Q.pos === 0 ? "disabled" : "") + '>Back</button><span class="sp"></span>' +
+    '<span class="kbd">' + (q.kind === "tf" ? "T / F" : "1–" + opts.length) + " to answer, Enter for next</span>" +
+    '<button class="btn primary" data-act="qnext" ' + (answered ? "" : "disabled") + ">" + (Q.pos === Q.items.length - 1 ? "See result" : "Next question") + "</button></div></div>";
+}
+function quizResult(Q){
+  const rows = Q.items.map((x, p) => ({ x, p, q: UM[x.u].quiz[x.i], a: Q.ans[p] }));
+  const ok = rows.filter(r => isRight(r.q, r.a)).length;
+  const missed = rows.filter(r => !isRight(r.q, r.a));
+  const pct = Math.round(100 * ok / rows.length);
+  return '<div class="quiz result"><div class="qmeta"><span>' + esc(Q.title) + " finished</span></div>" +
+    '<div class="score">' + ok + " / " + rows.length + "</div><p>" + pct + "% correct. " + (missed.length ? "Review the questions you missed below; each one links to the slide that teaches it." : "Every answer correct.") + "</p>" +
+    '<div class="actions">' + (missed.length ? '<button class="btn primary" data-act="qretry">Retry the ' + missed.length + " missed</button>" : "") +
+    '<button class="btn" data-act="qrestart">Start over</button>' + (Q.key === "mock" ? '<button class="btn" data-act="quick">New quick quiz</button>' : "") + (missed.length ? Shorts.weakButton() : "") + "</div>" +
+    (missed.length ? '<div class="missed">' + missed.map(r => {
+      const ans = r.q.kind === "tf" ? (r.q.answer ? "True" : "False") : inl(r.q.options[r.q.answer]);
+      return '<div class="mi"><div><strong>' + (Q.key === "mock" ? esc(UM[r.x.u].code) + " · " : "") + "</strong>" + inl(r.q.q) + "</div><div>Answer: <strong>" + ans + "</strong></div><div>" + inl(r.q.explain) + "</div><div>" + refChip(r.q.ref) + "</div></div>";
+    }).join("") + "</div>" : "") + "</div>";
+}
+function answer(v){
+  const Q = st.quiz; if (!Q || Q.done || Q.ans[Q.pos] !== undefined) return;
+  const it = Q.items[Q.pos], q = UM[it.u].quiz[it.i];
+  const val = q.kind === "tf" ? (v === "true" || v === true) : +v;
+  Q.ans[Q.pos] = val;
+  store.quiz[q.id] = isRight(q, val) ? 1 : 0; save();
+  render(true);
+}
+
+/* ---------- cards ---------- */
+function cardKey(c){ return UM[c.u].cards[c.i].id; }
+function newCards(key, items, title){ return { key, all: items, items: items.slice(), pos: 0, flip: false, filter: "all", shuffled: false, title }; }
+function applyCardFilter(C){
+  let it = C.all.slice();
+  if (C.filter === "learning") it = it.filter(c => store.cards[cardKey(c)] !== 1);
+  if (C.shuffled) shuffle(it);
+  C.items = it; C.pos = 0; C.flip = false;
+}
+function viewCards(){
+  const C = st.cards;
+  const known = C.all.filter(c => store.cards[cardKey(c)] === 1).length;
+  const head = '<div class="crow"><button class="btn sm' + (C.filter === "all" ? " on" : "") + '" data-act="cfilter" data-v="all">All ' + C.all.length + "</button>" +
+    '<button class="btn sm' + (C.filter === "learning" ? " on" : "") + '" data-act="cfilter" data-v="learning">Still learning ' + (C.all.length - known) + "</button>" +
+    '<button class="btn sm' + (C.shuffled ? " on" : "") + '" data-act="cshuffle">Shuffle</button><span class="sp"></span><span class="cstat">' + known + " of " + C.all.length + " known</span></div>";
+  if (!C.items.length) return '<div class="cards">' + head + '<p class="empty">No cards left in this filter. Every card here is marked as known.</p></div>';
+  const c = C.items[C.pos], u = UM[c.u], card = u.cards[c.i];
+  const mark = store.cards[cardKey(c)];
+  return '<div class="cards">' + (C.title ? '<div class="qmeta"><span>' + esc(C.title) + "</span></div>" : "") + head +
+    '<button class="flip' + (C.flip ? " on" : "") + '" data-act="cflip" aria-pressed="' + !!C.flip + '"><div class="inner">' +
+    '<div class="face front"' + (C.flip ? ' aria-hidden="true"' : "") + '><span class="lab"><span>' + esc(u.code) + " · card " + (C.pos + 1) + " of " + C.items.length + "</span><span>" + (mark === 1 ? "known" : mark === 0 ? "learning" : "") + '</span></span><div class="txt">' + inl(card.front) + '</div><span class="hint">Tap or press Space to flip</span></div>' +
+    '<div class="face back"' + (C.flip ? "" : ' aria-hidden="true"') + '><span class="lab"><span>Answer</span><span>' + esc(u.code) + '</span></span><div class="txt">' + inl(card.back) + "</div></div>" +
+    "</div></button>" +
+    '<div class="crow"><button class="btn" data-act="cprev" ' + (C.pos === 0 ? "disabled" : "") + ">&larr; Back</button>" +
+    '<button class="btn r-learn" data-act="crate" data-v="0">Still learning</button><button class="btn r-know" data-act="crate" data-v="1">I know it</button>' +
+    '<button class="btn" data-act="cnext" ' + (C.pos >= C.items.length - 1 ? "disabled" : "") + '>Next &rarr;</button><span class="sp"></span>' + refChip(card.ref, "Slide") + "</div>" +
+    '<p class="kbd">Space flips, arrows move, 1 = still learning, 2 = I know it.</p></div>';
+}
+
+/* ---------- search ---------- */
+function snippet(text, q){
+  const t = String(text).replace(/\s+/g, " ").trim(), i = t.toLowerCase().indexOf(q);
+  if (i < 0) return esc(t.slice(0, 140));
+  const s = Math.max(0, i - 60), e = Math.min(t.length, i + q.length + 80);
+  return (s > 0 ? "…" : "") + esc(t.slice(s, i)) + "<mark>" + esc(t.slice(i, i + q.length)) + "</mark>" + esc(t.slice(i + q.length, e)) + (e < t.length ? "…" : "");
+}
+function flat(bs){ return (bs || []).map(b => b.p || (b.list || b.steps || []).join(" ") || b.code || b.tip || b.note || (b.defs ? b.defs.map(d => d.join(" ")).join(" ") : "") ||
+  (b.table ? [].concat(b.table.head || [], ...(b.table.rows || [])).join(" ") : "") || (b.figure ? b.figure.caption || "" : "")).join(" "); }
+function viewSearch(){
+  const q = st.query.trim().toLowerCase();
+  if (q.length < 2) return '<p class="empty">Type at least two characters.</p>';
+  const L = [], C = [], P = [];
+  U.forEach(u => {
+    u.sections.forEach((s, i) => { const t = s.title + " " + flat(s.blocks); if (t.toLowerCase().includes(q)) L.push('<button class="hit" data-act="tosec2" data-unit="' + u.id + '" data-i="' + i + '"><span class="w">' + esc(u.code) + " · Lesson</span><strong>" + inl(s.title) + '</strong><span class="s">' + snippet(t, q) + "</span></button>"); });
+    u.cards.forEach((c, i) => { const t = c.front + ": " + c.back; if (t.toLowerCase().includes(q)) C.push('<button class="hit" data-act="tocard" data-unit="' + u.id + '" data-i="' + i + '"><span class="w">' + esc(u.code) + ' · Flashcard</span><span class="s">' + snippet(t, q) + "</span></button>"); });
+  });
+  Object.keys(S.text || {}).forEach(id => (S.text[id] || []).forEach((t, i) => { if (t && t.toLowerCase().includes(q)) P.push('<button class="hit" data-act="slide" data-deck="' + id + '" data-page="' + (i + 1) + '"><span class="w">' + esc(D[id].short) + " · page " + (i + 1) + '</span><span class="s">' + snippet(t, q) + "</span></button>"); }));
+  const grp = (h, a) => a.length ? "<div><h3>" + h + " (" + a.length + ')</h3><div class="sres" style="gap:6px;margin-top:8px">' + a.slice(0, 40).join("") + "</div></div>" : "";
+  const all = grp("Lessons", L) + grp("Original slides and tutorials", P) + grp("Flashcards", C);
+  return '<div class="sres"><div class="qmeta"><span>Results for “' + esc(st.query.trim()) + "”</span></div>" + (all || '<p class="empty">Nothing matches. Try a shorter word, such as a term from the slides.</p>') + "</div>";
+}
+
+/* ---------- shorts: the feed ---------- */
+/* A plain player: no server, no accounts. With site.url set in course.json, a short can be shared as a link to it. */
+const SITE_URL = C.url ? String(C.url).replace(/\/?$/, "/") : "";
+
+const SH = HAS.shorts ? (S.shorts || []).slice() : [];
+const SHM = Object.fromEntries(SH.map(s => [s.id, s]));
+const ICON = {
+  share: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4l7 7-7 7v-4c-5 0-8.5 1.6-11 5 1-5 4-10 11-11z"/></svg>',
+  soundOn: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+  soundOff: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+  musicOn: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17.5a2.5 2.5 0 1 1-2-2.45V5.5l11-2.5v11.5a2.5 2.5 0 1 1-2-2.45V7.6l-7 1.6z"/></svg>',
+  play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>',
+  autoNext: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5.5v13l9-6.5zM16 5h3v14h-3z"/></svg>',
+  lesson: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C6.5 4 9.5 4 12 5.5v14C9.5 18 6.5 18 4 19.5zM20 5.5C17.5 4 14.5 4 12 5.5v14c2.5-1.5 5.5-1.5 8 0z"/></svg>',
+  back: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.4 4.6a1.2 1.2 0 0 1 0 1.7L9.7 12l5.7 5.7a1.2 1.2 0 1 1-1.7 1.7l-6.5-6.5a1.2 1.2 0 0 1 0-1.7l6.5-6.5a1.2 1.2 0 0 1 1.7 0z"/></svg>'
+};
+
+/* --- what this device has watched, kept in local storage --- */
+const Mine = {
+  KEY: LS + "shorts", data: null,
+  load(){
+    if (this.data) return this.data;
+    let d = null; try { d = JSON.parse(localStorage.getItem(this.KEY) || "null"); } catch(e) {}
+    d = d && typeof d === "object" ? d : {};
+    d.seen = d.seen && typeof d.seen === "object" ? d.seen : {};
+    return (this.data = d);
+  },
+  save(){ try { localStorage.setItem(this.KEY, JSON.stringify(this.data)); } catch(e) {} },
+  markSeen(id){ this.load().seen[id] = Date.now(); this.save(); }
+};
+
+/* the feed order: a new shuffle on every visit. Shorts this device has not watched come first; watched ones come
+   back only after all the others (longest ago first). Neighbours avoid the same chapter and narrator when they can. */
+function shuffled(a){ for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function spread(list, prev){
+  const out = [], pool = list.slice();
+  while (pool.length) {
+    const last = out.length ? out[out.length - 1] : prev;
+    let i = last ? pool.findIndex(s => s.unit !== last.unit && s.look !== last.look) : 0;
+    if (i < 0) i = pool.findIndex(s => s.unit !== last.unit);
+    out.push(pool.splice(Math.max(0, i), 1)[0]);
+  }
+  return out;
+}
+function feedOrder(startId){
+  const seen = Mine.load().seen;
+  const fresh = spread(shuffled(SH.filter(s => !seen[s.id])));
+  const old = SH.filter(s => seen[s.id]).sort((a, b) => seen[a.id] - seen[b.id]);
+  const loose = []; for (let i = 0; i < old.length; i += 4) loose.push(...shuffled(old.slice(i, i + 4)));
+  let out = fresh.concat(spread(loose, fresh[fresh.length - 1]));
+  if (startId && SHM[startId]) out = [SHM[startId]].concat(out.filter(s => s.id !== startId));   // a shared link opens its short first
+  return out;
+}
+
+/* --- the feed --- */
+const Shorts = {
+  order: null, sound: false, cur: null, io: null, mounted: false,
+  list(){
+    if (this.pl) return this.pl.ids.map(id => SHM[id]).filter(Boolean);
+    if (!this.order) this.order = feedOrder(st.shortStart);
+    return this.order;
+  },
+  /* --- playlists: a fixed list in lesson order (chapter cram) or worst topics first (weak spots) --- */
+  pl: null,
+  secIndex(s){ const u = UM[s.unit]; if (!u) return 999; const ix = (s.sections || []).map(t => u.sections.findIndex(x => x.title === t)).filter(i => i >= 0); return ix.length ? Math.min(...ix) : 999; },
+  cram(uid){
+    const u = UM[uid]; if (!u) return null;
+    const ids = SH.filter(s => s.unit === uid)
+      .sort((a, b) => this.secIndex(a) - this.secIndex(b) || (a.kind === "explain" ? 0 : 1) - (b.kind === "explain" ? 0 : 1) || a.id.localeCompare(b.id))
+      .map(s => s.id);
+    return { kind: "cram", unit: uid, title: u.code + " cram", ids, gaps: [] };
+  },
+  /* weakness per lesson section, from this device's answers: a wrong quiz item +2, a card still being learned +1 */
+  weakScores(){
+    const out = [];
+    U.forEach(u => u.sections.forEach((sec, n) => {
+      const pages = new Set(sec.slides || []);
+      const on = it => it.ref && it.ref.deck === u.deck && pages.has(it.ref.page);
+      let score = 0;
+      u.quiz.forEach(q => { if (on(q) && store.quiz[q.id] === 0) score += 2; });
+      u.cards.forEach(c => { if (on(c) && store.cards[c.id] === 0) score += 1; });
+      if (score) out.push({ u: u.id, n, title: sec.title, score, high: sec.priority === "high" });
+    }));
+    return out.sort((a, b) => b.score - a.score || b.high - a.high);
+  },
+  answered(){ return Object.values(store.quiz).filter(v => v === 0 || v === 1).length; },
+  weak(){
+    const ids = [], gaps = [];
+    for (const w of this.weakScores()) {
+      const tagged = SH.filter(s => s.unit === w.u && (s.sections || []).includes(w.title) && !ids.includes(s.id));
+      if (!tagged.length) { if (gaps.length < 5) gaps.push(w); continue; }
+      tagged.sort((a, b) => (a.kind === "explain" ? 0 : 1) - (b.kind === "explain" ? 0 : 1)).forEach(s => { if (ids.length < 15) ids.push(s.id); });
+      if (ids.length >= 15) break;
+    }
+    return { kind: "weak", title: "Weak spots", ids, gaps };
+  },
+  minutes(ids){ return Math.max(1, Math.round(ids.reduce((a, id) => a + ((SHM[id] && SHM[id].duration) || 30), 0) / 60)); },
+  cramButton(uid){
+    const pl = this.cram(uid); if (!pl || !pl.ids.length) return "";
+    return '<button class="btn scrambtn" data-act="scram" data-unit="' + esc(uid) + '">' + ICON.play + "Cram in shorts <span>" + pl.ids.length + " shorts · " + this.minutes(pl.ids) + " min</span></button>";
+  },
+  weakButton(){
+    if (!SH.length) return "";
+    if (this.answered() < 5) return '<button class="btn" data-act="quick" title="Answer at least 5 quiz questions to build it">Weak spots: take the quick quiz first</button>';
+    return '<button class="btn" data-act="sweak">Fix my weak spots</button>';
+  },
+  openPlaylist(pl){
+    if (!pl) return;
+    pl.back = pl.back || (st.view === "unit" ? { view: "unit", unit: st.unit, tab: st.tab } : st.view === "shorts" ? { view: "home" } : { view: st.view });
+    this.pl = pl; st.shortStart = pl.ids[0] || null; st.view = "shorts";
+    render(); window.scrollTo(0, 0);
+  },
+  closePlaylist(){
+    const b = (this.pl && this.pl.back) || { view: "home" }; this.pl = null;
+    if (b.view === "unit") { st.view = "unit"; st.unit = b.unit; st.tab = b.tab || "learn"; ensureTabState(); }
+    else if (b.view === "quick" || b.view === "exam" || b.view === "allcards" || b.view === "shorts") { st.view = b.view; st.shortStart = null; }
+    else st.view = "home";
+    render(); window.scrollTo(0, 0);
+  },
+  /* chapter picker: All, then every chapter that has shorts; a chapter plays as its cram playlist (lesson order) */
+  chapChips(){
+    const on = uid => this.pl && this.pl.chip && this.pl.unit === uid;
+    const b = (uid, label, cur) => '<button class="btn sm' + (cur ? " on" : "") + '" data-act="schap" data-unit="' + esc(uid) + '" aria-pressed="' + !!cur + '">' + esc(label) + "</button>";
+    return '<div class="schaps" role="group" aria-label="Shorts by chapter">' + b("", "All", !this.pl || !this.pl.chip) +
+      U.filter(u => SH.some(s => s.unit === u.id)).map(u => b(u.id, u.code, on(u.id))).join("") + "</div>";
+  },
+  pickChapter(uid){
+    if (!uid) { if (this.pl) { this.pl = null; st.shortStart = null; render(); window.scrollTo(0, 0); } return; }
+    const pl = this.cram(uid); if (!pl || !pl.ids.length) return;
+    pl.chip = true; pl.back = { view: "shorts" };
+    this.openPlaylist(pl);
+  },
+  plChip(){
+    const pl = this.pl; if (!pl) return "";
+    const i = pl.ids.indexOf(this.cur);
+    return '<span class="spl"><b>' + esc(pl.title) + '</b><span class="splpos">' + (i >= 0 ? i + 1 : pl.ids.length) + " / " + pl.ids.length + "</span>" +
+      '<button class="splx" data-act="splclose" aria-label="Close the playlist">&times;</button></span>';
+  },
+  paintPl(){ const c = $(".spl .splpos"); if (c && this.pl) { const i = this.pl.ids.indexOf(this.cur); c.textContent = (i >= 0 ? i + 1 : this.pl.ids.length) + " / " + this.pl.ids.length; } },
+  endCard(){
+    const pl = this.pl;
+    if (pl.kind === "cram") {
+      const u = UM[pl.unit];
+      return '<article class="sitem send"><div class="sendbox"><p class="sendt">Done: ' + esc(u.code) + " cram</p><p>Test yourself:</p>" +
+        '<div class="actions"><button class="btn primary" data-act="unit" data-unit="' + esc(u.id) + '" data-tab="quiz">' + esc(u.code) + " quiz</button>" +
+        '<button class="btn" data-act="unit" data-unit="' + esc(u.id) + '" data-tab="cards">Flashcards</button>' +
+        '<button class="btn" data-act="splclose">Close</button></div></div></article>';
+    }
+    const gaps = pl.gaps.length ? '<p>No short teaches these weak sections yet. Read them:</p><ul class="sgaps">' + pl.gaps.map(g =>
+      '<li><button class="btn sm" data-act="unit" data-unit="' + esc(g.u) + '" data-tab="learn">' + esc(UM[g.u].code) + " · " + esc(g.title) + "</button></li>").join("") + "</ul>" : "";
+    return '<article class="sitem send"><div class="sendbox"><p class="sendt">' + (pl.ids.length ? "Done: weak spots" : "No short covers your weak spots yet") + "</p>" + gaps +
+      '<p>Then check yourself again:</p><div class="actions"><button class="btn primary" data-act="quick">Quick quiz</button><button class="btn" data-act="splclose">Close</button></div></div></article>';
+  },
+  view(){
+    if (!SH.length) return '<p class="empty">No shorts yet.</p>';
+    /* one feed of every short, or one chapter's shorts picked from the chapter row; phones get a back button over the video */
+    const chips = '<div class="schips">' + this.chapChips() + (this.pl && this.pl.chip ? "" : this.plChip()) + '<button class="sback" data-act="' + (this.pl ? "splclose" : "home") + '" aria-label="Back to the study site">' + ICON.back + "</button></div>";
+    const items = this.list().map(s => {
+      const u = UM[s.unit];
+      return '<article class="sitem" data-sid="' + esc(s.id) + '"><div class="sstage">' +
+        '<div class="sframe" data-act="stap" data-id="' + esc(s.id) + '">' +
+          '<video playsinline' + (this.autoNext ? "" : " loop") + ' muted preload="none" data-poster="shorts/p/' + esc((s.poster || s.id + ".jpg").replace(/\.jpg$/, ".webp")) + '" data-src="shorts/' + esc(s.video || s.id + ".mp4") + '" aria-label="' + esc(s.title) + '"></video>' +
+          '<span class="spaused" aria-hidden="true">' + ICON.play + "</span>" +
+          '<span class="ssoundhint" aria-hidden="true">Tap for sound</span>' +
+          '<div class="sprog"><i></i></div>' +
+        "</div>" +
+        '<div class="sacts">' +
+          (SITE_URL ? '<button class="sact" data-act="sshare" data-id="' + esc(s.id) + '" aria-label="Share"><span class="sic">' + ICON.share + '</span><span class="sn">Share</span></button>' : "") +
+          '<button class="sact saudio' + (s.music ? " smusbtn" : "") + '" data-act="saudio"><span class="sic ssnd"></span><span class="sn"></span></button>' +
+          '<button class="sact sautobtn" data-act="sauto" aria-label="Auto-play next short" aria-pressed="false"><span class="sic">' + ICON.autoNext + '</span><span class="sn">Auto</span></button>' +
+        "</div></div>" +
+        '<div class="sinfo"><span class="schip">' + esc(u ? u.code : s.unit) + "</span>" +
+          '<span class="sspeed"><label class="vh" for="srate-' + esc(s.id) + '">Speed</label>' +          // playback speed, in place of the caption
+          '<input type="range" class="srate" id="srate-' + esc(s.id) + '" min="0.5" max="2" step="0.25" value="' + this.rate + '">' +
+          '<output class="sratev" for="srate-' + esc(s.id) + '"></output></span><span class="sbtns">' +
+          '<button class="btn sm slesson" data-act="unit" data-unit="' + esc(s.unit) + '" data-tab="learn">' + ICON.lesson + "Lesson</button></span></div>" +
+        "</article>";
+    }).join("") + (this.pl ? this.endCard() : "");
+    return '<section class="sfeed' + (this.pl ? " splmode" : "") + '">' + chips + '<div class="sscroll" id="sscroll" tabindex="-1">' + items + "</div></section>";
+  },
+  mount(startId){
+    this.mounted = true;
+    const box = $("#sscroll"); if (!box) return;
+    this.fit(); this.paintSound(); this.paintPlayback();
+    box.addEventListener("input", e => { if (e.target.classList.contains("srate")) this.setRate(+e.target.value); });
+    this.io = new IntersectionObserver(ents => {
+      ents.forEach(e => { if (e.isIntersecting && e.intersectionRatio >= 0.6) this.activate(e.target); });
+    }, { root: box, threshold: [0.6] });
+    box.querySelectorAll(".sitem").forEach(el => this.io.observe(el));
+    box.querySelectorAll("video").forEach(v => {
+      v.addEventListener("timeupdate", () => { const p = v.closest(".sitem").querySelector(".sprog i"); if (p && v.duration) p.style.width = (100 * v.currentTime / v.duration) + "%"; });
+      v.addEventListener("play", () => v.closest(".sframe").classList.remove("paused"));
+      v.addEventListener("pause", () => { if (this.cur === v.closest(".sitem").dataset.sid) v.closest(".sframe").classList.add("paused"); });
+      const mine = () => this.cur === v.closest(".sitem").dataset.sid;
+      ["playing", "seeked", "volumechange"].forEach(ev => v.addEventListener(ev, () => { if (mine()) this.syncMusic(true); }));
+      ["pause", "waiting", "emptied"].forEach(ev => v.addEventListener(ev, () => { if (mine()) Music.stop(); }));
+      v.addEventListener("timeupdate", () => { if (mine()) this.syncMusic(false); });
+      v.addEventListener("ended", () => { if (mine() && this.autoNext) this.next(); });   // only fires with auto-play on (otherwise the video loops)
+      v.addEventListener("timeupdate", () => {
+        if (!v._seen && mine() && v.duration && v.currentTime >= Math.min(8, v.duration / 2)) { v._seen = true; Mine.markSeen(v.closest(".sitem").dataset.sid); }
+      });
+    });
+    const target = startId && box.querySelector('.sitem[data-sid="' + CSS.escape(startId) + '"]');
+    if (target) box.scrollTop = target.offsetTop; else box.scrollTop = 0;
+    box.addEventListener("scroll", () => { clearTimeout(this._st); this._st = setTimeout(() => this.syncFromScroll(), 140); }, { passive: true });
+    setTimeout(() => this.syncFromScroll(), 80);
+  },
+  syncFromScroll(){
+    const box = $("#sscroll"); if (!box || !this.mounted) return;
+    const items = box.querySelectorAll(".sitem"); if (!items.length) return;
+    const h = items[0].offsetHeight || 1;
+    const i = Math.max(0, Math.min(items.length - 1, Math.round(box.scrollTop / h)));
+    this.activate(items[i]);
+  },
+  unmount(){
+    if (!this.mounted) return;
+    this.mounted = false; this.cur = null;
+    if (this.io) this.io.disconnect(); this.io = null;
+    document.querySelectorAll("#sscroll video").forEach(v => { try { v.pause(); } catch(e) {} });
+    Music.stop();
+  },
+  fit(){
+    const box = $("#sscroll"); if (!box) return;
+    const full = matchMedia("(max-width: 640px)").matches;          // phones: one short fills the whole screen
+    const h = full ? window.innerHeight : Math.max(420, window.innerHeight - box.getBoundingClientRect().top - 12);
+    box.style.height = h + "px"; box.style.setProperty("--h", h + "px");
+    box.querySelectorAll(".sitem").forEach(el => el.style.height = h + "px");
+    const cur = this.cur && box.querySelector('.sitem[data-sid="' + CSS.escape(this.cur) + '"]');
+    if (cur) box.scrollTop = cur.offsetTop;
+  },
+  pop(el){
+    if (!el) return;
+    el.classList.remove("pop"); void el.offsetWidth;
+    el.classList.add("pop");
+    clearTimeout(el._popT); el._popT = setTimeout(() => el.classList.remove("pop"), 600);
+  },
+  activate(item){
+    const id = item.dataset.sid;
+    if (!id) {                                       // a playlist's end card
+      if (this.cur === null) return;
+      this.cur = null; Music.stop();
+      document.querySelectorAll("#sscroll video").forEach(v => { try { v.pause(); } catch(e) {} });
+      this.paintPl(); return;
+    }
+    if (this.cur === id) return;
+    this.cur = id;
+    const box = $("#sscroll");
+    box.querySelectorAll(".sitem").forEach(el => {
+      const v = el.querySelector("video");
+      if (!v) return;
+      if (el === item) {
+        if (!v.poster) v.poster = v.dataset.poster;
+        if (!v.src) v.src = v.dataset.src;
+        v.muted = !this.sound; v.loop = !this.autoNext; v.defaultPlaybackRate = v.playbackRate = this.rate; v.currentTime = 0;
+        v.play().catch(() => el.querySelector(".sframe").classList.add("paused"));
+        el.querySelector(".sframe").classList.remove("paused");
+      } else { try { v.pause(); } catch(e) {} }
+    });
+    /* Load ahead, so a quick swipe never lands on a black frame: the next two shorts start downloading, and the
+       next four (and the previous one) get their small poster (shorts/p/, about 15 KB) to show until the video plays. */
+    let el = item;
+    for (let k = 1; k <= 4; k++) {
+      el = el && el.nextElementSibling; const nv = el && el.querySelector("video"); if (!nv) break;
+      if (!nv.poster) nv.poster = nv.dataset.poster;
+      if (k <= 2 && !nv.src) { nv.preload = "auto"; nv.src = nv.dataset.src; }
+      nv.defaultPlaybackRate = nv.playbackRate = this.rate;
+    }
+    const prev = item.previousElementSibling, pv = prev && prev.querySelector("video"); if (pv && !pv.poster) pv.poster = pv.dataset.poster;
+    try { history.replaceState(null, "", this.pl ? (this.pl.kind === "cram" ? "#cram." + this.pl.unit : "#shorts") : "#short." + id); } catch(e) {}
+    this.paintPl();
+  },
+  /* one sound button that steps through: muted, then voice and music, then voice only (shorts without music: muted, sound) */
+  paintSound(){
+    document.querySelectorAll("#sscroll .saudio").forEach(b => {
+      const music = b.classList.contains("smusbtn");
+      const state = !this.sound ? "off" : music && this.musicOn ? "music" : "voice";
+      b.querySelector(".ssnd").innerHTML = state === "off" ? ICON.soundOff : state === "music" ? ICON.musicOn : ICON.soundOn;
+      b.querySelector(".sn").textContent = state === "off" ? "Muted" : state === "music" ? "Music" : music ? "Voice" : "Sound";
+      b.setAttribute("aria-label", state === "off" ? "Sound: muted" : state === "music" ? "Sound: voice and music" : music ? "Sound: voice only" : "Sound: on");
+    });
+    document.querySelectorAll("#sscroll .sframe").forEach(f => f.classList.toggle("muted", !this.sound));
+  },
+  toggleSound(){
+    this.sound = !this.sound;
+    if (this.sound) Music.ensure();                  // inside the tap, so phones let the music start
+    document.querySelectorAll("#sscroll video").forEach(v => v.muted = !this.sound);
+    const v = this.curVideo(); if (v && v.paused) v.play().catch(() => {});
+    this.paintSound(); this.syncMusic(true);
+  },
+  cycleAudio(){
+    const music = !!(SHM[this.cur] && SHM[this.cur].music);
+    if (!this.sound) { this.setMusic(true); this.toggleSound(); }   // muted -> voice and music
+    else if (music && this.musicOn) this.setMusic(false);           // voice and music -> voice only
+    else this.toggleSound();                                        // voice only -> muted
+  },
+  musicOn: (() => { try { return localStorage.getItem(LS + "music") !== "off"; } catch(e) { return true; } })(),
+  setMusic(on){
+    this.musicOn = on;
+    try { localStorage.setItem(LS + "music", on ? "on" : "off"); } catch(e) {}
+    if (on) Music.ensure();
+    this.paintSound(); this.syncMusic(true);
+  },
+  /* playback speed (0.5x to 2x) and auto-play of the next short, both remembered on this device */
+  rate: (() => { let r = 1; try { r = +localStorage.getItem(LS + "speed") || 1; } catch(e) {} return Math.min(2, Math.max(0.5, r)); })(),
+  autoNext: (() => { try { return localStorage.getItem(LS + "autonext") === "on"; } catch(e) { return false; } })(),
+  paintPlayback(){
+    const t = this.rate + "×";
+    document.querySelectorAll("#sscroll .sautobtn").forEach(b => { b.classList.toggle("act", this.autoNext); b.setAttribute("aria-pressed", String(this.autoNext)); });
+    document.querySelectorAll("#sscroll .sratev").forEach(o => o.textContent = t);
+    document.querySelectorAll("#sscroll .srate").forEach(i => { if (+i.value !== this.rate) i.value = this.rate; i.setAttribute("aria-valuetext", t); });
+  },
+  setRate(r){
+    this.rate = Math.min(2, Math.max(0.5, r || 1));
+    try { localStorage.setItem(LS + "speed", String(this.rate)); } catch(e) {}
+    document.querySelectorAll("#sscroll video").forEach(v => { v.defaultPlaybackRate = v.playbackRate = this.rate; });
+    this.paintPlayback(); this.syncMusic(true);
+  },
+  toggleAuto(){
+    this.autoNext = !this.autoNext;
+    try { localStorage.setItem(LS + "autonext", this.autoNext ? "on" : "off"); } catch(e) {}
+    document.querySelectorAll("#sscroll video").forEach(v => v.loop = !this.autoNext);
+    this.paintPlayback();
+    toast(this.autoNext ? "Auto-play on: the next short starts when this one ends." : "Auto-play off: shorts repeat.");
+  },
+  next(){
+    const v = this.curVideo();
+    const box = $("#sscroll"), item = v && v.closest(".sitem"), n = item && item.nextElementSibling;
+    if (!n) return;
+    box.scrollTo({ top: n.offsetTop, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  },
+  async syncMusic(force){
+    const id = this.cur, v = this.curVideo(), s = SHM[id];
+    const want = this.mounted && v && !v.paused && !v.muted && this.sound && this.musicOn && s && s.music;
+    const tok = ++this._mt;
+    if (!want) { Music.stop(); return; }
+    if (!Music.ctx) return;                          // not unlocked by a tap yet
+    let buf; try { buf = await Music.load(id); } catch(e) { return; }
+    if (tok !== this._mt || this.cur !== id || v.paused) return;
+    const pos = v.currentTime % buf.duration;
+    if (!force && Music.srcId === id && Music.rate === v.playbackRate) {
+      let drift = Math.abs(((Music.ctx.currentTime - Music.t0) * Music.rate) % buf.duration - pos);
+      drift = Math.min(drift, buf.duration - drift);
+      if (drift < 0.15) return;                      // still in step with the video
+    }
+    Music.start(id, buf, pos, v.playbackRate);
+  },
+  _mt: 0,
+  curVideo(){ return this.cur ? document.querySelector('#sscroll .sitem[data-sid="' + CSS.escape(this.cur) + '"] video') : null; },
+  tap(id, el){
+    const v = el.querySelector("video");
+    if (!this.sound) { this.toggleSound(); return; }
+    if (v.paused) v.play().catch(() => {}); else v.pause();
+  },
+  /* a plain link to the short on the course's own site (course.json site.url): the phone's share sheet, else copy */
+  async share(id){
+    if (!SITE_URL) return;
+    const s = SHM[id], url = SITE_URL + "#short." + encodeURIComponent(id);
+    if (navigator.share) { try { await navigator.share({ title: s.title, url }); return; } catch(e) { if (e && e.name === "AbortError") return; } }
+    try { await navigator.clipboard.writeText(url); toast("Link copied"); return; } catch(e) {}
+    this.showLink(url);
+  },
+  showLink(url){
+    lb.innerHTML = '<div class="bar"><span>Copy this link</span><span class="sp"></span><button data-act="lbclose">Close</button></div><div class="linkbox"><input id="sharelink" readonly value="' + esc(url) + '"></div>';
+    lbShow("Share link"); const i = $("#sharelink"); i.focus(); i.select();
+  },
+  key(e){
+    const box = $("#sscroll"); if (!box) return false;
+    const items = [...box.querySelectorAll(".sitem")]; const i = items.findIndex(el => el.dataset.sid === this.cur);
+    if (e.key === "ArrowDown" || e.key === "j") { if (items[i + 1]) box.scrollTo({ top: items[i + 1].offsetTop, behavior: "smooth" }); return true; }
+    if (e.key === "ArrowUp" || e.key === "k") { if (items[i - 1]) box.scrollTo({ top: items[i - 1].offsetTop, behavior: "smooth" }); return true; }
+    if (e.key === " ") { const v = this.curVideo(); if (v) { if (v.paused) v.play().catch(() => {}); else v.pause(); } return true; }
+    if (e.key === "m") { this.cycleAudio(); return true; }
+    return false;
+  }
+};
+
+let toastT;
+function toast(msg){
+  let t = $("#toast"); if (!t) { t = document.createElement("div"); t.id = "toast"; t.className = "toast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+  t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 2200);
+}
+/* music beds play through Web Audio, locked to the video's clock (the video file carries the narration) */
+const Music = {
+  ctx: null, gain: null, bufs: new Map(), src: null, srcId: null, t0: 0, rate: 1,
+  ensure(){
+    if (!this.ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
+      try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch(e) {}
+      this.ctx = new AC(); this.gain = this.ctx.createGain(); this.gain.gain.value = 1; this.gain.connect(this.ctx.destination);
+    }
+    if (this.ctx.state === "suspended") this.ctx.resume().catch(() => {});
+    return this.ctx;
+  },
+  load(id){
+    if (!this.bufs.has(id)) {
+      const p = fetch("shorts/" + encodeURIComponent(typeof SHM[id].music === "string" ? SHM[id].music : id + ".music.m4a")).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
+        .then(b => new Promise((res, rej) => this.ctx.decodeAudioData(b, res, rej)));
+      p.catch(() => this.bufs.delete(id));
+      this.bufs.set(id, p);
+      while (this.bufs.size > 4) this.bufs.delete(this.bufs.keys().next().value);
+    }
+    return this.bufs.get(id);
+  },
+  start(id, buf, pos, rate){
+    this.stop();
+    const s = this.ctx.createBufferSource(); s.buffer = buf; s.loop = true; s.playbackRate.value = rate || 1; s.connect(this.gain);
+    s.start(0, pos); this.src = s; this.srcId = id; this.rate = rate || 1; this.t0 = this.ctx.currentTime - pos / this.rate;
+    document.body.classList.add("music-playing");
+  },
+  stop(){
+    if (this.src) { try { this.src.stop(); } catch(e) {} try { this.src.disconnect(); } catch(e) {} }
+    this.src = null; this.srcId = null; document.body.classList.remove("music-playing");
+  }
+};
+function viewShorts(){ return Shorts.view(); }
+
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-act]"); if (!el) return;
+  const a = el.dataset.act;
+  if (a === "stap") { if (!e.target.closest(".slesson")) Shorts.tap(el.dataset.id, el); }
+  else if (a === "sshare") { Shorts.pop(el); Shorts.share(el.dataset.id); }
+  else if (a === "saudio") { Shorts.pop(el); Shorts.cycleAudio(); }
+  else if (a === "sauto") { Shorts.pop(el); Shorts.toggleAuto(); }
+  else if (a === "scram") Shorts.openPlaylist(Shorts.cram(el.dataset.unit));
+  else if (a === "schap") Shorts.pickChapter(el.dataset.unit);
+  else if (a === "sweak") Shorts.openPlaylist(Shorts.weak());
+  else if (a === "splclose") Shorts.closePlaylist();
+});
+window.addEventListener("resize", () => { if (Shorts.mounted) Shorts.fit(); });
+
+/* ---------- render ---------- */
+/* render() rebuilds the page, which destroys the focused button. Remember which control had focus and focus its
+   replacement afterwards; after a change of view or unit, focus the new heading instead. */
+const FOCUS_KEYS = ["act", "page", "id", "unit", "tab", "sec", "qid", "k", "v", "i", "deck"];
+function focusKey(el){
+  if (!el || !el.dataset || !el.dataset.act) return null;
+  return '[data-act="' + CSS.escape(el.dataset.act) + '"]' + FOCUS_KEYS.slice(1).filter(k => el.dataset[k] != null).map(k => '[data-' + k + '="' + CSS.escape(el.dataset[k]) + '"]').join("");
+}
+let lastPlace = "";
+function restoreFocus(key, act, qid){
+  const place = st.view + ":" + (st.unit || "") + ":" + (st.view === "unit" ? st.tab + (st.tab === "learn" ? ":" + (st.sec || 0) : "") : "");
+  const moved = place !== lastPlace; lastPlace = place;
+  if (st.view === "shorts") return;                       // the feed manages its own focus
+  let el = null;
+  if (!moved && key) {
+    el = main.querySelector(key) || document.querySelector(key);            // the copy in the page before the one in the rail
+    if ((!el || el.disabled) && act === "ans") el = document.querySelector('[data-act="qnext"]');   // after answering
+    if ((!el || el.disabled) && act === "secq" && qid) el = main.querySelector('.sq[data-qid="' + CSS.escape(qid) + '"] .exp');   // after answering a section question
+    if (el && el.disabled) el = null;
+  }
+  if (!el && (moved || key)) {
+    /* a new section page focuses its heading, anything else the page heading */
+    el = (st.view === "unit" && st.tab === "learn" && st.sec != null && main.querySelector(".lsec h3")) || main.querySelector("h2");
+    if (el) el.setAttribute("tabindex", "-1");
+  }
+  if (el) { try { el.focus({ preventScroll: true }); } catch(e) {} }
+}
+function render(keepScroll){
+  const fa = document.activeElement, fkey = fa && fa !== document.body && !lb.contains(fa) ? focusKey(fa) : null, fact = fa && fa.dataset ? fa.dataset.act : null;
+  const fqid = fa && fa.dataset ? fa.dataset.qid : null;
+  planReset();
+  Shorts.unmount();
+  if (st.view !== "shorts") Shorts.pl = null;
+  document.body.classList.toggle("shorts-on", st.view === "shorts");
+  shell.classList.toggle("full", st.view === "home" || st.view === "shorts");
+  renderRail();
+  scrollCur(rail, ".railsec.cur");
+  let html = "";
+  if (st.view === "home") html = viewHome();
+  else if (st.view === "unit") html = viewUnit();
+  else if (st.view === "quick") html = '<section class="uhead"><div class="row"><span class="code">Quiz</span><h2>' + (U.length === 1 ? "Quick quiz" : "Quick quiz across all " + U.length + " units") + '</h2></div><p>' + quickIntro() + ' Each answer links back to the slide that teaches it.</p></section><div class="pane">' + viewQuiz() + "</div>";
+  else if (st.view === "exam") html = viewExam();
+  else if (st.view === "shorts") html = viewShorts();
+  else if (st.view === "allcards") html = '<section class="uhead"><div class="row"><span class="code">Cards</span><h2>Every flashcard in the course</h2></div></section><div class="pane">' + viewCards() + "</div>";
+  else if (st.view === "search") html = viewSearch();
+  else if (st.view === "plan") html = viewPlan();
+  else if (st.view === "brief") html = viewBrief();
+  else if (st.view === "listen") html = viewListen();
+  else if (st.view === "revise") html = viewRevise();
+  Gloss.hide();
+  main.innerHTML = html;
+  setHash();
+  if (st.view === "shorts") { const sid = st.shortStart; st.shortStart = null; Shorts.mount(sid); }
+  if (st.view === "unit" && st.tab === "slides") {
+    const t = $("#thumbs .cur"); if (t) t.scrollIntoView({ block: "nearest", inline: "center" });
+    const d = D[st.deck]; if (d && st.page < d.pages) { const im = new Image(); im.src = slideSrc(st.deck, st.page + 1); }
+  }
+  paintCountdown();
+  if (st.view === "unit" && st.tab === "learn") { try { linkSlides(main, UM[st.unit]); } catch(e) {} }
+  if (st.view !== "shorts") { try { markGloss(main); } catch(e) {} }
+  growAll();
+  scrollCur($(".toc ol"), "a.cur");
+  mountSW();
+  measureTop();
+  restoreFocus(fkey, fact, fqid);
+}
+/* keep the open section visible in a scrolling section index (the rail, or the list above the text on narrow screens) */
+function scrollCur(box, sel){
+  const c = box && box.querySelector(sel);
+  if (c && box.scrollHeight > box.clientHeight) box.scrollTop = Math.max(0, c.offsetTop - box.clientHeight / 2);
+}
+document.addEventListener("toggle", e => { if (e.target.classList && e.target.classList.contains("tocd") && e.target.open) scrollCur(e.target.querySelector("ol"), "a.cur"); }, true);
+function paintCountdown(){ const cd = $("#cdbtn"); if (cd) cd.textContent = countdownText(); }
+setInterval(paintCountdown, 60000);
+
+function openSlide(deck, page){
+  const u = U.find(x => unitDecks(x).includes(deck)) || UM[st.unit];
+  st.view = "unit"; if (u.id !== st.unit) { st.unit = u.id; st.quiz = null; st.cards = null; }
+  st.tab = "slides"; st.deck = deck; st.page = page;
+  store.last = { unit: st.unit, tab: "slides" }; save();
+  render(); window.scrollTo(0, 0);
+}
+let lbOpener = null;
+function lbShow(label){
+  if (lb.hidden) lbOpener = document.activeElement;
+  lb.setAttribute("aria-label", label || "Slide viewer");
+  lb.hidden = false; document.body.style.overflow = "hidden";
+  const wrap = $(".wrap"); if (wrap) wrap.inert = true;
+  const c = lb.querySelector('[data-act="lbclose"]'); if (c) c.focus();
+}
+function lbOpen(deck, page){ lb.dataset.deck = deck; lb.dataset.page = page; lbDraw(); lbShow("Slide viewer"); }
+function lbDraw(){
+  const deck = lb.dataset.deck, p = +lb.dataset.page, d = D[deck];
+  const was = lb.contains(document.activeElement) ? document.activeElement.dataset.act : null;
+  lb.innerHTML = '<div class="bar"><span>' + esc(d.short) + " · " + p + " / " + d.pages + '</span><span class="sp"></span><button data-act="lbprev" aria-label="Previous page" ' + (p <= first(d) ? "disabled" : "") + '>&larr;</button><button data-act="lbnext" aria-label="Next page" ' + (p >= d.pages ? "disabled" : "") + '>&rarr;</button><button data-act="lbclose">Close</button></div>' +
+    '<div class="img" data-act="lbclose"><img src="' + slideSrc(deck, p) + '" alt="' + esc(d.title) + " page " + p + '"></div>';
+  if (was) { const b = lb.querySelector('button[data-act="' + was + '"]:not([disabled])') || lb.querySelector('[data-act="lbclose"]'); b.focus(); }
+}
+function lbClose(){
+  lb.hidden = true; lb.innerHTML = ""; document.body.style.overflow = "";
+  const wrap = $(".wrap"); if (wrap) wrap.inert = false;
+  const o = lbOpener; lbOpener = null;
+  if (o && document.contains(o)) { try { o.focus({ preventScroll: true }); } catch(e) {} }
+}
+
+function startQuizFor(u){ st.quiz = unitQuiz(u); }
+function ensureTabState(){
+  const u = UM[st.unit]; if (!u) return;
+  if (st.tab === "quiz" && (!st.quiz || st.quiz.key !== "unit:" + u.id)) startQuizFor(u);
+  if (st.tab === "cards" && (!st.cards || st.cards.key !== "unit:" + u.id)) st.cards = newCards("unit:" + u.id, u.cards.map((c, i) => ({ u: u.id, i })), "");
+}
+
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-act]"); if (!el) return;
+  const a = el.dataset.act;
+  if (el.tagName === "A") e.preventDefault();
+  switch (a) {
+    case "home": go("home"); break;
+    case "unit": st.view = "unit"; if (el.dataset.unit !== st.unit) { st.unit = el.dataset.unit; st.quiz = null; st.cards = null; st.deck = null; st.page = 1; st.sec = null; }
+      st.tab = el.dataset.tab || (store.last && store.last.unit === st.unit ? store.last.tab : "learn") || "learn"; ensureTabState(); go("unit", {}); break;
+    /* the Learn tab pressed while already on Learn goes back to the unit overview */
+    case "tab": if (el.dataset.tab === "learn" && st.tab === "learn") st.sec = null; st.tab = el.dataset.tab; ensureTabState(); go("unit", { keepScroll: false }); break;
+    case "sec": { const n = +el.dataset.sec; go("unit", { unit: el.dataset.unit, tab: "learn", sec: n > 0 ? n : null }); break; }
+    case "secread": {
+      const u = UM[el.dataset.unit], i = +el.dataset.sec - 1, k = secKey(u, i);
+      if (store.read[k]) delete store.read[k]; else store.read[k] = true;
+      save();
+      if (store.read[k] && i + 1 < u.sections.length) go("unit", { unit: u.id, tab: "learn", sec: i + 2 });   // done: on to the next section
+      else render(true);
+      break;
+    }
+    case "secq": {
+      const u = UM[st.unit], qid = el.dataset.qid, pick = +el.dataset.i;
+      const q = (u.quiz || []).find(x => x.id === qid);
+      if (q && store.quiz[qid] == null) {
+        const correct = q.kind === "tf" || !Array.isArray(q.options) ? (q.answer === true || q.answer === "True" ? 1 : 0) : q.answer;
+        store.quiz[qid] = pick === correct ? 1 : 0; st.secPick[qid] = pick; save(); render(true);
+      }
+      break;
+    }
+    case "slideto": st.deck = el.dataset.deck; st.page = +el.dataset.page; go("unit", { unit: st.unit, tab: "slides" }); break;
+    case "plan": go("plan"); break;
+    case "brief": go("brief"); break;
+    case "listen": go("listen"); break;
+    case "lplay": Listen.play(el.dataset.id); break;
+    case "lseek": Listen.play(el.dataset.id, +el.dataset.t); break;
+    case "lclose": Listen.close(); break;
+    case "revise": go("revise"); break;
+    case "jump": { const t = document.getElementById(el.dataset.jump); if (t) { t.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" }); try { t.focus({ preventScroll: true }); } catch(e) {} } break; }
+    case "shorts": go("shorts"); break;
+    case "quick": st.quiz = mockQuiz(); go("quick"); break;
+    case "exam": if (!st.paper) st.paper = newPaper(); go("exam"); break;
+    case "xmode": st.paper = el.dataset.v ? fixedPaper(el.dataset.v) : newPaper(); Object.keys(st.openSol).forEach(k => { if (k.startsWith("x:")) delete st.openSol[k]; }); render(true); break;
+    case "xnew": st.paper = newPaper(); Object.keys(st.openSol).forEach(k => { if (k.startsWith("x:")) delete st.openSol[k]; }); go("exam"); break;
+    case "xreveal": st.paper.qs.forEach(q => q.parts.forEach(x => st.openSol["x:" + paperItem(x).id] = true)); render(true); break;
+    case "xgrade": st.paper.graded[el.dataset.id] = +el.dataset.v; store.practice[el.dataset.id] = +el.dataset.v; save(); render(true); break;
+    case "pgrade": store.practice[el.dataset.id] = +el.dataset.v; save(); render(true); break;
+    case "allcards": { const items = []; U.forEach(u => u.cards.forEach((c, i) => items.push({ u: u.id, i }))); st.cards = newCards("all", items, "All units"); go("allcards"); break; }
+    case "slide": openSlide(el.dataset.deck, +el.dataset.page); break;
+    case "zoom": lbOpen(el.dataset.deck, +el.dataset.page); break;
+    case "deck": st.deck = el.dataset.deck; st.page = 1; render(true); break;
+    case "page": st.page = +el.dataset.page; render(true); break;
+    case "prev": st.page--; render(true); break;
+    case "next": st.page++; render(true); break;
+    case "tosec": go("unit", { unit: st.unit, tab: "learn", sec: +el.dataset.i + 1 }); break;
+    case "tosec2": go("unit", { unit: el.dataset.unit, tab: "learn", sec: +el.dataset.i + 1 }); break;
+    case "tocard": { st.view = "unit"; if (el.dataset.unit !== st.unit) st.sec = null; st.unit = el.dataset.unit; st.tab = "cards"; const u = UM[st.unit]; st.cards = newCards("unit:" + u.id, u.cards.map((c, i) => ({ u: u.id, i })), ""); st.cards.pos = +el.dataset.i; st.quiz = null; render(); window.scrollTo(0, 0); break; }
+    case "toc": { const t = document.getElementById(el.dataset.id); if (t) t.scrollIntoView({ behavior: "smooth" }); break; }
+    case "sol": st.openSol[el.dataset.k] = !st.openSol[el.dataset.k]; render(true); break;
+    case "solall": { const on = el.dataset.v === "1"; UM[st.unit].tutorial.forEach((t, i) => st.openSol[st.unit + ":" + i] = on); (UM[st.unit].practice || []).forEach(p => st.openSol["p:" + p.id] = on); render(true); break; }
+    case "ans": answer(el.dataset.v); break;
+    case "qnext": { const Q = st.quiz; if (Q.pos < Q.items.length - 1) Q.pos++; else Q.done = true; render(true); scrollQuiz(); break; }
+    case "qprev": st.quiz.pos = Math.max(0, st.quiz.pos - 1); render(true); break;
+    case "qretry": { const Q = st.quiz; const missed = Q.items.filter((x, p) => !isRight(UM[x.u].quiz[x.i], Q.ans[p])); st.quiz = newQuiz(Q.key, shuffle(missed), Q.title + " · missed"); render(true); scrollQuiz(); break; }
+    case "qrestart": { const Q = st.quiz; st.quiz = Q && Q.key === "mock" ? mockQuiz() : unitQuiz(UM[st.unit]); render(true); scrollQuiz(); break; }
+    case "cflip": st.cards.flip = !st.cards.flip; render(true); break;
+    case "cnext": st.cards.pos = Math.min(st.cards.items.length - 1, st.cards.pos + 1); st.cards.flip = false; render(true); break;
+    case "cprev": st.cards.pos = Math.max(0, st.cards.pos - 1); st.cards.flip = false; render(true); break;
+    case "crate": rateCard(+el.dataset.v); break;
+    case "cfilter": st.cards.filter = el.dataset.v; applyCardFilter(st.cards); render(true); break;
+    case "cshuffle": st.cards.shuffled = !st.cards.shuffled; applyCardFilter(st.cards); render(true); break;
+    case "lbprev": lb.dataset.page = Math.max(first(D[lb.dataset.deck]), +lb.dataset.page - 1); lbDraw(); break;
+    case "lbnext": lb.dataset.page = Math.min(D[lb.dataset.deck].pages, +lb.dataset.page + 1); lbDraw(); break;
+    case "lbclose": if (e.target === el || el.tagName === "BUTTON") lbClose(); break;
+  }
+});
+function scrollQuiz(){ const q = $(".quiz"); if (q && q.getBoundingClientRect().top < 0) q.scrollIntoView(); }
+function rateCard(v){
+  const C = st.cards; if (!C || !C.items.length) return;
+  store.cards[cardKey(C.items[C.pos])] = v; save();
+  if (C.pos < C.items.length - 1) { C.pos++; C.flip = false; }
+  render(true);
+}
+let tx = null, ty = null;
+document.addEventListener("touchstart", e => { const s = e.target.closest(".stage, .lb .img"); if (!s || e.touches.length !== 1) { tx = null; return; } tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+document.addEventListener("touchend", e => {
+  if (tx === null) return;
+  const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty; tx = null;
+  if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+  if (!lb.hidden) { const n = +lb.dataset.page + (dx < 0 ? 1 : -1); if (n >= first(D[lb.dataset.deck]) && n <= D[lb.dataset.deck].pages) { lb.dataset.page = n; lbDraw(); } return; }
+  if (st.view === "unit" && st.tab === "slides") { const n = st.page + (dx < 0 ? 1 : -1); if (n >= first(D[st.deck]) && n <= D[st.deck].pages) { st.page = n; render(true); } }
+}, { passive: true });
+document.addEventListener("change", e => {
+  if (e.target.id === "pg") { const d = D[st.deck]; st.page = Math.min(d.pages, Math.max(first(d), +e.target.value || 1)); render(true); }
+  else if (e.target.id === "plh") { try { localStorage.setItem(LS + "plan-hours", e.target.value); } catch(err) {} render(true); }
+  else if (e.target.id === "trsel") { try { localStorage.setItem(LS + "budget", e.target.value); } catch(err) {} render(true); }
+});
+let qt;
+$("#q").addEventListener("input", e => {
+  clearTimeout(qt);
+  qt = setTimeout(() => {
+    st.query = e.target.value;
+    if (st.query.trim()) { st.view = "search"; render(); }
+    else if (st.view === "search") go(st.unit ? "unit" : "home");
+  }, 160);
+});
+document.addEventListener("keydown", e => {
+  const tag = (e.target.tagName || "").toLowerCase();
+  if (tag === "input" || tag === "textarea" || e.metaKey || e.ctrlKey || e.altKey) return;
+  if (!lb.hidden) {
+    if (e.key === "Escape") lbClose();
+    else if (e.key === "ArrowLeft" && +lb.dataset.page > first(D[lb.dataset.deck])) { lb.dataset.page--; lbDraw(); }
+    else if (e.key === "ArrowRight" && +lb.dataset.page < D[lb.dataset.deck].pages) { lb.dataset.page++; lbDraw(); }
+    return;
+  }
+  if (st.view === "shorts") { if (Shorts.key(e)) e.preventDefault(); return; }
+  const inQuiz = (st.view === "quick") || (st.view === "unit" && st.tab === "quiz");
+  const inCards = (st.view === "allcards") || (st.view === "unit" && st.tab === "cards");
+  if (st.view === "unit" && st.tab === "slides") {
+    const d = D[st.deck];
+    if (e.key === "ArrowLeft" && st.page > first(d)) { st.page--; render(true); e.preventDefault(); }
+    else if (e.key === "ArrowRight" && st.page < d.pages) { st.page++; render(true); e.preventDefault(); }
+  } else if (inQuiz && st.quiz && !st.quiz.done) {
+    const Q = st.quiz, it = Q.items[Q.pos]; if (!it) return;
+    const q = UM[it.u].quiz[it.i];
+    if (q.kind === "tf") { if (/^[tT]$/.test(e.key)) answer(true); else if (/^[fF]$/.test(e.key)) answer(false); }
+    else { const n = "1234567".indexOf(e.key); const l = "abcdefg".indexOf(e.key.toLowerCase()); const k = n >= 0 ? n : l; if (k >= 0 && k < it.perm.length) answer(it.perm[k]); }
+    if (e.key === "Enter" && Q.ans[Q.pos] !== undefined) { if (Q.pos < Q.items.length - 1) Q.pos++; else Q.done = true; render(true); scrollQuiz(); }
+  } else if (inCards && st.cards && st.cards.items.length) {
+    const C = st.cards;
+    if (e.key === " ") { C.flip = !C.flip; render(true); e.preventDefault(); }
+    else if (e.key === "ArrowRight" && C.pos < C.items.length - 1) { C.pos++; C.flip = false; render(true); }
+    else if (e.key === "ArrowLeft" && C.pos > 0) { C.pos--; C.flip = false; render(true); }
+    else if (e.key === "1") rateCard(0);
+    else if (e.key === "2") rateCard(1);
+  }
+});
+
+/* deep link: #<unit>.quiz, #<unit>.s3 (a Learn section), #mock, #allcards, #plan, #brief, #revise; pages a course
+   switched off (course.json features, a missing brief.json or revise.json) fall back to the home page */
+const VIEW_NEED = Object.assign(Object.create(null), { plan: "studyPlan", brief: "brief", revise: "revise", listen: "audio" });
+function fromHash(){
+  let h = ""; try { h = decodeURIComponent((location.hash || "").slice(1)); } catch(e) {}
+  const [uid, tab] = h.split(".");
+  if (UM[uid]) {
+    if (uid !== st.unit) { st.quiz = null; st.cards = null; st.deck = null; st.page = 1; }
+    st.view = "unit"; st.unit = uid;
+    const sm = /^s(\d+)$/.exec(tab || "");
+    if (sm) { st.tab = "learn"; st.sec = +sm[1] > 0 ? +sm[1] : null; }
+    else { st.tab = tab === "tutorial" ? "practice" : TABS.some(t => t[0] === tab) ? tab : "learn"; st.sec = null; }
+    ensureTabState();
+  }
+  else if (VIEW_NEED[h] !== undefined) st.view = HAS[VIEW_NEED[h]] ? h : "home";
+  else if (/^cram\./.test(h) && UM[h.slice(5)] && SH.length) { Shorts.openPlaylist(Object.assign(Shorts.cram(h.slice(5)), { back: { view: "unit", unit: h.slice(5), tab: "learn" } })); return; }
+  else if ((h === "shorts" || /^short\./.test(h)) && HAS.shorts) { st.view = "shorts"; st.shortStart = h.startsWith("short.") ? h.slice(6) : null; }
+  else if (h === "quick") { st.quiz = mockQuiz(); st.view = "quick"; }
+  else if ((h === "exam" || h === "mock") && HAS.mockExam) { st.paper = st.paper || newPaper(); st.view = "exam"; }
+  else if (h === "allcards") { const items = []; U.forEach(u => u.cards.forEach((c, i) => items.push({ u: u.id, i }))); st.cards = newCards("all", items, "All units"); st.view = "allcards"; }
+  else if (!h) st.view = "home";
+  else if (/^s-/.test(h)) return;
+  render(); window.scrollTo(0, 0);
+}
+window.addEventListener("hashchange", fromHash);
+fromHash();
+})();
+</script>

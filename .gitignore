@@ -1,0 +1,19 @@
+# the person's own material and everything built from it
+materials/*
+!materials/README.md
+site/
+shorts/backgrounds/*
+!shorts/backgrounds/README.md
+shorts/music/*
+!shorts/music/README.md
+# caches and local environments
+__pycache__/
+*.pyc
+.venv/
+venv/
+tts_cache/
+*.log
+.DS_Store
+Thumbs.db
+build/
+.cache/

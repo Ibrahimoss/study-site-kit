@@ -1,0 +1,35 @@
+{
+ "about": "The kit's default pronunciations for the Kokoro voices, merged with course/pronunciations.json (the course wins). 'words' gives exact sounds as phonemes (Kokoro/misaki notation), sent as [word](/phonemes/) so every voice says them the same way: 'us' for the American voices (af_, am_), 'gb' for the British ones (bf_, bm_). Matching is whole-word and ignores case. 'spell' is a plain respelling, matched exactly. Any other word of two or more capitals is read letter by letter (DNA: dee en ay). See pronunciations.example.json for a course file.",
+ "words": {
+  "GPU": {"us": "ʤˈi pˈi jˈu", "gb": "ʤˈiː pˈiː jˈuː"},
+  "GPUs": {"us": "ʤˈi pˈi jˈuz", "gb": "ʤˈiː pˈiː jˈuːz"},
+  "CPU": {"us": "sˈi pˈi jˈu", "gb": "sˈiː pˈiː jˈuː"},
+  "CPUs": {"us": "sˈi pˈi jˈuz", "gb": "sˈiː pˈiː jˈuːz"},
+  "RAM": {"us": "ɹˈæm", "gb": "ɹˈam"},
+  "SQL": {"us": "sˈikwəl", "gb": "sˈiːkwᵊl"},
+  "JSON": {"us": "ʤˈAsᵊn", "gb": "ʤˈAsᵊn"},
+  "NASA": {"us": "nˈæsə", "gb": "nˈasə"}
+ },
+ "spell": {
+  "sin": "sine",
+  "cos": "cosine",
+  "tan": "tangent",
+  "ln": "natural log",
+  "lim": "limit",
+  "dx": "d x",
+  "dy": "d y",
+  "dt": "d t",
+  "°C": " degrees Celsius",
+  "°F": " degrees Fahrenheit",
+  "°": " degrees",
+  "√": " the square root of ",
+  "π": " pi ",
+  "Δ": " delta ",
+  "Σ": " the sum of ",
+  "∞": " infinity ",
+  "±": " plus or minus ",
+  "≠": " is not equal to ",
+  "²": " squared",
+  "³": " cubed"
+ }
+}

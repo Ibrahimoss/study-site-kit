@@ -1,0 +1,21 @@
+
+=== t-u1 page 1 ===
+Tutorial 1: Outcomes, Events and Rules (with solutions)
+Question 1. A coin is tossed twice. Write down the sample space
+and the event A = "at least one head".
+Solution: S = {HH, HT, TH, TT}. A = {HH, HT, TH}.
+With 4 equally likely outcomes, P(A) = 3/4.
+Question 2. P(A) = 0.5, P(B) = 0.4 and P(A ∩ B) = 0.2.
+Find P(A ∪ B) and the probability that neither happens.
+Solution: P(A ∪ B) = 0.5 + 0.4 - 0.2 = 0.7.
+Neither = (A ∪ B)', so P = 1 - 0.7 = 0.3.
+
+=== t-u1 page 2 ===
+Question 3. Two fair dice are rolled. Find P(sum = 7)
+and P(sum is at least 10).
+Solution: 36 equally likely pairs.
+Sum 7: (1,6) (2,5) (3,4) (4,3) (5,2) (6,1), so 6/36 = 1/6.
+At least 10: sums 10, 11, 12 have 3 + 2 + 1 = 6 ways, so 6/36 = 1/6.
+Question 4. Are "first die shows 6" and "sum is 2" disjoint?
+Solution: Yes. A sum of 2 needs (1,1), so the first die cannot be 6.
+Their intersection is empty and P(A ∩ B) = 0.

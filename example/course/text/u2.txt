@@ -1,0 +1,72 @@
+
+=== u2 page 1 ===
+Introduction to Probability
+Unit 2
+Conditional Probability
+Lecture slides
+
+=== u2 page 2 ===
+What "given" means
+Introduction to Probability - Unit 2
+P(A | B): the probability of A when we know B happened
+Knowing B shrinks the sample space from S to B
+Only the part of A inside B still counts
+Example: one die, B = "even" = {2, 4, 6}
+P(roll is 6 | even) = 1/3, not 1/6
+Order matters: P(A | B) is usually not P(B | A)
+
+=== u2 page 3 ===
+The formula and the multiplication rule
+Introduction to Probability - Unit 2
+Conditional probability (needs P(B) > 0)
+P(A | B) = P(A ∩ B) / P(B)
+Multiplication rule (rearranged)
+P(A ∩ B) = P(B) x P(A | B) = P(A) x P(B | A)
+Use it to find "both" probabilities step by step, as in a tree.
+
+=== u2 page 4 ===
+Independent events
+Introduction to Probability - Unit 2
+A and B are independent if knowing B does not change A
+Test: P(A ∩ B) = P(A) x P(B)
+Same thing: P(A | B) = P(A)  (when P(B) > 0)
+Example: two coin tosses are independent
+Disjoint is NOT independent: if A ∩ B is empty and both
+     have positive probability, knowing B rules A out
+
+=== u2 page 5 ===
+Tree diagrams
+Introduction to Probability - Unit 2
+0.3
+B
+0.9
+A
+0.1
+A'
+0.7
+B'
+0.2
+A
+0.8
+A'
+Multiply along a path:
+P(B ∩ A) = 0.3 x 0.9 = 0.27
+P(B' ∩ A) = 0.7 x 0.2 = 0.14
+Add the paths you want:
+P(A) = 0.27 + 0.14 = 0.41
+
+=== u2 page 6 ===
+Bayes' rule
+Introduction to Probability - Unit 2
+P(B | A) = P(A | B) x P(B) / P(A)
+Turns P(A | B) around. P(A) comes from the total probability rule.
+Event
+Probability
+Has condition, P(B)
+0.01
+Test positive if has it, P(A | B)
+0.95
+Test positive if not, P(A | B')
+0.05
+P(A) = 0.95 x 0.01 + 0.05 x 0.99 = 0.059
+P(B | A) = 0.0095 / 0.059 = 0.161 (about 16%)

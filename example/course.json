@@ -1,0 +1,21 @@
+{
+  "site": { "title": "Probability Study Lab", "subtitle": "Introduction to Probability", "url": "" },
+  "exam": { "name": "Midterm", "at": "2027-03-10T10:00:00+03:00", "covers": "Units 1 and 2" },
+  "code": { "language": "none" },
+  "decks": [
+    { "id": "u1", "file": "materials/Unit 1 - Outcomes and Events.pdf", "short": "Unit 1 slides", "title": "Unit 1 - Outcomes, Events and Rules", "first": 2 },
+    { "id": "u2", "file": "materials/Unit 2 - Conditional Probability.pdf", "short": "Unit 2 slides", "title": "Unit 2 - Conditional Probability", "first": 2 },
+    { "id": "t-u1", "file": "materials/Tutorial 1 - solved.pdf", "short": "Tutorial 1", "title": "Tutorial 1 (solved)" },
+    { "id": "paper-a", "file": "materials/Practice paper 1 - graded.pdf", "short": "Practice paper 1", "title": "Practice paper 1 (graded)", "publish": false }
+  ],
+  "units": [
+    { "id": "u1", "code": "U1", "title": "Outcomes, Events and Rules", "deck": "u1", "tutorials": ["t-u1"] },
+    { "id": "u2", "code": "U2", "title": "Conditional Probability", "deck": "u2", "tutorials": [] }
+  ],
+  "papers": [ { "id": "A", "name": "Practice paper 1" } ],
+  "features": { "audio": false, "shorts": false, "mockExam": true, "studyPlan": true },
+  "audio": { "engine": "kokoro-local", "voice": "af_heart", "speed": 0.96, "units": {} },
+  "shorts": { "engine": "kokoro-local", "background": "gameplay", "backgroundFile": "shorts/backgrounds/minecraft-parkour.mp4" },
+  "voicePC": { "host": "", "key": "" },
+  "hosting": { "target": "artifact" }
+}

@@ -1,0 +1,434 @@
+{
+ "id": "u2",
+ "summary": "What a probability \"given\" some information means, how to compute it, and when extra information changes nothing (independence). Tree diagrams and Bayes' rule put these together for problems in two stages.",
+ "objectives": [
+  "Explain P(A | B) as a probability on the reduced sample space B",
+  "Use P(A | B) = P(A ∩ B) / P(B) and the multiplication rule",
+  "Test two events for independence",
+  "Build a tree diagram and read probabilities off it",
+  "Apply Bayes' rule to turn a conditional probability around"
+ ],
+ "sections": [
+  {
+   "title": "What \"given\" means",
+   "slides": [
+    2
+   ],
+   "blocks": [
+    {
+     "p": "`P(A | B)` is the probability of A once you know that B happened. Knowing B throws away every outcome outside B, so B becomes the new sample space and only the part of A inside B still counts."
+    },
+    {
+     "p": "Example: roll one die and learn the result is even. The possible outcomes are now {2, 4, 6}, so P(6 | even) = 1/3, not the 1/6 you had before."
+    },
+    {
+     "tip": "P(A | B) and P(B | A) are different numbers in general. Read the bar as \"given\" and check which event is known."
+    }
+   ]
+  },
+  {
+   "title": "The formula and the multiplication rule",
+   "slides": [
+    3
+   ],
+   "freq": 5,
+   "priority": "high",
+   "blocks": [
+    {
+     "code": "P(A | B) = P(A ∩ B) / P(B)        (P(B) > 0)\nP(A ∩ B) = P(B) x P(A | B) = P(A) x P(B | A)",
+     "lang": "text"
+    },
+    {
+     "p": "The first line is the definition. Multiply both sides by P(B) and you get the **multiplication rule**, which finds the probability that both events happen one step at a time."
+    },
+    {
+     "p": "Worked example: P(A ∩ B) = 0.12 and P(B) = 0.4 give `P(A | B) = 0.12 / 0.4 = 0.3`."
+    }
+   ]
+  },
+  {
+   "title": "Independent events",
+   "slides": [
+    4
+   ],
+   "freq": 4,
+   "blocks": [
+    {
+     "p": "A and B are **independent** when knowing one tells you nothing about the other. The test is:"
+    },
+    {
+     "code": "P(A ∩ B) = P(A) x P(B)",
+     "lang": "text"
+    },
+    {
+     "p": "Equivalently P(A | B) = P(A) when P(B) > 0. Two separate coin tosses are the standard example."
+    },
+    {
+     "note": "Disjoint and independent are different ideas. If A and B are disjoint and both have positive probability, they are **dependent**: learning B happened tells you A did not."
+    }
+   ]
+  },
+  {
+   "title": "Tree diagrams and Bayes' rule",
+   "slides": [
+    5,
+    6
+   ],
+   "blocks": [
+    {
+     "p": "A tree splits an experiment into stages. Each branch carries a conditional probability; you **multiply along a path** to get a \"both\" probability and **add the paths** that make up the event you want."
+    },
+    {
+     "figure": {
+      "deck": "u2",
+      "page": 5,
+      "caption": "A two-stage tree: P(A) = 0.3 x 0.9 + 0.7 x 0.2 = 0.41."
+     }
+    },
+    {
+     "p": "**Bayes' rule** turns a conditional probability around:"
+    },
+    {
+     "code": "P(B | A) = P(A | B) x P(B) / P(A)",
+     "lang": "text"
+    },
+    {
+     "p": "P(A) at the bottom usually comes from the tree: the sum of every path that ends in A."
+    },
+    {
+     "table": {
+      "head": [
+       "Step",
+       "Value"
+      ],
+      "rows": [
+       [
+        "P(B), has the condition",
+        "0.01"
+       ],
+       [
+        "P(A | B), positive if has it",
+        "0.95"
+       ],
+       [
+        "P(A | B'), positive if not",
+        "0.05"
+       ],
+       [
+        "P(A) = 0.95 x 0.01 + 0.05 x 0.99",
+        "0.059"
+       ],
+       [
+        "P(B | A) = 0.0095 / 0.059",
+        "0.161"
+       ]
+      ]
+     }
+    },
+    {
+     "tip": "A positive result from a good test can still leave a low chance of having a rare condition. The small P(B) is why."
+    }
+   ]
+  }
+ ],
+ "tutorial": [],
+ "practice": [
+  {
+   "slot": "u2-cond",
+   "topic": "Conditional probability",
+   "marks": 2,
+   "q": "P(A ∩ B) = 0.15 and P(B) = 0.5. Find P(A | B). If P(A) = 0.3, are A and B independent?",
+   "a": [
+    {
+     "p": "**Full marks needs:**"
+    },
+    {
+     "list": [
+      "P(A | B) = 0.15 / 0.5 = 0.3",
+      "Independent, because P(A | B) = P(A) = 0.3"
+     ]
+    },
+    {
+     "p": "By the definition, P(A | B) = 0.15 / 0.5 = 0.3. This equals P(A), so knowing B does not change A: they are independent. The product test agrees: 0.3 x 0.5 = 0.15 = P(A ∩ B)."
+    }
+   ],
+   "ref": {
+    "deck": "u2",
+    "page": 3
+   },
+   "answerSource": "slides"
+  },
+  {
+   "slot": "u2-indep",
+   "topic": "Independence",
+   "marks": 3,
+   "examstyle": true,
+   "sec": 3,
+   "q": "A fair coin is tossed three times. Find the probability of three heads, and the probability of at least one tail.",
+   "a": [
+    {
+     "p": "**Full marks needs:**"
+    },
+    {
+     "list": [
+      "Tosses are independent, so multiply",
+      "P(HHH) = (1/2)^3 = 1/8",
+      "P(at least one tail) = 1 - 1/8 = 7/8"
+     ]
+    },
+    {
+     "p": "Each toss is independent with P(H) = 1/2, so P(HHH) = 1/2 x 1/2 x 1/2 = 1/8. \"At least one tail\" is the complement of HHH, so it is 1 - 1/8 = 7/8."
+    }
+   ],
+   "ref": {
+    "deck": "u2",
+    "page": 4
+   },
+   "answerSource": "slides"
+  },
+  {
+   "slot": "u2-bayes",
+   "topic": "Bayes' rule",
+   "marks": 3,
+   "q": "A machine is faulty with probability 0.1. A faulty machine fails a check with probability 0.8; a working one fails with probability 0.05. A machine fails the check. Find the probability that it is faulty.",
+   "a": [
+    {
+     "p": "**Full marks needs:**"
+    },
+    {
+     "list": [
+      "P(fail) = 0.8 x 0.1 + 0.05 x 0.9 = 0.125",
+      "Bayes' rule set up correctly",
+      "Answer 0.08 / 0.125 = 0.64"
+     ]
+    },
+    {
+     "p": "Let F = faulty and X = fails the check. P(X) = 0.8 x 0.1 + 0.05 x 0.9 = 0.08 + 0.045 = 0.125."
+    },
+    {
+     "p": "P(F | X) = P(X | F) x P(F) / P(X) = 0.08 / 0.125 = 0.64."
+    }
+   ],
+   "ref": {
+    "deck": "u2",
+    "page": 6
+   },
+   "answerSource": "slides"
+  },
+  {
+   "paper": "A",
+   "slot": "paper-a",
+   "pq": 2,
+   "pp": 1,
+   "plabel": "",
+   "examstyle": true,
+   "sec": 3,
+   "marks": 2,
+   "answerSource": "slides",
+   "topic": "Independence",
+   "q": "Events A and B are independent, with P(A) = 0.3 and P(B) = 0.5. Find P(A ∩ B) and P(A | B).",
+   "a": [
+    {
+     "p": "**Full marks needs:**"
+    },
+    {
+     "list": [
+      "P(A ∩ B) = 0.3 x 0.5 = 0.15",
+      "P(A | B) = P(A) = 0.3 (or 0.15 / 0.5)"
+     ]
+    },
+    {
+     "p": "For independent events the intersection is the product: P(A ∩ B) = 0.3 x 0.5 = 0.15."
+    },
+    {
+     "p": "Then P(A | B) = 0.15 / 0.5 = 0.3, which is P(A), as independence says it must be."
+    },
+    {
+     "note": "The graded answer added the probabilities (0.8). Adding is the rule for disjoint events, not independent ones."
+    }
+   ],
+   "ref": {
+    "deck": "paper-a",
+    "page": 2
+   }
+  }
+ ],
+ "quiz": [
+  {
+   "kind": "mcq",
+   "q": "One die is rolled and the result is even. What is P(roll is 6 | even)?",
+   "options": [
+    "1/6",
+    "1/2",
+    "1/3",
+    "2/3"
+   ],
+   "answer": 2,
+   "explain": "Given even, the outcomes are {2, 4, 6}, and 6 is one of three. 1/6 ignores the information.",
+   "ref": {
+    "deck": "u2",
+    "page": 2
+   }
+  },
+  {
+   "kind": "mcq",
+   "q": "P(A ∩ B) = 0.2 and P(B) = 0.8. What is P(A | B)?",
+   "options": [
+    "0.25",
+    "0.16",
+    "0.4",
+    "1.0"
+   ],
+   "answer": 0,
+   "explain": "0.2 / 0.8 = 0.25. Multiplying instead of dividing gives 0.16.",
+   "ref": {
+    "deck": "u2",
+    "page": 3
+   }
+  },
+  {
+   "kind": "mcq",
+   "q": "P(B) = 0.5 and P(A | B) = 0.6. What is P(A ∩ B)?",
+   "options": [
+    "1.1",
+    "0.3",
+    "0.83",
+    "0.1"
+   ],
+   "answer": 1,
+   "explain": "Multiplication rule: 0.5 x 0.6 = 0.3.",
+   "ref": {
+    "deck": "u2",
+    "page": 3
+   }
+  },
+  {
+   "kind": "mcq",
+   "q": "Which condition shows A and B are independent?",
+   "options": [
+    "A ∩ B is empty",
+    "P(A) + P(B) = 1",
+    "P(A | B) = P(B | A)",
+    "P(A ∩ B) = P(A) x P(B)"
+   ],
+   "answer": 3,
+   "explain": "The product test is the definition. An empty intersection means disjoint, which is a different idea.",
+   "ref": {
+    "deck": "u2",
+    "page": 4
+   }
+  },
+  {
+   "kind": "mcq",
+   "q": "In the tree on the slides (P(B) = 0.3, P(A | B) = 0.9, P(A | B') = 0.2), what is P(A)?",
+   "options": [
+    "0.27",
+    "0.41",
+    "1.1",
+    "0.14"
+   ],
+   "answer": 1,
+   "explain": "Add both paths that end in A: 0.27 + 0.14 = 0.41.",
+   "ref": {
+    "deck": "u2",
+    "page": 5
+   }
+  },
+  {
+   "kind": "tf",
+   "q": "Disjoint events with positive probabilities are independent.",
+   "answer": false,
+   "explain": "If one happens the other cannot, so knowing one changes the other: they are dependent.",
+   "ref": {
+    "deck": "u2",
+    "page": 4
+   }
+  },
+  {
+   "kind": "tf",
+   "q": "P(A | B) is always equal to P(B | A).",
+   "answer": false,
+   "explain": "They differ in general; Bayes' rule is how you get from one to the other.",
+   "ref": {
+    "deck": "u2",
+    "page": 2
+   }
+  },
+  {
+   "kind": "tf",
+   "q": "In the slides' test example, a positive result means about a 16% chance of having the condition.",
+   "answer": true,
+   "explain": "P(B | A) = 0.0095 / 0.059 = 0.161, small because the condition is rare.",
+   "ref": {
+    "deck": "u2",
+    "page": 6
+   }
+  }
+ ],
+ "cards": [
+  {
+   "front": "P(A | B) in words",
+   "back": "The probability of A when we know B happened.",
+   "ref": {
+    "deck": "u2",
+    "page": 2
+   }
+  },
+  {
+   "front": "Conditional probability formula",
+   "back": "P(A | B) = P(A ∩ B) / P(B), with P(B) > 0",
+   "ref": {
+    "deck": "u2",
+    "page": 3
+   }
+  },
+  {
+   "front": "Multiplication rule",
+   "back": "P(A ∩ B) = P(B) x P(A | B)",
+   "ref": {
+    "deck": "u2",
+    "page": 3
+   }
+  },
+  {
+   "front": "Independence test",
+   "back": "P(A ∩ B) = P(A) x P(B)",
+   "ref": {
+    "deck": "u2",
+    "page": 4
+   }
+  },
+  {
+   "front": "Disjoint vs independent",
+   "back": "Disjoint: cannot happen together. Independent: one gives no information about the other. Disjoint events with positive probability are dependent.",
+   "ref": {
+    "deck": "u2",
+    "page": 4
+   }
+  },
+  {
+   "front": "Reading a tree diagram",
+   "back": "Multiply along a path; add the paths that make up the event.",
+   "ref": {
+    "deck": "u2",
+    "page": 5
+   }
+  },
+  {
+   "front": "Bayes' rule",
+   "back": "P(B | A) = P(A | B) x P(B) / P(A)",
+   "ref": {
+    "deck": "u2",
+    "page": 6
+   }
+  },
+  {
+   "front": "Where P(A) in Bayes comes from",
+   "back": "The total of all tree paths ending in A, e.g. P(A | B)P(B) + P(A | B')P(B').",
+   "ref": {
+    "deck": "u2",
+    "page": 6
+   }
+  }
+ ]
+}

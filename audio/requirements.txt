@@ -1,0 +1,13 @@
+# Narration on this computer ("engine": "kokoro-local" in course.json). Install once:
+#   python -m pip install -r audio/requirements.txt
+# PyTorch picks the graphics card when it can (NVIDIA), else the processor. For an NVIDIA card, install
+# PyTorch first from https://pytorch.org (the CUDA build), then this file.
+kokoro>=0.9
+soundfile
+numpy
+pillow
+torch
+# English word list used by Kokoro's pronunciation step (it would otherwise download it on first use)
+en_core_web_sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+# Optional: Whisper listens to every clip and reports lines it heard differently.
+# openai-whisper

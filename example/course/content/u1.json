@@ -1,0 +1,518 @@
+{
+ "id": "u1",
+ "summary": "How to describe a random experiment with a sample space and events, the three axioms every probability obeys, and the two rules (complement and addition) behind almost every calculation in the course. It ends with counting equally likely outcomes, using two dice as the standard example.",
+ "objectives": [
+  "Write down the sample space of a simple experiment and list the outcomes in an event",
+  "State the three axioms of probability and what follows from them",
+  "Use the complement rule and the addition rule",
+  "Read unions, intersections and complements off a Venn diagram",
+  "Find probabilities by counting equally likely outcomes"
+ ],
+ "sections": [
+  {
+   "title": "Sample spaces and events",
+   "slides": [
+    2
+   ],
+   "blocks": [
+    {
+     "p": "An **experiment** is anything whose result you cannot predict for certain: tossing a coin, rolling a die, picking a card. The **sample space** `S` is the set of every result it can give."
+    },
+    {
+     "defs": [
+      [
+       "Sample space S",
+       "All possible outcomes. One die: S = {1, 2, 3, 4, 5, 6}."
+      ],
+      [
+       "Event",
+       "Any subset of S. \"Even\" is the event {2, 4, 6}."
+      ],
+      [
+       "A ∪ B (union)",
+       "A or B (or both) happens."
+      ],
+      [
+       "A ∩ B (intersection)",
+       "A and B both happen."
+      ],
+      [
+       "A' (complement)",
+       "A does not happen: every outcome of S not in A."
+      ],
+      [
+       "Disjoint",
+       "A ∩ B is empty, so A and B cannot happen together."
+      ]
+     ]
+    },
+    {
+     "tip": "When a question gives an event in words, write it as a set first. Most mistakes come from a wrong set, not a wrong formula."
+    }
+   ]
+  },
+  {
+   "title": "The axioms of probability",
+   "slides": [
+    3
+   ],
+   "blocks": [
+    {
+     "p": "A probability `P` gives every event a number. The course takes three rules, the **axioms**, as given and proves the rest from them."
+    },
+    {
+     "steps": [
+      "P(A) ≥ 0 for every event A.",
+      "P(S) = 1: something in the sample space always happens.",
+      "If A and B are disjoint, P(A ∪ B) = P(A) + P(B)."
+     ]
+    },
+    {
+     "p": "Three facts follow straight away: every probability lies between 0 and 1, the empty event has probability 0, and a smaller event can never be more likely than a bigger one (if A ⊆ B then P(A) ≤ P(B))."
+    },
+    {
+     "tip": "An answer above 1 or below 0 is always wrong. Check this before you move on."
+    }
+   ]
+  },
+  {
+   "title": "Complement and addition rules",
+   "slides": [
+    4,
+    5
+   ],
+   "freq": 5,
+   "priority": "high",
+   "blocks": [
+    {
+     "p": "Two rules do most of the work in this unit."
+    },
+    {
+     "code": "P(A') = 1 - P(A)\nP(A ∪ B) = P(A) + P(B) - P(A ∩ B)",
+     "lang": "text"
+    },
+    {
+     "p": "The **complement rule** is the quick way to find \"at least one\" or \"neither\": work out the opposite event and subtract from 1."
+    },
+    {
+     "p": "The **addition rule** works for any two events. Adding P(A) and P(B) counts the overlap A ∩ B twice, so you take it off once. When A and B are disjoint the overlap is 0 and you are back to Axiom 3."
+    },
+    {
+     "figure": {
+      "deck": "u1",
+      "page": 5,
+      "caption": "The Venn diagram: the overlap is A ∩ B, and everything outside both circles is (A ∪ B)'."
+     }
+    },
+    {
+     "p": "Worked example: P(A) = 0.5, P(B) = 0.4, P(A ∩ B) = 0.2. Then P(A ∪ B) = 0.5 + 0.4 - 0.2 = 0.7, and P(neither) = P((A ∪ B)') = 1 - 0.7 = 0.3."
+    },
+    {
+     "tip": "\"Neither A nor B\" is the complement of the union, not of the intersection."
+    }
+   ]
+  },
+  {
+   "title": "Equally likely outcomes",
+   "slides": [
+    6
+   ],
+   "freq": 4,
+   "blocks": [
+    {
+     "p": "When every outcome in S is equally likely, probability is counting:"
+    },
+    {
+     "code": "P(A) = (number of outcomes in A) / (number of outcomes in S)",
+     "lang": "text"
+    },
+    {
+     "p": "Two fair dice give 6 x 6 = 36 ordered pairs, each with probability 1/36. Count the pairs for each sum:"
+    },
+    {
+     "table": {
+      "head": [
+       "Sum",
+       "2",
+       "3",
+       "4",
+       "5",
+       "6",
+       "7",
+       "8",
+       "9",
+       "10",
+       "11",
+       "12"
+      ],
+      "rows": [
+       [
+        "Ways",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "5",
+        "4",
+        "3",
+        "2",
+        "1"
+       ]
+      ]
+     }
+    },
+    {
+     "p": "So P(sum = 7) = 6/36 = 1/6, the most likely sum, and the extremes 2 and 12 each have 1/36."
+    },
+    {
+     "note": "Count ordered pairs: (2,5) and (5,2) are different outcomes. Treating them as one is the classic error that gives 21 outcomes instead of 36."
+    }
+   ]
+  }
+ ],
+ "tutorial": [
+  {
+   "src": "t-u1",
+   "page": 1,
+   "q": "A coin is tossed twice. Write down the sample space and the event A = \"at least one head\".",
+   "a": [
+    {
+     "p": "S = {HH, HT, TH, TT}. A = {HH, HT, TH}."
+    },
+    {
+     "p": "All 4 outcomes are equally likely, so P(A) = 3/4. A faster route: the complement of A is {TT}, so P(A) = 1 - 1/4 = 3/4."
+    }
+   ]
+  },
+  {
+   "src": "t-u1",
+   "page": 1,
+   "q": "P(A) = 0.5, P(B) = 0.4 and P(A ∩ B) = 0.2. Find P(A ∪ B) and the probability that neither happens.",
+   "a": [
+    {
+     "p": "Addition rule: P(A ∪ B) = 0.5 + 0.4 - 0.2 = 0.7."
+    },
+    {
+     "p": "\"Neither\" is (A ∪ B)', so P = 1 - 0.7 = 0.3."
+    }
+   ]
+  },
+  {
+   "src": "t-u1",
+   "page": 2,
+   "q": "Two fair dice are rolled. Find P(sum = 7) and P(sum is at least 10).",
+   "a": [
+    {
+     "p": "There are 36 equally likely ordered pairs."
+    },
+    {
+     "list": [
+      "Sum 7: (1,6) (2,5) (3,4) (4,3) (5,2) (6,1), so 6/36 = 1/6.",
+      "At least 10: sums 10, 11 and 12 have 3 + 2 + 1 = 6 pairs, so 6/36 = 1/6."
+     ]
+    }
+   ]
+  },
+  {
+   "src": "t-u1",
+   "page": 2,
+   "q": "Are \"first die shows 6\" and \"sum is 2\" disjoint?",
+   "a": [
+    {
+     "p": "Yes. A sum of 2 needs (1,1), so the first die cannot show 6. The intersection is empty and P(A ∩ B) = 0."
+    }
+   ]
+  }
+ ],
+ "practice": [
+  {
+   "slot": "u1-rules",
+   "topic": "Addition rule",
+   "marks": 2,
+   "q": "P(A) = 0.6, P(B) = 0.3 and P(A ∪ B) = 0.7. Find P(A ∩ B) and P(neither A nor B).",
+   "a": [
+    {
+     "p": "**Full marks needs:**"
+    },
+    {
+     "list": [
+      "P(A ∩ B) = 0.6 + 0.3 - 0.7 = 0.2",
+      "P(neither) = 1 - 0.7 = 0.3"
+     ]
+    },
+    {
+     "p": "Rearrange the addition rule: P(A ∩ B) = P(A) + P(B) - P(A ∪ B) = 0.9 - 0.7 = 0.2. Neither is the complement of the union, so 1 - 0.7 = 0.3."
+    }
+   ],
+   "ref": {
+    "deck": "u1",
+    "page": 4
+   },
+   "answerSource": "slides"
+  },
+  {
+   "slot": "u1-count",
+   "topic": "Counting outcomes",
+   "marks": 2,
+   "q": "Two fair dice are rolled. Find the probability that the sum is 4 or less.",
+   "a": [
+    {
+     "p": "**Full marks needs:**"
+    },
+    {
+     "list": [
+      "36 equally likely ordered pairs",
+      "Sums 2, 3, 4 have 1 + 2 + 3 = 6 pairs, so 6/36 = 1/6"
+     ]
+    },
+    {
+     "p": "Sum 2: (1,1). Sum 3: (1,2), (2,1). Sum 4: (1,3), (2,2), (3,1). That is 6 pairs out of 36, so the probability is 1/6."
+    }
+   ],
+   "ref": {
+    "deck": "u1",
+    "page": 6
+   },
+   "answerSource": "slides"
+  },
+  {
+   "slot": "u1-defs",
+   "topic": "Events and axioms",
+   "marks": 2,
+   "examstyle": true,
+   "sec": 2,
+   "q": "State the three axioms of probability.",
+   "a": [
+    {
+     "p": "**Full marks needs:** all three, with the disjoint condition on the third."
+    },
+    {
+     "steps": [
+      "P(A) ≥ 0 for every event A.",
+      "P(S) = 1.",
+      "If A and B are disjoint, P(A ∪ B) = P(A) + P(B)."
+     ]
+    }
+   ],
+   "ref": {
+    "deck": "u1",
+    "page": 3
+   },
+   "answerSource": "slides"
+  },
+  {
+   "paper": "A",
+   "slot": "paper-a",
+   "pq": 1,
+   "pp": 1,
+   "plabel": "",
+   "examstyle": true,
+   "sec": 3,
+   "marks": 2,
+   "answerSource": "marked",
+   "topic": "Addition rule",
+   "q": "A fair six-sided die is rolled once. Let A = \"the roll is even\" and B = \"the roll is greater than 4\". Find P(A ∪ B).",
+   "a": [
+    {
+     "p": "**Full marks needs:**"
+    },
+    {
+     "list": [
+      "The sets A = {2, 4, 6}, B = {5, 6} and A ∩ B = {6}",
+      "The addition rule giving 4/6 = 2/3"
+     ]
+    },
+    {
+     "p": "A = {2, 4, 6} and B = {5, 6}, so A ∩ B = {6}."
+    },
+    {
+     "p": "P(A ∪ B) = 3/6 + 2/6 - 1/6 = 4/6 = 2/3."
+    }
+   ],
+   "ref": {
+    "deck": "paper-a",
+    "page": 1
+   }
+  }
+ ],
+ "quiz": [
+  {
+   "kind": "mcq",
+   "q": "A die is rolled. Which set is the event \"roll is greater than 4\"?",
+   "options": [
+    "{4, 5, 6}",
+    "{5, 6}",
+    "{1, 2, 3, 4}",
+    "{6}"
+   ],
+   "answer": 1,
+   "explain": "\"Greater than 4\" excludes 4, so only 5 and 6. {4, 5, 6} is \"at least 4\".",
+   "ref": {
+    "deck": "u1",
+    "page": 2
+   }
+  },
+  {
+   "kind": "mcq",
+   "q": "P(A) = 0.35. What is P(A')?",
+   "options": [
+    "0.35",
+    "1.35",
+    "0.30",
+    "0.65"
+   ],
+   "answer": 3,
+   "explain": "Complement rule: 1 - 0.35 = 0.65.",
+   "ref": {
+    "deck": "u1",
+    "page": 4
+   }
+  },
+  {
+   "kind": "mcq",
+   "q": "P(A) = 0.4, P(B) = 0.5, P(A ∩ B) = 0.1. What is P(A ∪ B)?",
+   "options": [
+    "0.8",
+    "0.9",
+    "1.0",
+    "0.2"
+   ],
+   "answer": 0,
+   "explain": "0.4 + 0.5 - 0.1 = 0.8. Forgetting to subtract the overlap gives 0.9.",
+   "ref": {
+    "deck": "u1",
+    "page": 4
+   }
+  },
+  {
+   "kind": "mcq",
+   "q": "How many equally likely ordered outcomes do two dice have?",
+   "options": [
+    "12",
+    "21",
+    "36",
+    "11"
+   ],
+   "answer": 2,
+   "explain": "6 x 6 = 36. 21 counts unordered pairs, which are not equally likely; 11 is the number of possible sums.",
+   "ref": {
+    "deck": "u1",
+    "page": 6
+   }
+  },
+  {
+   "kind": "mcq",
+   "q": "Which region of a Venn diagram is (A ∪ B)'?",
+   "options": [
+    "The overlap of the two circles",
+    "Inside A but outside B",
+    "Outside both circles",
+    "Inside either circle"
+   ],
+   "answer": 2,
+   "explain": "The complement of the union is everything that is in neither circle.",
+   "ref": {
+    "deck": "u1",
+    "page": 5
+   }
+  },
+  {
+   "kind": "tf",
+   "q": "If A and B are disjoint, then P(A ∪ B) = P(A) + P(B).",
+   "answer": true,
+   "explain": "That is Axiom 3: disjoint events have no overlap to subtract.",
+   "ref": {
+    "deck": "u1",
+    "page": 3
+   }
+  },
+  {
+   "kind": "tf",
+   "q": "A probability can be 1.2 if the event is very likely.",
+   "answer": false,
+   "explain": "Every probability lies between 0 and 1, which follows from the axioms.",
+   "ref": {
+    "deck": "u1",
+    "page": 3
+   }
+  },
+  {
+   "kind": "tf",
+   "q": "With two fair dice, a sum of 7 is more likely than a sum of 8.",
+   "answer": true,
+   "explain": "7 has 6 ways and 8 has 5 ways out of 36.",
+   "ref": {
+    "deck": "u1",
+    "page": 6
+   }
+  }
+ ],
+ "cards": [
+  {
+   "front": "Sample space",
+   "back": "The set S of all possible outcomes of an experiment.",
+   "ref": {
+    "deck": "u1",
+    "page": 2
+   }
+  },
+  {
+   "front": "Event",
+   "back": "Any subset of the sample space.",
+   "ref": {
+    "deck": "u1",
+    "page": 2
+   }
+  },
+  {
+   "front": "Disjoint events",
+   "back": "Events with an empty intersection: they cannot happen together.",
+   "ref": {
+    "deck": "u1",
+    "page": 2
+   }
+  },
+  {
+   "front": "The three axioms",
+   "back": "P(A) ≥ 0; P(S) = 1; for disjoint A, B: P(A ∪ B) = P(A) + P(B).",
+   "ref": {
+    "deck": "u1",
+    "page": 3
+   }
+  },
+  {
+   "front": "Complement rule",
+   "back": "P(A') = 1 - P(A)",
+   "ref": {
+    "deck": "u1",
+    "page": 4
+   }
+  },
+  {
+   "front": "Addition rule",
+   "back": "P(A ∪ B) = P(A) + P(B) - P(A ∩ B)",
+   "ref": {
+    "deck": "u1",
+    "page": 4
+   }
+  },
+  {
+   "front": "Equally likely outcomes",
+   "back": "P(A) = outcomes in A / outcomes in S",
+   "ref": {
+    "deck": "u1",
+    "page": 6
+   }
+  },
+  {
+   "front": "P(sum = 7) with two dice",
+   "back": "6/36 = 1/6, the most likely sum.",
+   "ref": {
+    "deck": "u1",
+    "page": 6
+   }
+  }
+ ]
+}

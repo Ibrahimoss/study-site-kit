@@ -1,0 +1,12 @@
+
+=== paper-a page 1 ===
+Practice paper 1
+Introduction to Probability    Total: 4 marks    Time: 15 minutes
+Question 1 (2 marks)
+A fair six-sided die is rolled once. Let A = "the roll is even" and
+B = "the roll is greater than 4". Find P(A ∪ B).
+
+=== paper-a page 2 ===
+Question 2 (2 marks)
+Events A and B are independent, with P(A) = 0.3 and P(B) = 0.5.
+Find P(A ∩ B) and P(A | B).

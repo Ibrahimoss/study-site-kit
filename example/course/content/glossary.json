@@ -1,0 +1,14 @@
+{
+ "S": [
+  "the sample space",
+  "Every outcome the experiment can give."
+ ],
+ "P": [
+  "a probability",
+  "Gives each event a number from 0 to 1."
+ ],
+ "P(A | B)": [
+  "probability of A given B",
+  "Divide P(A ∩ B) by P(B)."
+ ]
+}

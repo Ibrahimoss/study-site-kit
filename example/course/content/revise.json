@@ -1,0 +1,76 @@
+{
+ "title": "Final revision",
+ "intro": "Everything you need for the exam on one page.",
+ "blocks": [
+  {
+   "heading": "Unit 1: rules",
+   "jump": "Unit 1"
+  },
+  {
+   "table": {
+    "head": [
+     "Rule",
+     "Formula",
+     "Use it for"
+    ],
+    "rows": [
+     [
+      "Complement",
+      "P(A') = 1 - P(A)",
+      "\"at least one\", \"neither\""
+     ],
+     [
+      "Addition",
+      "P(A ∪ B) = P(A) + P(B) - P(A ∩ B)",
+      "\"A or B\""
+     ],
+     [
+      "Counting",
+      "P(A) = outcomes in A / outcomes in S",
+      "dice, coins, cards"
+     ]
+    ]
+   }
+  },
+  {
+   "heading": "Unit 2: given and independent",
+   "jump": "Unit 2"
+  },
+  {
+   "table": {
+    "head": [
+     "Rule",
+     "Formula"
+    ],
+    "rows": [
+     [
+      "Conditional",
+      "P(A | B) = P(A ∩ B) / P(B)"
+     ],
+     [
+      "Multiplication",
+      "P(A ∩ B) = P(B) x P(A | B)"
+     ],
+     [
+      "Independence",
+      "P(A ∩ B) = P(A) x P(B)"
+     ],
+     [
+      "Bayes",
+      "P(B | A) = P(A | B) x P(B) / P(A)"
+     ]
+    ]
+   }
+  },
+  {
+   "figure": {
+    "deck": "u2",
+    "page": 5,
+    "caption": "Multiply along a path, add the paths."
+   }
+  },
+  {
+   "tip": "Disjoint and independent are not the same. Disjoint events with positive probability are always dependent."
+  }
+ ]
+}
