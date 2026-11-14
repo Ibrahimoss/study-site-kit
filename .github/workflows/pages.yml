@@ -14,6 +14,8 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
+    # runs only in a course copy (the kit itself has no course.json)
+    if: hashFiles('course.json') != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
