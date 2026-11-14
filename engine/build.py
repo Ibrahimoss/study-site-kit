@@ -6,9 +6,9 @@ python -I engine/build.py [--root <repo>] [--target artifact|github-pages|file] 
   --target  overrides course.json hosting.target (default artifact)
   --stub    build units whose content file is missing with an empty placeholder instead of failing
 
-Steps: slide thumbnails (not for the artifact target), small shorts posters (only when there are shorts), the data
-blob, site/index.html (standalone, data inlined), the coverage report (build/coverage.md), every check, and for the
-artifact target site/publish_plan.json. Prints "refs OK" and "no problems", or the problems, and exits 1 on problems.
+Steps: slide thumbnails (not for the artifact target), slide packs (only for the artifact target: site/slides/<deck>.N.js),
+small shorts posters (only when there are shorts), the data blob, site/index.html (standalone, data inlined), the
+coverage report (build/coverage.md), every check, and for the artifact target site/publish_plan.json. Prints "refs OK" and "no problems", or the problems, and exits 1 on problems.
 """
 import argparse
 import hashlib
@@ -29,6 +29,7 @@ from make_standalone import standalone  # noqa: E402
 
 TARGETS = ("artifact", "github-pages", "file")
 MB = 1024 * 1024
+PACK_BYTES = 8 * MB      # a slide pack file stays under this (base64 text), so a big deck splits into several
 LIMITS = {"filesPerPublish": 255, "bytesPerPublish": 64 * MB, "filesPerVersion": 511, "bytesPerVersion": 256 * MB, "bytesPerFile": 16 * MB}
 
 # Code highlighting per language; only the languages a course uses go into the page.
@@ -407,6 +408,7 @@ class Build:
 
         # 3. data
         decks, text = self.read_decks(c)
+        packs = self.slide_packs(decks)
         langs = set()
         units = self.read_units(c, decks, langs)
         um = {u["id"]: u for u in units}
@@ -450,6 +452,8 @@ class Build:
         data = {"course": meta, "units": units, "decks": decks, "text": text, "exam": exam, "shorts": shorts, "audio": audio,
                 "brief": pages["brief"], "revise": pages["revise"], "glossary": gloss or {},
                 "hl": {k: LANGS[k] for k in sorted(used) if k in LANGS}, "thumbs": self.target != "artifact"}
+        if packs is not None:
+            data["packs"] = {did: [[x["n"], x["from"], x["to"], x["v"]] for x in ps] for did, ps in packs.items()}
 
         tpl = open(os.path.join(HERE, "template.html"), encoding="utf-8").read()
         assert "/*DATA*/null" in tpl
@@ -465,7 +469,7 @@ class Build:
 
         # 4. hosting
         if self.target == "artifact":
-            dropped = self.publish_plan(decks, audio, shorts, size)
+            dropped = self.publish_plan(packs, audio, shorts, size)
             if dropped:
                 if "shorts" in dropped:
                     data["shorts"], feat["shorts"] = [], False
@@ -490,17 +494,71 @@ class Build:
         print(coverage.report(units, sc, exam, os.path.join(self.root, "build"), shorts_on=bool(feat["shorts"])) + " (build/coverage.md)")
         return self.finish(c)
 
+    # ---------- artifact slide packs ----------
+    def slide_packs(self, decks):
+        """Artifact target: each published deck's page images go into one or more script files, site/slides/<deck>.N.js,
+        each under PACK_BYTES, so a course needs a few files per deck instead of one per page (a version holds at most 511).
+        A pack sets window.__SLIDES__[deck][page] to a data URI; the page loads a pack when a view first shows one of its pages.
+        Other targets: no packs (stale ones are removed); the page loads site/slides/<deck>/pNNN.webp directly.
+        Returns {deck: [{"n", "from", "to", "v", "file", "bytes"}]} or None."""
+        import base64
+        sroot = os.path.join(self.site, "slides")
+        stale = {f for f in (os.listdir(sroot) if os.path.isdir(sroot) else []) if re.match(r"^.+\.\d+\.js$", f)}
+        if self.target != "artifact":
+            for f in stale:
+                os.remove(os.path.join(sroot, f))
+            return None
+        packs, n_pages = {}, 0
+        for did, d in decks.items():
+            if d.get("hidden"):
+                continue
+            out, cur, cur_b = [], [], 0
+
+            def flush():
+                body = "".join(f"d[{pg}]={json.dumps(uri)};\n" for pg, uri in cur)
+                js = (f"/* slide pack: deck {did}, pages {cur[0][0]}-{cur[-1][0]} (made by engine/build.py) */\n"
+                      f"(function(s){{var d=s[{json.dumps(did)}]=s[{json.dumps(did)}]||{{}};\n{body}}})"
+                      f"(window.__SLIDES__=window.__SLIDES__||{{}});\n")
+                raw = js.encode("utf-8")
+                n = len(out) + 1
+                rel = f"slides/{did}.{n}.js"
+                open(os.path.join(sroot, f"{did}.{n}.js"), "wb").write(raw)
+                stale.discard(f"{did}.{n}.js")
+                out.append({"n": n, "from": cur[0][0], "to": cur[-1][0], "v": hashlib.sha1(raw).hexdigest()[:10], "file": rel, "bytes": len(raw)})
+
+            for pg in range(d.get("first", 1), d["pages"] + 1):
+                path = os.path.join(sroot, did, f"p{pg:03d}.webp")
+                if not os.path.exists(path):
+                    continue
+                uri = "data:image/webp;base64," + base64.b64encode(open(path, "rb").read()).decode("ascii")
+                if len(uri) + 200 > PACK_BYTES:
+                    self.p(f"site/slides/{did}/p{pg:03d}.webp is too big for a slide pack ({len(uri) / MB:.1f} MB as text; at most 8 MB)")
+                    continue
+                if cur and cur_b + len(uri) + 200 > PACK_BYTES:
+                    flush()
+                    cur, cur_b = [], 0
+                cur.append((pg, uri))
+                cur_b += len(uri) + 20
+                n_pages += 1
+            if cur:
+                flush()
+            if out:
+                packs[did] = out
+        for f in stale:
+            os.remove(os.path.join(sroot, f))
+        allp = [x for ps in packs.values() for x in ps]
+        print(f"slide packs: {len(allp)} files for {n_pages} pages in {len(packs)} decks, {sum(x['bytes'] for x in allp) / MB:.1f} MB")
+        return packs
+
     # ---------- artifact publish plan ----------
-    def publish_plan(self, decks, audio, shorts, page_bytes):
+    def publish_plan(self, packs, audio, shorts, page_bytes):
         def entry(rel):
             path = os.path.join(self.site, rel.replace("/", os.sep))
             return (rel, os.path.getsize(path)) if os.path.exists(path) else None
         groups = {"slides": [], "audio": [], "shorts": []}
-        for did, d in decks.items():
-            if d.get("hidden"):
-                continue
-            for n in range(d.get("first", 1), d["pages"] + 1):
-                e = entry(f"slides/{did}/p{n:03d}.webp")
+        for ps in (packs or {}).values():      # slide packs, never the loose site/slides/<deck>/pNNN.webp files
+            for x in ps:
+                e = entry(x["file"])
                 if e:
                     groups["slides"].append(e)
         for a in audio:
@@ -539,7 +597,9 @@ class Build:
             "howto": ("First publish: batch 1, with file_path site/index.html, files mapping each other path in batch 1 to site/<path>, "
                       "icon set to one generic word (for example \"book\") and description set to one sentence about the site. The title "
                       "comes from the page's <title>. Every later publish (the other batches, and any rebuild) passes the url the first "
-                      "publish returned, with the same file_path and that batch's files, and no icon."),
+                      "publish returned, with the same file_path and that batch's files, and no icon. Slides ship as packs (slides/<deck>.N.js); "
+                      "if an earlier publish of this artifact sent loose slides/<deck>/pNNN.webp files, map each of those paths to null "
+                      "so they stop counting toward the version's file limit."),
             "batches": [{"n": i + 1, "count": len(x["files"]), "bytes": x["bytes"], "files": x["files"]} for i, x in enumerate(batches)],
         }
         json.dump(plan, open(os.path.join(self.site, "publish_plan.json"), "w", encoding="utf-8"), indent=1)

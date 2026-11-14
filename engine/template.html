@@ -780,9 +780,54 @@ function hl(src, lang){
 /* a block's own "lang" wins ("text": no colours); otherwise the course language */
 function codeBlock(src, lang){ return '<pre class="code"><code>' + hl(String(src).replace(/\t/g, "    ").replace(/\s+$/, ""), lang || LANG) + "</code></pre>"; }
 function pad3(n){ return String(n).padStart(3, "0"); }
-function slideSrc(deck, page){ return "slides/" + deck + "/p" + pad3(page) + ".webp"; }
-/* 200 px copies (tools/make_thumbs.py); the artifact target has none, so the strip scales the full images */
+/* Slide images. github-pages and file: one file per page, slides/<deck>/pNNN.webp, plus 200 px thumbnails (tools/make_thumbs.py).
+   artifact: no loose files; build.py packs each deck's pages into slides/<deck>.N.js, scripts that set
+   window.__SLIDES__[deck][page] to a data URI (S.packs: deck -> [[n, first page, last page, version], ...]). An image made with
+   slideImg() starts as a transparent placeholder carrying data-sd/data-sp; when it comes near the screen its pack is loaded
+   (one script tag per pack, cached) and the src is filled in. Nothing is loaded at start. */
+const PACKS = S.packs || null;
+const BLANK = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+const SLIDES = window.__SLIDES__ = window.__SLIDES__ || {};
+const packLoads = {};
+function packed(deck, page){ return (SLIDES[deck] || {})[page] || ""; }
+function loadPack(deck, page){
+  const x = ((PACKS && PACKS[deck]) || []).find(x => page >= x[1] && page <= x[2]);
+  if (!x || packed(deck, page)) return Promise.resolve();
+  const k = deck + "." + x[0];
+  return packLoads[k] || (packLoads[k] = new Promise((ok, no) => {
+    const s = document.createElement("script");
+    s.src = "slides/" + encodeURIComponent(deck) + "." + x[0] + ".js?v=" + x[3];
+    s.onload = () => {   // fill every waiting image of this deck at once, so nothing depends on the observer firing
+      document.querySelectorAll("img[data-sd]").forEach(img => {
+        if (img.dataset.sd === deck && img.getAttribute("src") === BLANK) { const u = packed(deck, +img.dataset.sp); if (u) img.src = u; }
+      });
+      ok();
+    };
+    s.onerror = () => { delete packLoads[k]; s.remove(); no(new Error("slide pack " + k + " did not load")); };
+    document.head.appendChild(s);
+  }));
+}
+function slideSrc(deck, page){ return PACKS ? packed(deck, page) || BLANK : "slides/" + deck + "/p" + pad3(page) + ".webp"; }
 function thumbSrc(deck, page){ return S.thumbs ? "slides/" + deck + "/t/p" + pad3(page) + ".webp" : slideSrc(deck, page); }
+/* the src attribute of a slide <img>, plus on the artifact target the deck and page the filler needs */
+function slideImg(deck, page, thumb){
+  return 'src="' + (thumb ? thumbSrc(deck, page) : slideSrc(deck, page)) + '"' + (PACKS ? ' data-sd="' + esc(deck) + '" data-sp="' + page + '"' : "");
+}
+function fillSlide(img){
+  const deck = img.dataset.sd, page = +img.dataset.sp;
+  loadPack(deck, page).then(() => { const u = packed(deck, page); if (u && img.dataset.sd === deck && +img.dataset.sp === page) img.src = u; })
+    .catch(e => console.warn(e.message));
+}
+const slideIO = PACKS && "IntersectionObserver" in window ? new IntersectionObserver(ents => ents.forEach(e => {
+  if (e.isIntersecting) { slideIO.unobserve(e.target); fillSlide(e.target); }
+}), { rootMargin: "400px" }) : null;
+function watchSlides(root){
+  [].concat(root.matches("img[data-sd]") ? [root] : [], [...root.querySelectorAll("img[data-sd]")]).forEach(img => {
+    if (img.getAttribute("src") === BLANK) { if (slideIO) slideIO.observe(img); else fillSlide(img); }
+  });
+}
+if (PACKS) new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => { if (n.nodeType === 1) watchSlides(n); })))
+  .observe(document.body, { childList: true, subtree: true });
 /* a deck can start after page 1 (a removed title slide); pages keep their printed numbers */
 function first(d){ return d.first || 1; }
 function nPages(d){ return d.pages - first(d) + 1; }
@@ -831,7 +876,7 @@ function blocks(bs, inCard){
     if (b.figure && D[b.figure.deck] && !D[b.figure.deck].hidden) {
       const f = b.figure;
       return '<figure class="fig"><button data-act="zoom" data-deck="' + esc(f.deck) + '" data-page="' + f.page + '" aria-label="Open slide ' + f.page + ' full size">' +
-        '<img loading="lazy" src="' + slideSrc(f.deck, f.page) + '" alt="' + esc(f.caption || ("Slide " + f.page)) + '" width="' + D[f.deck].w + '" height="' + D[f.deck].h + '"></button>' +
+        '<img loading="lazy" ' + slideImg(f.deck, f.page) + ' alt="' + esc(f.caption || ("Slide " + f.page)) + '" width="' + D[f.deck].w + '" height="' + D[f.deck].h + '"></button>' +
         "<figcaption>" + inl(f.caption || "") + " " + refChip(f, deckName(f.deck) + " · p." + f.page) + "</figcaption></figure>";
     }
     return "";
@@ -1594,7 +1639,7 @@ function viewSlides(u){
   st.page = p;
   const sec = st.deck === u.deck ? u.sections.map((s, i) => [s, i]).filter(x => (x[0].slides || []).includes(p)) : [];
   let thumbs = "";
-  for (let i = first(d); i <= d.pages; i++) thumbs += '<button class="' + (i === p ? "cur" : "") + '" data-act="page" data-page="' + i + '" aria-label="Page ' + i + '"><img loading="lazy" src="' + thumbSrc(st.deck, i) + '" alt="" width="200" height="' + Math.round(200 * d.h / d.w) + '"><span>' + i + "</span></button>";
+  for (let i = first(d); i <= d.pages; i++) thumbs += '<button class="' + (i === p ? "cur" : "") + '" data-act="page" data-page="' + i + '" aria-label="Page ' + i + '"><img loading="lazy" ' + slideImg(st.deck, i, true) + ' alt="" width="200" height="' + Math.round(200 * d.h / d.w) + '"><span>' + i + "</span></button>";
   return '<div class="viewer">' +
     '<div class="vbar">' + decks.map(id => '<button class="btn sm' + (id === st.deck ? " on" : "") + '" data-act="deck" data-deck="' + id + '">' + esc(D[id].short) + "</button>").join("") + "</div>" +
     '<div class="vbar"><span class="pager"><button class="btn sm" data-act="prev" ' + (p <= first(d) ? "disabled" : "") + ' aria-label="Previous page">&larr;</button>' +
@@ -1606,7 +1651,7 @@ function viewSlides(u){
       if (si < 0) return '<span class="kbd dim">No section covers this page</span>';
       return '<button class="btn sm backsec" data-act="sec" data-unit="' + u.id + '" data-sec="' + (si + 1) + '">← Back to §' + SEC(u, si).num + " " + inl(u.sections[si].title) + "</button>";
     })() + "</div>" +
-    '<div class="stage"><img id="slideimg" src="' + slideSrc(st.deck, p) + '" alt="' + esc(d.title) + " page " + p + '" width="' + d.w + '" height="' + d.h + '" data-act="zoom" data-deck="' + st.deck + '" data-page="' + p + '">' +
+    '<div class="stage"><img id="slideimg" ' + slideImg(st.deck, p) + ' alt="' + esc(d.title) + " page " + p + '" width="' + d.w + '" height="' + d.h + '" data-act="zoom" data-deck="' + st.deck + '" data-page="' + p + '">' +
     (p > first(d) ? '<button class="nav l" data-act="prev" aria-label="Previous page"><span>&lsaquo;</span></button>' : "") +
     (p < d.pages ? '<button class="nav r" data-act="next" aria-label="Next page"><span>&rsaquo;</span></button>' : "") + "</div>" +
     (sec.length ? '<div class="inlesson">In the lesson: ' + sec.map(x => '<button class="chip" data-act="tosec" data-i="' + x[1] + '">' + inl(x[0].title) + "</button>").join("") + "</div>" : "") +
@@ -2326,7 +2371,8 @@ function render(keepScroll){
   if (st.view === "shorts") { const sid = st.shortStart; st.shortStart = null; Shorts.mount(sid); }
   if (st.view === "unit" && st.tab === "slides") {
     const t = $("#thumbs .cur"); if (t) t.scrollIntoView({ block: "nearest", inline: "center" });
-    const d = D[st.deck]; if (d && st.page < d.pages) { const im = new Image(); im.src = slideSrc(st.deck, st.page + 1); }
+    const d = D[st.deck];
+    if (d && st.page < d.pages) { if (PACKS) loadPack(st.deck, st.page + 1).catch(() => {}); else { const im = new Image(); im.src = slideSrc(st.deck, st.page + 1); } }
   }
   paintCountdown();
   if (st.view === "unit" && st.tab === "learn") { try { linkSlides(main, UM[st.unit]); } catch(e) {} }
@@ -2366,7 +2412,7 @@ function lbDraw(){
   const deck = lb.dataset.deck, p = +lb.dataset.page, d = D[deck];
   const was = lb.contains(document.activeElement) ? document.activeElement.dataset.act : null;
   lb.innerHTML = '<div class="bar"><span>' + esc(d.short) + " · " + p + " / " + d.pages + '</span><span class="sp"></span><button data-act="lbprev" aria-label="Previous page" ' + (p <= first(d) ? "disabled" : "") + '>&larr;</button><button data-act="lbnext" aria-label="Next page" ' + (p >= d.pages ? "disabled" : "") + '>&rarr;</button><button data-act="lbclose">Close</button></div>' +
-    '<div class="img" data-act="lbclose"><img src="' + slideSrc(deck, p) + '" alt="' + esc(d.title) + " page " + p + '"></div>';
+    '<div class="img" data-act="lbclose"><img ' + slideImg(deck, p) + ' alt="' + esc(d.title) + " page " + p + '"></div>';
   if (was) { const b = lb.querySelector('button[data-act="' + was + '"]:not([disabled])') || lb.querySelector('[data-act="lbclose"]'); b.focus(); }
 }
 function lbClose(){

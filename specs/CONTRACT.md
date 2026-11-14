@@ -20,6 +20,7 @@ course/                          everything the AI writes for this course (commi
 site/                            build output, served as it is (git-ignored in the kit, committed or published by the person)
   index.html                     the whole app, data inlined
   slides/<deck>/pNNN.webp        slide images (and t/pNNN.webp thumbnails unless the target is "artifact"); none for a deck with "publish": false
+  slides/<deck>.N.js             artifact target only: slide packs, the deck's page images as data URIs, each file under 8 MB
   slides/_manifest.json          what extract.py read: pages, size, scanned, publish per deck
   audio/<id>-<hash>.mp3, audio/manifest.json
   shorts/<id>-<hash>.mp4 / .jpg, shorts/p/*.jpg, shorts/manifest.json
@@ -67,4 +68,4 @@ Paths are always relative to the repo root. Nothing outside the repo is read, ex
 2. Thumbnails, posters, the data blob, index.html, the coverage report (`build/`), and every check.
 3. Prints `refs OK` and `no problems`, or the list of problems, and exits non-zero on problems.
 
-Target `artifact`: no thumbnail folder (the page scales the full images), and a `site/publish_plan.json` grouping the files into publish batches within the Artifact limits (255 files and 64 MB per publish, 511 files and 256 MB per version, 16 MB per file). If the course does not fit, the plan says what to drop first (shorts, then audio) and the build prints it. Its `howto`: the first publish passes `file_path` site/index.html, batch 1 in `files`, an `icon` (one generic word, such as `book`) and a one-sentence `description`; the title comes from the page `<title>`; every later publish passes the `url` the first one returned.
+Target `artifact`: no thumbnail folder (the page scales the full images), slide packs instead of one file per page (each published deck's pages go into `site/slides/<deck>.N.js`, scripts that set `window.__SLIDES__[deck][page]` to a `data:image/webp` URI, each under 8 MB, so a big deck splits; the page loads a pack only when a view shows one of its pages; the loose `pNNN.webp` files stay on disk but are not in the plan), and a `site/publish_plan.json` grouping the files into publish batches within the Artifact limits (255 files and 64 MB per publish, 511 files and 256 MB per version, 16 MB per file). If the course does not fit, the plan says what to drop first (shorts, then audio) and the build prints it. Its `howto`: the first publish passes `file_path` site/index.html, batch 1 in `files`, an `icon` (one generic word, such as `book`) and a one-sentence `description`; the title comes from the page `<title>`; every later publish passes the `url` the first one returned.
