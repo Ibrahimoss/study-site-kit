@@ -11,7 +11,7 @@ Paths are relative to the course folder (the repository root, or the folder give
 - Source of truth: the unit's lesson (`course/content/<unit>.json`: sections, practice with model answers, quiz,
   cards) and its slides (`course/text/<deck>.txt`, images in `site/slides/<deck>/pNNN.webp`). Write shorts after
   the lessons are written and verified.
-- Rendered files: `site/shorts/<id>-<hash>.mp4`, `.jpg` (poster), `.music.m4a` and `site/shorts/manifest.json`.
+- Rendered files: `site/shorts/<id>-<hash>.mp4`, `.jpg` (poster), `.music.mp3` and `site/shorts/manifest.json`.
 
 **Never say where a question comes from** (no "this was asked", no years, no papers); just teach it.
 

@@ -677,7 +677,7 @@ html,button,a,input,textarea,summary,[data-act]{-webkit-tap-highlight-color:tran
       <button class="btn primary" data-act="revise" data-need="revise" title="The whole exam on one page">Final revision</button>
       <button class="btn primary" data-act="shorts" data-need="shorts">Shorts</button>
       <button class="btn" data-act="brief" data-need="brief" title="What the exam usually looks like">Exam brief</button>
-      <button class="btn" data-act="listen" data-need="audio" title="Audio lessons you can play or download">Listen</button>
+      <button class="btn" data-act="listen" data-need="audio" title="Audio lessons">Listen</button>
       <button class="btn cdbtn" data-act="plan" data-need="studyPlan" id="cdbtn" title="Your study plan: what to cover before the exam">Study plan</button>
       <button class="btn" data-act="exam" data-need="mockExam">Mock exam</button>
       <button class="btn" data-act="quick">Quick quiz</button>
@@ -1423,7 +1423,7 @@ const Listen = {
     box.innerHTML = '<div class="lrow"><span class="ltitle"></span>' +
       '<select class="lsecsel" aria-label="Jump to a section"></select>' +
       '<select class="lspeed" aria-label="Playback speed">' + RATES.map(r => '<option value="' + r + '"' + (r === this.rate() ? " selected" : "") + ">" + r + "×</option>").join("") + "</select>" +
-      '<a class="btn sm ldl" download>Download</a>' +
+      (PACKS ? "" : '<a class="btn sm ldl" download>Download</a>') +   // an Artifact page cannot hand out files
       '<button class="btn sm" data-act="lclose" aria-label="Close the player">&times;</button></div>' +
       '<audio controls preload="metadata"></audio><div class="lsec" aria-live="polite"></div>';
     const au = this.au = box.querySelector("audio"), sel = box.querySelector(".lsecsel"), spd = box.querySelector(".lspeed"), lab = box.querySelector(".lsec");
@@ -1460,7 +1460,7 @@ const Listen = {
     this.cur = a.id;
     box.querySelector(".ltitle").textContent = a.title;
     box.querySelector(".lsecsel").innerHTML = a.chapters.map(c => '<option value="' + c.start + '">' + esc(c.title) + "</option>").join("");
-    const dl = box.querySelector(".ldl"); dl.href = "audio/" + a.file; dl.setAttribute("download", lfile(a));
+    const dl = box.querySelector(".ldl"); if (dl) { dl.href = "audio/" + a.file; dl.setAttribute("download", lfile(a)); }
     this.au.src = "audio/" + a.file;
     if ("mediaSession" in navigator && window.MediaMetadata) {
       try { navigator.mediaSession.metadata = new MediaMetadata({ title: a.title, artist: TITLE, album: "Audio lessons" }); } catch(e) {}
@@ -1487,14 +1487,14 @@ function viewListen(){
       '<div class="lmeta">' + Math.round(a.duration / 60) + " min · " + a.chapters.length + " sections · " + (a.bytes / 1048576).toFixed(1) + " MB</div>" +
       '<div class="actions"><button class="btn primary" data-act="lplay" data-id="' + esc(a.id) + '">' + LPLAY + (p > 5 ? "Resume at " + mmss(p) : "Play") + "</button>" +
       (p > 5 ? '<button class="btn" data-act="lseek" data-id="' + esc(a.id) + '" data-t="0">From the start</button>' : "") +
-      '<a class="btn" href="audio/' + esc(a.file) + '" download="' + esc(lfile(a)) + '">Download MP3</a></div>' +
+      (PACKS ? "" : '<a class="btn" href="audio/' + esc(a.file) + '" download="' + esc(lfile(a)) + '">Download MP3</a>') + "</div>" +
       '<details><summary>Sections</summary><ol class="lsecs">' + a.chapters.map(c =>
         '<li><button data-act="lseek" data-id="' + esc(a.id) + '" data-t="' + c.start + '"><span class="t">' + mmss(c.start) + "</span>" + esc(c.title) + "</button></li>").join("") + "</ol></details></article>";
   }).join("") : '<p class="empty">No audio lessons yet.</p>';
   return '<section class="uhead"><div class="row"><span class="code">Audio</span><h2>Listen</h2></div>' +
     "<p>Audio lessons for the theory parts of the course. They explain everything in words, so you can listen without looking at a screen, " +
-    "and each section ends with what you need to know. Play them here (the player keeps going while you browse, and when a lesson ends the next one starts) " +
-    "or download them for later.</p>" + (function(){
+    "and each section ends with what you need to know. Play them here (the player keeps going while you browse, and when a lesson ends the next one starts)" +
+    (PACKS ? "" : " or download them for later") + ".</p>" + (function(){
       const id = Listen.last(), a = id && AUM[id], p = id ? Listen.pos(id) : 0;
       const resume = a ? '<button class="btn primary" data-act="lplay" data-id="' + esc(a.id) + '">' + LPLAY + "Continue: " + esc(a.title) + (p > 5 ? " at " + mmss(p) : "") + "</button>" : "";
       return AU.length ? '<div class="actions">' + resume + '<button class="btn' + (a ? "" : " primary") + '" data-act="lseek" data-id="' + esc(AU[0].id) + '" data-t="0">' + LPLAY + "Play all from the start</button></div>" : "";
@@ -2281,7 +2281,7 @@ const Music = {
   },
   load(id){
     if (!this.bufs.has(id)) {
-      const p = fetch("shorts/" + encodeURIComponent(typeof SHM[id].music === "string" ? SHM[id].music : id + ".music.m4a")).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
+      const p = fetch("shorts/" + encodeURIComponent(typeof SHM[id].music === "string" ? SHM[id].music : id + ".music.mp3")).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); })
         .then(b => new Promise((res, rej) => this.ctx.decodeAudioData(b, res, rej)));
       p.catch(() => this.bufs.delete(id));
       this.bufs.set(id, p);

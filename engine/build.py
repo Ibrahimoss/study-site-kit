@@ -333,7 +333,7 @@ class Build:
         shorts, used = [], {"manifest.json"}
         for m in sorted(man, key=lambda m: (order.get(m.get("unit"), 99), m.get("id", ""))):
             video, poster = m.get("video") or m["id"] + ".mp4", m.get("poster") or m["id"] + ".jpg"
-            music = m["music"] if isinstance(m.get("music"), str) else (m["id"] + ".music.m4a" if m.get("music") else None)
+            music = m["music"] if isinstance(m.get("music"), str) else (m["id"] + ".music.mp3" if m.get("music") else None)
             if not os.path.exists(os.path.join(sdir, video)):
                 self.p("short missing video: " + m["id"])
                 continue

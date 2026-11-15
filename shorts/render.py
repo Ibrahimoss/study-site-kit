@@ -16,7 +16,7 @@ Settings come from course.json:
 course/shorts/scripts/<id>.json   one short per file (specs/SHORTS_SPEC.md); "bg": "gameplay" or "drawn" overrides
                                   the course's background for one short
 .cache/tts/<key>.wav              narration clips; .cache/shorts/ holds frames, sheets and work files
-site/shorts/<id>-<hash>.mp4 (narration + effects), <id>-<hash>.music.m4a (music bed, played in sync by the page),
+site/shorts/<id>-<hash>.mp4 (narration + effects), <id>-<hash>.music.mp3 (music bed, played in sync by the page),
 <id>-<hash>.jpg, manifest.json. File names change with their content (see publish()), so the site can cache them.
 
 Background: gameplay footage from backgroundFile (a video, or a folder of videos), dimmed under the text. Without
@@ -425,9 +425,10 @@ AUDIO_ARGS = ["-af", "alimiter=limit=0.7:level=false", "-c:a", "aac", "-b:a", "6
 
 
 def encode_music(wav, dst):
-    """The music bed as a small AAC file the page plays in sync with the video (so it can be muted on its own)."""
+    """The music bed as a small MP3 the page plays in sync with the video (so it can be muted on its own).
+    MP3, not AAC/.m4a: every host serves it, Claude Artifacts included."""
     r = subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", wav, "-af", "alimiter=limit=0.89:level=false",
-                        "-c:a", "aac", "-b:a", "48k", "-ar", "44100", "-ac", "1", "-movflags", "+faststart", dst])
+                        "-c:a", "libmp3lame", "-b:a", "64k", "-ar", "44100", "-ac", "1", dst])
     if r.returncode != 0: raise RuntimeError("ffmpeg failed for " + dst)
 
 # ---------- rich text ----------
@@ -1087,7 +1088,7 @@ def render_one(args):
     wav = os.path.join(work_dir(), short["id"] + ".wav"); mwav = os.path.join(work_dir(), short["id"] + ".music.wav")
     cue = cues(tl)
     build_audio(tl, total, wav, mwav, cue[0], music_seed(short))
-    encode_music(mwav, os.path.join(out, short["id"] + ".music.m4a")); os.remove(mwav)
+    encode_music(mwav, os.path.join(out, short["id"] + ".music.mp3")); os.remove(mwav)
     mp4 = os.path.join(out, short["id"] + ".mp4")
     code = unit_code(short)
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",
@@ -1111,7 +1112,7 @@ def render_one(args):
 
 # The site caches these files, so a changed file must get a new name: <id>-<first 10 hex of its sha256>.
 # Unchanged files keep their name.
-KINDS = (("video", ".mp4"), ("poster", ".jpg"), ("music", ".music.m4a"))
+KINDS = (("video", ".mp4"), ("poster", ".jpg"), ("music", ".music.mp3"))
 
 def published(out, sid, ext):
     """The current file of one kind for a short: its content-named copy, else the plain <id><ext>."""
@@ -1153,7 +1154,7 @@ def remux_one(args):
     mp4 = os.path.join(out, sid + ".mp4"); tmp = os.path.join(work_dir(), sid + ".remux.mp4")
     wav = os.path.join(work_dir(), sid + ".wav"); mwav = os.path.join(work_dir(), sid + ".music.wav")
     build_audio(tl, total, wav, mwav, cues(tl)[0], music_seed(short))
-    encode_music(mwav, os.path.join(out, sid + ".music.m4a"))
+    encode_music(mwav, os.path.join(out, sid + ".music.mp3"))
     r = subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", os.path.join(out, cur["video"]), "-i", wav, "-map", "0:v",
                         "-map", "1:a", "-c:v", "copy", *AUDIO_ARGS, "-movflags", "+faststart", tmp])
     os.remove(wav); os.remove(mwav)
