@@ -32,6 +32,8 @@ Add each part to the `practice` array of the unit it belongs to, with these extr
 
 `q` is the question text, faithfully transcribed (markdown allowed); `qcode` holds code given in the question; `qblocks` holds tables and figures (use `cells` grids for numbered-cell figures). Leave out the cover sheet, the student's details, and anything that identifies the school or teacher unless the person wants it.
 
+Multiple-choice questions become clickable on the site: put the options in `qblocks` as one list, each item starting with its letter (`"A. ..."`, `"b) ..."`), and start the model answer's key line with `Answer: C` (or `**C. ...**`). The build turns these into `choices` and `choice` (0-based index of the right option); you can also set those two fields yourself.
+
 The model answer `a` starts with a `**Full marks needs:**` paragraph and a list of the points that earn the marks, then the full answer. Give marks per point only when the paper or the teacher shows them (the grader's numbers beside each point, a marking scheme); otherwise list the points without marks.
 
 `ref` is optional: point it at the slide that teaches the answer. A ref to the paper's own page is allowed, but the page shows no link to a deck with `"publish": false`.

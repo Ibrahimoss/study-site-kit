@@ -36,14 +36,14 @@ Paths are always relative to the repo root. Nothing outside the repo is read, ex
 
 ```json
 {
-  "site":   { "title": "Biology Midterm Lab", "subtitle": "BIO 101", "url": "" },
+  "site":   { "title": "Biology Midterm Lab", "subtitle": "BIO 101", "url": "", "api": "/api/", "shareBase": "/s/" },
   "exam":   { "name": "Midterm", "at": "2027-03-14T10:00:00+03:00", "covers": "Units 1 to 4" },
   "code":   { "language": "none" },
   "decks":  [ { "id": "u1", "file": "materials/Unit 1 - Cells.pdf", "short": "Unit 1 slides", "title": "Unit 1 - Cells", "first": 2 },
               { "id": "paper-a", "file": "materials/Spring 2026 midterm", "short": "Spring 2026 paper", "title": "Spring 2026 midterm (graded)", "publish": false } ],
   "units":  [ { "id": "u1", "code": "U1", "title": "Cells", "deck": "u1", "tutorials": [] } ],
   "papers": [ { "id": "A", "name": "Spring 2026" } ],
-  "features": { "audio": false, "shorts": false, "mockExam": true, "studyPlan": true },
+  "features": { "audio": false, "shorts": false, "mockExam": true, "studyPlan": true, "social": false },
   "audio":  { "engine": "kokoro-local", "voice": "af_heart", "speed": 0.96, "units": { "u1": "u1" } },
   "shorts": { "engine": "kokoro-local", "background": "gameplay", "backgroundFile": "shorts/backgrounds/minecraft-parkour.mp4" },
   "voicePC": { "host": "", "key": "" },
@@ -60,6 +60,10 @@ Paths are always relative to the repo root. Nothing outside the repo is read, ex
 - `audio.units`: unit id -> audio lesson id, so a unit page shows its Listen button.
 - `audio.engine` / `shorts.engine`: `kokoro-local` (this computer, GPU if present, else CPU) or `kokoro-ssh` (the `voicePC`, set up with shorts/homepc/setup.ps1).
 - `hosting.target`: `artifact` (default: a Claude Artifact page), `github-pages`, or `file`.
+- `site.url`: the public address of the built site. With social off, a short's Share button copies a link to it (`<url>#short.<id>`); without it there is no Share button.
+- `features.social` (default `false`, needs `features.shorts`): likes and a Liked view, anonymous comments with the commenter's handle, share counts with a share link that opens a preview page, and anonymous watch stats on the shorts feed. They are kept by an API on the same host as the site, which the kit does not ship: its contract is `specs/SOCIAL_API.md`. With social off the page sends no request to any API. With social on and the API not answering (or the page opened somewhere else), likes and comments are kept on this device only and nothing is sent.
+- `site.api` (default `"/api/"`, used only with social on): the API's base path, taken from the site's origin, so it starts with `/`. Requests go to `<api>health`, `<api>social` and so on.
+- `site.shareBase` (default `"/s/"`, used only with social on): the share-page path, also from the origin. While the API answers, Share gives `<origin><shareBase><id>`; otherwise it gives `<site.url>#short.<id>` (or this page's address).
 
 ## Build
 

@@ -364,6 +364,7 @@ figure.cells figcaption{font-size:13px;color:var(--ink-2)}
 @media (max-width:360px){.sw .swe{display:none}}
 
 .secnav{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:30px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.secnav.secdone{justify-content:flex-end;margin:18px 0 34px}
 .secnav > span{flex:1}
 .secnav .btn{white-space:normal;text-align:left}
 .secnav .btn.primary{margin-left:auto}
@@ -550,6 +551,11 @@ body.shorts-on{padding-block:0}
 .spaused{position:absolute;inset:0;display:none;place-items:center;pointer-events:none}
 .sframe.paused .spaused{display:grid}
 .spaused svg{width:76px;height:76px;fill:rgba(255,255,255,.88);filter:drop-shadow(0 2px 8px rgba(0,0,0,.6))}
+/* social (features.social): the double-tap heart, likes, comments */
+.sheart{position:absolute;left:50%;top:44%;width:120px;height:120px;margin:-60px 0 0 -60px;opacity:0;pointer-events:none}
+.sheart svg{width:100%;height:100%;fill:#ff4d6d;filter:drop-shadow(0 4px 14px rgba(0,0,0,.5))}
+.sheart.pop{animation:spop .75s ease-out}
+@keyframes spop{0%{opacity:0;transform:scale(.4)}25%{opacity:1;transform:scale(1.08)}100%{opacity:0;transform:scale(1.35)}}
 .ssoundhint{position:absolute;top:7.5%;right:10px;display:none;font:600 13px var(--f-body);color:#fff;background:rgba(0,0,0,.62);border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:6px 12px;pointer-events:none;white-space:nowrap}
 .sframe.muted .ssoundhint{display:block}
 .sprog{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.18)}
@@ -559,6 +565,7 @@ body.shorts-on{padding-block:0}
 .sact .sic{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow)}
 .sact .sic svg{width:26px;height:26px;fill:var(--ink)}
 .sact:hover .sic{border-color:var(--copper)}
+.sact.on .sic svg{fill:#ff4d6d}
 .sact .sn{font-variant-numeric:tabular-nums;color:var(--ink-2)}
 .sact.act .sic{border-color:var(--copper);background:var(--copper-soft)}.sact.act .sic svg{fill:var(--copper)}
 .scrambtn{margin-top:12px}.scrambtn svg{width:15px;height:15px;fill:currentColor}.scrambtn span{color:var(--ink-2);font-size:13px;margin-left:4px}
@@ -583,7 +590,29 @@ body.music-playing .smusbtn .sic svg{animation:mpulse 1.1s ease-in-out infinite}
 .sinfo{display:flex;align-items:center;gap:10px;min-width:0;max-width:640px;width:100%;margin:0 auto}
 .sinfo p{flex:1;min-width:0;font-size:14px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sbtns{display:flex;gap:8px;flex:0 0 auto}
 .schip{font:800 15px var(--f-display);color:var(--pcb);background:var(--surface-2);border-radius:6px;padding:3px 7px;flex:0 0 auto}
-.slesson svg{width:15px;height:15px;fill:currentColor}
+.slesson svg,.sliked svg{width:15px;height:15px;fill:currentColor}.sliked.on{border-color:var(--copper);color:var(--copper)}
+.sempty{height:100%;display:grid;place-content:center;justify-items:center;gap:14px;text-align:center;padding:24px;color:var(--ink-2)}.sempty p{max-width:30ch}.sempty-ic svg{width:44px;height:44px;fill:#ff4d6d}
+.csheet{position:fixed;z-index:45;right:max(16px,env(safe-area-inset-right,0px));top:calc(env(safe-area-inset-top,0px) + 80px);bottom:calc(env(safe-area-inset-bottom,0px) + 16px);width:min(400px,calc(100vw - 32px));
+  background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.25);display:flex;flex-direction:column;overflow:hidden}
+.chead{display:flex;align-items:center;gap:6px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.chead .sp{flex:1}
+.ccount{font:13px var(--f-mono);color:var(--ink-3)}
+.clist{flex:1;overflow-y:auto;padding:6px 14px;display:grid;gap:4px;align-content:start}
+.citem{padding:10px 0;border-bottom:1px solid var(--line)}
+.cmeta{display:flex;gap:8px;align-items:baseline;font-size:13px}
+.cmeta span{color:var(--ink-3);font:12px var(--f-mono)}
+.cname{font-weight:700}
+.ccfg{font:600 12px var(--f-mono);color:var(--pcb);background:none;padding:0;margin-left:2px;white-space:nowrap}
+.cyou{font:600 11px var(--f-body);font-style:normal;color:var(--copper);border:1px solid var(--copper);border-radius:999px;padding:0 6px;margin-left:4px}
+.cas{font-size:12px;color:var(--ink-3)}
+.cas .cname{color:var(--ink-2)}
+.citem p{margin-top:3px;font-size:15px;overflow-wrap:anywhere}
+.clink{margin-left:auto;background:none;border:0;color:var(--ink-3);font:12px var(--f-body);cursor:pointer;text-decoration:underline}
+.cnote{font-size:13px;color:var(--ink-2);background:var(--surface-2);border-radius:8px;padding:8px 10px;margin:6px 0}
+.cform{border-top:1px solid var(--line);padding:10px 14px;display:grid;gap:8px}
+.cform textarea{width:100%;resize:none;font:15px var(--f-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.crow2{display:flex;gap:8px;align-items:center}
+.cstatus{flex:1;font-size:13px;color:var(--ink-2)}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .toast{position:fixed;z-index:60;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 28px);background:var(--ink);color:var(--bg);font:600 14px var(--f-body);padding:10px 16px;border-radius:999px;box-shadow:var(--shadow)}
 .linkbox{flex:1;display:flex;align-items:center;justify-content:center;padding:20px}
@@ -595,14 +624,24 @@ html,button,a,input,textarea,summary,[data-act]{-webkit-tap-highlight-color:tran
 .btn:active{transform:scale(.96)}
 .sback{display:none;width:36px;height:36px;flex:0 0 auto;place-items:center;border-radius:50%;border:1px solid rgba(255,255,255,.22);background:rgba(20,20,20,.55);color:#fff;cursor:pointer;padding:0}
 .sback svg{width:20px;height:20px;fill:currentColor}
-/* motion: buttons press in and pop, toasts ease in */
+/* motion: buttons press in and pop, likes burst, the comment sheet slides, new comments and toasts ease in */
 .sact .sic{position:relative;transition:transform .14s ease,background-color .2s ease,border-color .2s ease}
 .sact:active .sic{transform:scale(.86)}
 .sact.pop .sic{animation:sactpop .45s cubic-bezier(.2,.9,.3,1.35)}
 @keyframes sactpop{0%{transform:scale(.8)}45%{transform:scale(1.24)}100%{transform:scale(1)}}
+.sact.burst .sic::after{content:"";position:absolute;inset:-3px;border-radius:50%;border:2px solid #ff4d6d;pointer-events:none;animation:sburst .55s ease-out forwards}
+@keyframes sburst{from{opacity:.95;transform:scale(.9)}to{opacity:0;transform:scale(1.75)}}
+.sact.on .sic svg{transition:fill .2s ease}
 .sact .sn{display:inline-block}
+.sact .sn.bump{animation:sbump .32s ease-out}
+@keyframes sbump{0%{transform:none}40%{transform:translateY(-5px)}100%{transform:none}}
 .sframe.paused .spaused{animation:sfade .2s ease-out}
 @keyframes sfade{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
+.csheet{transition:transform .32s cubic-bezier(.2,.8,.2,1),opacity .24s ease}
+.csheet:not(.open){opacity:0;transform:translateX(30px);pointer-events:none}
+.cback{display:none}
+.citem.new{animation:cin .38s cubic-bezier(.2,.8,.2,1)}
+@keyframes cin{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
 .toast:not([hidden]){animation:tin .26s cubic-bezier(.2,.8,.2,1)}
 @keyframes tin{from{opacity:0;transform:translate(-50%,12px)}to{opacity:1;transform:translate(-50%,0)}}
 .lb:not([hidden]) .linkbox{animation:sfade .22s ease-out}
@@ -628,19 +667,27 @@ html,button,a,input,textarea,summary,[data-act]{-webkit-tap-highlight-color:tran
   .sacts{position:absolute;z-index:3;right:6px;bottom:calc(env(safe-area-inset-bottom,0px) + 104px);gap:12px;padding:0}
   .sact .sic{width:46px;height:46px;background:rgba(0,0,0,.45);border-color:rgba(255,255,255,.25);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
   .sact .sic svg{fill:#fff;width:23px;height:23px}
+  .sact.on .sic svg{fill:#ff4d6d}
   .sact.act .sic{background:rgba(229,139,82,.4);border-color:#E58B52}.sact.act .sic svg{fill:#fff}
   .sact .sn{color:#fff;text-shadow:0 0 2px #000,0 0 4px rgba(0,0,0,.9),0 1px 3px rgba(0,0,0,.9)}
   .sinfo{position:absolute;z-index:3;left:0;right:0;bottom:0;max-width:none;margin:0;align-items:center;flex-wrap:nowrap;gap:6px;padding:32px 8px calc(env(safe-area-inset-bottom,0px) + 12px);background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.78) 42%)}
   .sinfo p{flex:1 1 0;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;color:rgba(255,255,255,.94);text-shadow:0 1px 2px rgba(0,0,0,.6)}
   .sbtns{flex:0 0 auto;gap:6px}.sbtns .btn{padding-inline:9px}
   .sspeed{padding:4px 10px;gap:6px}
-  .sinfo .slesson{background:rgba(20,20,20,.6);border-color:rgba(255,255,255,.25);color:#fff}
+  .sinfo .slesson,.sinfo .sliked{background:rgba(20,20,20,.6);border-color:rgba(255,255,255,.25);color:#fff}
+  .sinfo .sliked.on{border-color:var(--copper);color:var(--copper)}
+  .sempty{color:rgba(255,255,255,.85)}
+  .csheet{left:0;right:0;top:auto;bottom:0;width:auto;height:72dvh;border-radius:18px 18px 0 0;border-bottom:0;padding-bottom:env(safe-area-inset-bottom,0px)}
+  .csheet:not(.open){opacity:1;transform:translateY(100%)}
+  .cback{display:block;position:fixed;inset:0;z-index:44;background:rgba(0,0,0,.42);opacity:0;transition:opacity .28s ease}
+  .cback.open{opacity:1}
+  .cback[hidden]{display:none}
 }
 /* very narrow phones: the video already shows the chapter at the top, so the speed slider gets the chip's room */
 @media (max-width:359px){.sinfo .schip{display:none}}
 @media (prefers-reduced-motion: reduce){
-  body.music-playing .smusbtn .sic svg,.sact.pop .sic,.sframe.paused .spaused,.toast:not([hidden]),.lb:not([hidden]) .linkbox{animation:none}
-  .btn,.sact .sic{transition:none}
+  body.music-playing .smusbtn .sic svg,.sheart.pop,.sact.pop .sic,.sact.burst .sic::after,.sact .sn.bump,.sframe.paused .spaused,.citem.new,.toast:not([hidden]),.lb:not([hidden]) .linkbox{animation:none}
+  .csheet,.cback,.btn,.sact .sic{transition:none}
 }
 
 @media (max-width:900px){
@@ -682,6 +729,7 @@ html,button,a,input,textarea,summary,[data-act]{-webkit-tap-highlight-color:tran
       <button class="btn" data-act="exam" data-need="mockExam">Mock exam</button>
       <button class="btn" data-act="quick">Quick quiz</button>
       <button class="btn" data-act="allcards">Flashcards</button>
+      <button class="btn" data-act="layout" id="layoutbtn" title="Lessons: all of a unit's sections on one page, or one section at a time">Legacy layout</button>
     </div>
   </header>
   <div class="striprow" id="striprow">
@@ -706,8 +754,9 @@ const UM = Object.fromEntries(U.map(u => [u.id, u]));
 /* everything that names the subject comes from course.json through the data blob */
 const C = S.course || {};
 const TITLE = C.title || "Study Lab", EXAM = (C.exam && C.exam.name) || "Exam", EXAM_L = EXAM.toLowerCase();
-const FEAT = Object.assign({ audio: false, shorts: false, mockExam: true, studyPlan: true }, C.features || {});
+const FEAT = Object.assign({ audio: false, shorts: false, mockExam: true, studyPlan: true, social: false }, C.features || {});
 const HAS = { audio: !!FEAT.audio, shorts: !!FEAT.shorts, mockExam: !!FEAT.mockExam, studyPlan: !!FEAT.studyPlan, brief: !!S.brief, revise: !!S.revise };
+HAS.social = HAS.shorts && !!FEAT.social;            /* likes, comments, shares, watch stats: needs the API in specs/SOCIAL_API.md */
 const LANG = C.language || "none";
 const LS = (C.slug || "study-lab") + "-";           /* prefix of every localStorage key */
 const KEY = (C.slug || "study-lab") + ":v2";
@@ -715,10 +764,21 @@ document.title = TITLE;
 document.querySelectorAll("[data-need]").forEach(b => { if (!HAS[b.dataset.need]) b.remove(); });
 if (LANG === "none") document.body.classList.add("nocode");
 /* read: sections marked done ("unit:index"), sw: stopwatch ms per section ("sw:unit:index"), ans: written answers */
-let store = {quiz:{}, cards:{}, practice:{}, read:{}, sw:{}, ans:{}, last:null};
+let store = {quiz:{}, cards:{}, practice:{}, read:{}, sw:{}, ans:{}, pick:{}, last:null};
 try { const raw = localStorage.getItem(KEY); if (raw) store = Object.assign(store, JSON.parse(raw)); } catch(e) {}
-["read", "sw", "ans"].forEach(k => { if (!store[k] || typeof store[k] !== "object") store[k] = {}; });
+["read", "sw", "ans", "pick"].forEach(k => { if (!store[k] || typeof store[k] !== "object") store[k] = {}; });
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(store)); } catch(e) {} }
+/* Legacy layout: a unit's lesson shows all its sections one after the other instead of one section per page.
+   Everything else is the same. Section links (#unit.sN) scroll to that section. */
+let LEGACY = false;
+try { LEGACY = localStorage.getItem(LS + "layout") === "legacy"; } catch(e) {}
+function paintLayoutBtn(){ const b = document.getElementById("layoutbtn"); if (b) { b.textContent = LEGACY ? "New layout" : "Legacy layout"; b.setAttribute("aria-pressed", String(LEGACY)); } }
+paintLayoutBtn();
+function scrollToSec(){
+  if (!(LEGACY && st.view === "unit" && st.tab === "learn" && st.sec)) return;
+  const el = document.getElementById("s-" + st.unit + "-" + (st.sec - 1));
+  if (el) el.scrollIntoView({ block: "start" });
+}
 
 const $ = (s, el=document) => el.querySelector(s);
 const main = $("#main"), rail = $("#rail"), strip = $("#strip"), shell = $("#shell"), lb = $("#lb");
@@ -931,6 +991,7 @@ function go(view, opts){
   }
   render();
   if (!opts.keepScroll) window.scrollTo(0, 0);
+  scrollToSec();
 }
 
 /* ---------- views ---------- */
@@ -1244,16 +1305,18 @@ function secQuestionsHTML(u, i){
   }).join("");
   return h + "</div>";
 }
-function viewSection(u, i){
+function secBody(u, i){
   const s = u.sections[i], m = SEC(u, i);
-  const prev = i > 0 ? i - 1 : null, next = i + 1 < u.sections.length ? i + 1 : null;
-  const body =
-    '<section class="lsec" id="s-' + u.id + "-" + i + '">' +
+  return '<section class="lsec" id="s-' + u.id + "-" + i + '">' +
       "<h3 tabindex=\"-1\"><span class='num'>§" + m.num + "</span>" + inl(s.title) + freqBadge(u, i) +
       '<span class="secest" title="Estimated time for one careful pass, including its questions">' + m.min + " min</span></h3>" +
       (s.slides && s.slides.length ? '<div class="chips">' + refChip({ deck: u.deck, page: Math.min.apply(null, s.slides) }, rangeLabel(s.slides)) + "</div>" : "") +
       '<div class="blocks">' + blocks(s.blocks) + "</div>" + secQuestionsHTML(u, i) +
-    "</section>" +
+    "</section>";
+}
+function viewSection(u, i){
+  const prev = i > 0 ? i - 1 : null, next = i + 1 < u.sections.length ? i + 1 : null;
+  const body = secBody(u, i) +
     '<nav class="secnav" aria-label="Section navigation">' +
       (prev != null ? '<button class="btn" data-act="sec" data-unit="' + u.id + '" data-sec="' + (prev + 1) + '">← §' + SEC(u, prev).num + "</button>" : "<span></span>") +
       '<button class="btn' + (isRead(u, i) ? " done" : "") + '" data-act="secread" data-unit="' + u.id + '" data-sec="' + (i + 1) + '" aria-pressed="' + isRead(u, i) + '">' +
@@ -1264,7 +1327,16 @@ function viewSection(u, i){
     "</nav>";
   return '<div class="learn">' + tocHTML(u, i + 1) + '<div class="reading">' + body + "</div></div>";
 }
+function viewAllSections(u){
+  const obj = u.objectives && u.objectives.length ? '<div class="objectives"><h4>After this unit you can</h4><ul>' + u.objectives.map(o => "<li>" + inl(o) + "</li>").join("") + "</ul></div>" : "";
+  const body = obj + u.sections.map((s, i) => secBody(u, i) +
+    '<nav class="secnav secdone"><span></span><button class="btn' + (isRead(u, i) ? " done" : "") + '" data-act="secread" data-unit="' + u.id + '" data-sec="' + (i + 1) + '" aria-pressed="' + isRead(u, i) + '">' +
+      (isRead(u, i) ? "Done ✓" : "Mark as done") + "</button><span></span></nav>").join("") +
+    '<nav class="secnav"><span></span><button class="btn primary" data-act="tab" data-tab="quiz">Take the ' + esc(u.code) + " quiz →</button><span></span></nav>";
+  return '<div class="learn">' + tocHTML(u, st.sec || 0) + '<div class="reading">' + body + "</div></div>";
+}
 function viewLearn(u){
+  if (LEGACY && u.sections.length) return viewAllSections(u);
   if (st.sec == null || !u.sections.length) return '<div class="learn learn-ov">' + (u.sections.length ? tocHTML(u, 0) : "") + '<div class="reading">' + viewChapter(u) + "</div></div>";
   const i = Math.min(Math.max(0, st.sec - 1), u.sections.length - 1);
   st.sec = i + 1;
@@ -1666,7 +1738,23 @@ function gradeBar(id, graded, act){
     [[1, "Full marks", "g1"], [0.5, "Partly", "g05"], [0, "Missed it", "g0"]].map(g =>
       '<button class="btn sm ' + g[2] + (v === g[0] ? " on" : "") + '" data-act="' + act + '" data-id="' + esc(id) + '" data-v="' + g[0] + '">' + g[1] + "</button>").join("") + "</div>";
 }
+/* a multiple-choice exam question (choices + choice, see CONTENT_SPEC): click an option, it marks itself and
+   the model answer opens; "Try again" clears the pick. Options keep the paper's order and letters. */
+/* picks in a mock paper belong to that paper (a new paper starts blank); elsewhere they are saved */
+function pickStore(k){ return k.startsWith("x:") && st.paper ? (st.paper.picks = st.paper.picks || {}) : store.pick; }
+function choiceBody(p, k, graded, act){
+  const pick = pickStore(k)[k], done = pick != null, open = done || !!st.openSol[k];
+  return '<div class="q">' + inl(p.q) + "</div>" + (p.qcode ? codeBlock(p.qcode) : "") + (p.qblocks ? '<div class="blocks">' + blocks(p.qblocks) + "</div>" : "") +
+    '<div class="opts">' + p.choices.map((c, i) =>
+      '<button class="opt' + (done ? (i === p.choice ? " ok" : i === pick ? " no" : " dim") : "") + '" data-act="mcq" data-k="' + esc(k) + '" data-id="' + esc(p.id) +
+      '" data-g="' + act + '" data-i="' + i + '"' + (done ? " disabled" : "") + '><span class="k">' + String.fromCharCode(65 + i) + "</span><span>" + inl(c) + "</span></button>").join("") + "</div>" +
+    '<div class="actions">' + (done ? '<span class="cstat">' + (pick === p.choice ? "Correct" : "Not quite: the answer is " + String.fromCharCode(65 + p.choice)) + "</span>" +
+      '<button class="btn sm" data-act="mcqreset" data-k="' + esc(k) + '" data-id="' + esc(p.id) + '" data-g="' + act + '">Try again</button>'
+      : '<button class="btn sm' + (open ? " on" : "") + '" data-act="sol" data-k="' + esc(k) + '">' + (open ? "Hide model answer" : "Show model answer") + "</button>") + "</div>" +
+    (open ? '<div class="ans blocks">' + (srcBadge(p) ? "<div>" + srcBadge(p) + "</div>" : "") + blocks(p.a) + (p.ref ? "<div>" + refChip(p.ref) + "</div>" : "") + "</div>" : "");
+}
 function practiceBody(p, k, graded, act){
+  if (Array.isArray(p.choices) && p.choices.length) return choiceBody(p, k, graded, act);
   const open = !!st.openSol[k], txt = store.ans[k] || "", has = !!txt.trim();
   const boxOpen = st.ansOpen[k] != null ? st.ansOpen[k] : has, tid = "ans-" + k.replace(/[^\w-]/g, "_");
   return '<div class="q">' + inl(p.q) + "</div>" + (p.qcode ? codeBlock(p.qcode) : "") + (p.qblocks ? '<div class="blocks">' + blocks(p.qblocks) + "</div>" : "") +
@@ -1886,13 +1974,21 @@ function viewSearch(){
   return '<div class="sres"><div class="qmeta"><span>Results for “' + esc(st.query.trim()) + "”</span></div>" + (all || '<p class="empty">Nothing matches. Try a shorter word, such as a term from the slides.</p>') + "</div>";
 }
 
-/* ---------- shorts: the feed ---------- */
-/* A plain player: no server, no accounts. With site.url set in course.json, a short can be shared as a link to it. */
+/* ---------- shorts: the feed (and, with features.social, likes, comments and sharing) ---------- */
+/* Without features.social: a plain player, no server, no accounts, no requests; with site.url set in course.json, a
+   short can be shared as a link to it. With features.social: likes, a liked view, anonymous comments, share counts and
+   watch stats, kept by the site's own API at site.api (specs/SOCIAL_API.md). When the API does not answer, likes and
+   comments stay on this device and nothing else is sent. */
 const SITE_URL = C.url ? String(C.url).replace(/\/?$/, "/") : "";
+const SOCIAL = !!HAS.social;
+const API = SOCIAL ? String(C.api || "/api/").replace(/\/?$/, "/") : "";
+const SHARE_BASE = SOCIAL && C.shareBase ? String(C.shareBase).replace(/\/?$/, "/") : "";
 
 const SH = HAS.shorts ? (S.shorts || []).slice() : [];
 const SHM = Object.fromEntries(SH.map(s => [s.id, s]));
 const ICON = {
+  heart: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.6 2.9 4.5 6.8 4.5c2.2 0 3.6 1.2 4.4 2.6.8-1.4 2.2-2.6 4.4-2.6 3.9 0 5.9 4.1 4.4 7.3C19.5 16.4 12 21 12 21z"/></svg>',
+  comment: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H11l-4.5 4v-4h0A2.5 2.5 0 0 1 4 13.5z"/></svg>',
   share: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4l7 7-7 7v-4c-5 0-8.5 1.6-11 5 1-5 4-10 11-11z"/></svg>',
   soundOn: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
   soundOff: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
@@ -1902,20 +1998,62 @@ const ICON = {
   lesson: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C6.5 4 9.5 4 12 5.5v14C9.5 18 6.5 18 4 19.5zM20 5.5C17.5 4 14.5 4 12 5.5v14c2.5-1.5 5.5-1.5 8 0z"/></svg>',
   back: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.4 4.6a1.2 1.2 0 0 1 0 1.7L9.7 12l5.7 5.7a1.2 1.2 0 1 1-1.7 1.7l-6.5-6.5a1.2 1.2 0 0 1 0-1.7l6.5-6.5a1.2 1.2 0 0 1 1.7 0z"/></svg>'
 };
+function fmtCount(n){ return n >= 1000 ? (Math.round(n / 100) / 10) + "K" : String(n); }
+function ago(ms){ const s = Math.max(1, Math.round((Date.now() - ms) / 1000)); if (s < 60) return s + "s"; const m = Math.round(s / 60); if (m < 60) return m + "m"; const h = Math.round(m / 60); if (h < 48) return h + "h"; return Math.round(h / 24) + "d"; }
 
-/* --- what this device has watched, kept in local storage --- */
+/* --- what this device has watched (and, with social on, liked), kept in local storage --- */
 const Mine = {
   KEY: LS + "shorts", data: null,
   load(){
     if (this.data) return this.data;
     let d = null; try { d = JSON.parse(localStorage.getItem(this.KEY) || "null"); } catch(e) {}
     d = d && typeof d === "object" ? d : {};
-    d.seen = d.seen && typeof d.seen === "object" ? d.seen : {};
+    d.seen = d.seen && typeof d.seen === "object" ? d.seen : {}; d.liked = d.liked && typeof d.liked === "object" ? d.liked : {};
     return (this.data = d);
   },
   save(){ try { localStorage.setItem(this.KEY, JSON.stringify(this.data)); } catch(e) {} },
-  markSeen(id){ this.load().seen[id] = Date.now(); this.save(); }
+  markSeen(id){ this.load().seen[id] = Date.now(); this.save(); },
+  liked(id){ return !!this.load().liked[id]; },
+  setLiked(id, on){ const d = this.load(); if (on) d.liked[id] = d.liked[id] || Date.now(); else delete d.liked[id]; this.save(); },
+  likedIds(){ const l = this.load().liked; return Object.keys(l).filter(id => SHM[id]).sort((a, b) => l[b] - l[a]); }
 };
+
+/* --- anonymous watch stats, sent to the site's API only (social on and the API answering): how far each view of a
+   short got. Nothing that identifies the device goes with them. --- */
+const Views = {
+  q: [], cur: null,
+  begin(id, v){ this.end(); if (!SOCIAL) return; this.cur = { id, v, max: 0, secs: 0, last: null, looped: false }; },
+  tick(v){
+    const c = this.cur; if (!c || c.v !== v || !v.duration) return;
+    const t = v.currentTime;
+    if (c.last !== null) {
+      const d = t - c.last;
+      if (d > 0 && d < 1.5) c.secs += d;
+      else if (d < -1 && c.last > v.duration - 1.5) c.looped = true;      // the video looped: watched to the end
+    }
+    c.last = t; c.max = Math.max(c.max, t / v.duration);
+  },
+  end(){
+    const c = this.cur; this.cur = null;
+    if (!c || Social.mode !== "server") return;
+    this.q.push({ short: c.id, pct: c.looped ? 100 : Math.round(100 * Math.min(1, c.max)), secs: Math.round(c.secs * 10) / 10 });
+    if (this.q.length >= 10) this.flush();
+  },
+  flush(){
+    if (!this.q.length || Social.mode !== "server") return;
+    const body = JSON.stringify({ views: this.q.splice(0, 20) });
+    try { if (navigator.sendBeacon && navigator.sendBeacon(API + "views", new Blob([body], { type: "application/json" }))) return; } catch(e) {}
+    fetch(API + "views", { method: "POST", body, keepalive: true, headers: { "Content-Type": "application/json" } }).catch(() => {});
+  }
+};
+if (SOCIAL) {
+  setInterval(() => Views.flush(), 30000);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") { Views.end(); Views.flush(); }
+    else if (Shorts.mounted && Shorts.cur) Views.begin(Shorts.cur, Shorts.curVideo());
+  });
+  window.addEventListener("pagehide", () => { Views.end(); Views.flush(); });
+}
 
 /* the feed order: a new shuffle on every visit. Shorts this device has not watched come first; watched ones come
    back only after all the others (longest ago first). Neighbours avoid the same chapter and narrator when they can. */
@@ -1940,11 +2078,112 @@ function feedOrder(startId){
   return out;
 }
 
+/* --- social backends (features.social only): the site's API (site.api), or this device when the API does not answer --- */
+const Social = {
+  mode: "off", canWrite: false, canComment: false, admin: false, me: null, myName: "",
+  likes: {}, shares: {}, comments: {}, myLikes: new Set(), listeners: [], note: "",
+  on(fn){ this.listeners.push(fn); }, emit(){ this.listeners.forEach(f => { try { f(); } catch(e) {} }); },
+  likeCount(id){ return this.likes[id] || 0; }, commentCount(id){ return (this.comments[id] || []).length; },
+  async init(){
+    if (!SOCIAL) return;
+    if (this._init) return this._init;
+    this.mode = "loading";
+    this._init = (async () => {
+      if (await this.probeServer()) { await this.initServer(); return; }
+      this.initLocal();
+    })().catch(() => this.initLocal());
+    return this._init;
+  },
+  /* server: the site's API (specs/SOCIAL_API.md); every request carries this browser's random id */
+  cid(){ let c = null; try { c = localStorage.getItem(LS + "anon-id"); } catch(e) {} if (!c) { c = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now()); try { localStorage.setItem(LS + "anon-id", c); } catch(e) {} } return c; },
+  async probeServer(){
+    try { const ctl = new AbortController(); const tm = setTimeout(() => ctl.abort(), 2500);
+      const r = await fetch(API + "health", { signal: ctl.signal, cache: "no-store" }); clearTimeout(tm);
+      return r.ok && (await r.json()).ok === true; } catch(e) { return false; }
+  },
+  adminToken(){ try { return localStorage.getItem(LS + "admin") || ""; } catch(e) { return ""; } },
+  async api(path, opts){
+    const headers = { "Content-Type": "application/json", "X-Client-Id": this.me };
+    const tok = this.adminToken(); if (tok) headers["X-Admin-Token"] = tok;
+    const r = await fetch(API + path, Object.assign({ cache: "no-store", headers }, opts || {}));
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) { j.ok = false; if (!j.reason) j.reason = "The server could not save that. Try again."; }
+    j.status = r.status; return j;
+  },
+  async initServer(){
+    this.mode = "server"; this.me = this.cid(); this.canWrite = true; this.canComment = true;
+    this.myLikes = new Set(Mine.likedIds());                    // hearts show at once from this device's memory
+    const pull = async () => { const j = await this.api("social"); if (j.likes) { this.likes = j.likes; this.shares = j.shares || {}; this.myLikes = new Set(j.myLikes || []); this.comments = j.comments || {}; this.admin = !!j.admin; this.myName = j.me || ""; this.emit(); } };
+    await pull().catch(() => {});
+    Mine.likedIds().filter(id => !this.myLikes.has(id)).forEach(id => {      // liked here while the server was away
+      this.myLikes.add(id); this.api("like", { method: "POST", body: JSON.stringify({ short: id, on: true }) }).catch(() => {});
+    });
+    this.myLikes.forEach(id => { if (!Mine.liked(id)) Mine.setLiked(id, true); });
+    this.emit();
+    this._poll = setInterval(() => { if (st.view === "shorts") pull().catch(() => {}); }, 20000);
+  },
+  /* local: this device only (the API did not answer, or the page was opened without it) */
+  initLocal(){
+    this.mode = "local"; this.me = "me"; this.canWrite = true; this.canComment = true;
+    this.note = "Likes and comments are saved on this device only.";
+    const L = store.social || (store.social = { likes: [], shares: {}, comments: {} });
+    this.myLikes = new Set(L.likes.concat(Mine.likedIds())); this.likes = Object.fromEntries(L.likes.map(id => [id, 1])); this.shares = Object.assign({}, L.shares);
+    this.comments = {}; Object.entries(L.comments).forEach(([s, a]) => this.comments[s] = a.map(c => Object.assign({ mine: true }, c)));
+    this.emit();
+  },
+  saveLocal(){ store.social = { likes: [...this.myLikes], shares: this.shares, comments: Object.fromEntries(Object.entries(this.comments).map(([s, a]) => [s, a.map(c => ({ id: c.id, text: c.text, at: c.at }))])) }; save(); },
+  async toggleLike(id){
+    if (!this.canWrite) return { ok: false, reason: "" };
+    const on = !this.myLikes.has(id);
+    on ? this.myLikes.add(id) : this.myLikes.delete(id); this.likes[id] = Math.max(0, (this.likes[id] || 0) + (on ? 1 : -1)); this.emit();
+    try {
+      if (this.mode === "server") { const j = await this.api("like", { method: "POST", body: JSON.stringify({ short: id, on }) }); if (!j.ok) throw new Error(j.reason); }
+      else this.saveLocal();
+      Mine.setLiked(id, on);
+      return { ok: true };
+    } catch(e) { on ? this.myLikes.delete(id) : this.myLikes.add(id); this.likes[id] = Math.max(0, (this.likes[id] || 0) + (on ? -1 : 1)); this.emit(); return { ok: false, reason: (e && e.message) || "Could not save your like." }; }
+  },
+  async countShare(id){
+    this.shares[id] = (this.shares[id] || 0) + 1; this.emit();
+    try {
+      if (this.mode === "server") await this.api("share", { method: "POST", body: JSON.stringify({ short: id }) });
+      else if (this.mode === "local") this.saveLocal();
+    } catch(e) {}
+  },
+  async post(id, text){
+    text = String(text || "").replace(/\s+/g, " ").trim();
+    if (!text) return { ok: false, reason: "Write something first." };
+    if (text.length > 300) return { ok: false, reason: "Keep comments under 300 characters." };
+    if (!this.canComment) return { ok: false, reason: this.note };
+    if (this.mode === "server") {   /* the server runs every check before it stores a comment */
+      const j = await this.api("comments", { method: "POST", body: JSON.stringify({ short: id, text }) }).catch(() => ({ ok: false, reason: "No connection to the server." }));
+      if (j.ok && j.comment) { (this.comments[id] = this.comments[id] || []).unshift(Object.assign({ mine: true }, j.comment)); this.emit(); }
+      return j.ok ? { ok: true } : { ok: false, reason: j.reason || "Not posted." };
+    }
+    const c = { id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), text, at: Date.now() };
+    (this.comments[id] = this.comments[id] || []).unshift(Object.assign({ mine: true }, c)); this.saveLocal(); this.emit();
+    return { ok: true };
+  },
+  async remove(id, c){
+    if (this.mode === "server") {
+      const j = await this.api("comments/" + encodeURIComponent(c.id), { method: "DELETE" }).catch(() => ({ ok: false }));
+      if (!j.ok) { toast("Could not delete that comment."); return; }
+      this.comments[id] = (this.comments[id] || []).filter(x => x.id !== c.id); this.emit();
+    } else if (this.mode === "local") {
+      this.comments[id] = (this.comments[id] || []).filter(x => x.id !== c.id); this.saveLocal(); this.emit();
+    }
+  }
+};
+
 /* --- the feed --- */
 const Shorts = {
-  order: null, sound: false, cur: null, io: null, mounted: false,
+  mode: "feed", order: null, sound: false, cur: null, io: null, mounted: false, openId: null,
   list(){
     if (this.pl) return this.pl.ids.map(id => SHM[id]).filter(Boolean);
+    if (this.mode === "liked") {                 // newest like first
+      const ids = Mine.likedIds(); [...Social.myLikes].forEach(id => { if (!ids.includes(id)) ids.push(id); });
+      return ids.map(id => SHM[id]).filter(Boolean);
+    }
     if (!this.order) this.order = feedOrder(st.shortStart);
     return this.order;
   },
@@ -1995,13 +2234,13 @@ const Shorts = {
   openPlaylist(pl){
     if (!pl) return;
     pl.back = pl.back || (st.view === "unit" ? { view: "unit", unit: st.unit, tab: st.tab } : st.view === "shorts" ? { view: "home" } : { view: st.view });
-    this.pl = pl; st.shortStart = pl.ids[0] || null; st.view = "shorts";
+    this.pl = pl; this.mode = "feed"; st.shortStart = pl.ids[0] || null; st.view = "shorts";
     render(); window.scrollTo(0, 0);
   },
   closePlaylist(){
     const b = (this.pl && this.pl.back) || { view: "home" }; this.pl = null;
     if (b.view === "unit") { st.view = "unit"; st.unit = b.unit; st.tab = b.tab || "learn"; ensureTabState(); }
-    else if (b.view === "quick" || b.view === "exam" || b.view === "allcards" || b.view === "shorts") { st.view = b.view; st.shortStart = null; }
+    else if (b.view === "quick" || b.view === "exam" || b.view === "allcards" || b.view === "shorts") { st.view = b.view; this.mode = "feed"; st.shortStart = null; }
     else st.view = "home";
     render(); window.scrollTo(0, 0);
   },
@@ -2013,7 +2252,7 @@ const Shorts = {
       U.filter(u => SH.some(s => s.unit === u.id)).map(u => b(u.id, u.code, on(u.id))).join("") + "</div>";
   },
   pickChapter(uid){
-    if (!uid) { if (this.pl) { this.pl = null; st.shortStart = null; render(); window.scrollTo(0, 0); } return; }
+    if (!uid) { if (this.pl) { this.pl = null; this.mode = "feed"; st.shortStart = null; render(); window.scrollTo(0, 0); } return; }
     const pl = this.cram(uid); if (!pl || !pl.ids.length) return;
     pl.chip = true; pl.back = { view: "shorts" };
     this.openPlaylist(pl);
@@ -2039,21 +2278,33 @@ const Shorts = {
     return '<article class="sitem send"><div class="sendbox"><p class="sendt">' + (pl.ids.length ? "Done: weak spots" : "No short covers your weak spots yet") + "</p>" + gaps +
       '<p>Then check yourself again:</p><div class="actions"><button class="btn primary" data-act="quick">Quick quiz</button><button class="btn" data-act="splclose">Close</button></div></div></article>';
   },
+  toggleLiked(){
+    if (this.mode === "liked") { this.mode = "feed"; st.shortStart = this._feedCur || null; }   // back where you were
+    else { this._feedCur = this.cur; this.mode = "liked"; st.shortStart = null; }
+    this.unmount(); render(true);
+  },
   view(){
     if (!SH.length) return '<p class="empty">No shorts yet.</p>';
     /* one feed of every short, or one chapter's shorts picked from the chapter row; phones get a back button over the video */
-    const chips = '<div class="schips">' + this.chapChips() + (this.pl && this.pl.chip ? "" : this.plChip()) + '<button class="sback" data-act="' + (this.pl ? "splclose" : "home") + '" aria-label="Back to the study site">' + ICON.back + "</button></div>";
-    const items = this.list().map(s => {
+    const chips = '<div class="schips">' + (this.mode === "liked" ? "" : this.chapChips()) + (this.pl && this.pl.chip ? "" : this.plChip()) + '<button class="sback" data-act="' + (this.pl ? "splclose" : "home") + '" aria-label="Back to the study site">' + ICON.back + "</button></div>";
+    const list = this.list();
+    const empty = this.mode === "liked" && !list.length
+      ? '<div class="sempty"><span class="sempty-ic">' + ICON.heart + '</span><p>No liked shorts yet. Tap the heart or double-tap a short to keep it here.</p><button class="btn primary" data-act="sliked">Back to all shorts</button></div>' : "";
+    const items = empty || list.map(s => {
       const u = UM[s.unit];
       return '<article class="sitem" data-sid="' + esc(s.id) + '"><div class="sstage">' +
         '<div class="sframe" data-act="stap" data-id="' + esc(s.id) + '">' +
           '<video playsinline' + (this.autoNext ? "" : " loop") + ' muted preload="none" data-poster="shorts/p/' + esc((s.poster || s.id + ".jpg").replace(/\.jpg$/, ".webp")) + '" data-src="shorts/' + esc(s.video || s.id + ".mp4") + '" aria-label="' + esc(s.title) + '"></video>' +
           '<span class="spaused" aria-hidden="true">' + ICON.play + "</span>" +
+          (SOCIAL ? '<span class="sheart" aria-hidden="true">' + ICON.heart + "</span>" : "") +
           '<span class="ssoundhint" aria-hidden="true">Tap for sound</span>' +
           '<div class="sprog"><i></i></div>' +
         "</div>" +
         '<div class="sacts">' +
-          (SITE_URL ? '<button class="sact" data-act="sshare" data-id="' + esc(s.id) + '" aria-label="Share"><span class="sic">' + ICON.share + '</span><span class="sn">Share</span></button>' : "") +
+          (SOCIAL ? '<button class="sact" data-act="slike" data-id="' + esc(s.id) + '" aria-label="Like"><span class="sic">' + ICON.heart + '</span><span class="sn" data-n="like"></span></button>' +
+            '<button class="sact" data-act="scomm" data-id="' + esc(s.id) + '" aria-label="Comments"><span class="sic">' + ICON.comment + '</span><span class="sn" data-n="comm"></span></button>' +
+            '<button class="sact" data-act="sshare" data-id="' + esc(s.id) + '" aria-label="Share"><span class="sic">' + ICON.share + '</span><span class="sn" data-n="share"></span></button>'
+          : SITE_URL ? '<button class="sact" data-act="sshare" data-id="' + esc(s.id) + '" aria-label="Share"><span class="sic">' + ICON.share + '</span><span class="sn">Share</span></button>' : "") +
           '<button class="sact saudio' + (s.music ? " smusbtn" : "") + '" data-act="saudio"><span class="sic ssnd"></span><span class="sn"></span></button>' +
           '<button class="sact sautobtn" data-act="sauto" aria-label="Auto-play next short" aria-pressed="false"><span class="sic">' + ICON.autoNext + '</span><span class="sn">Auto</span></button>' +
         "</div></div>" +
@@ -2061,7 +2312,10 @@ const Shorts = {
           '<span class="sspeed"><label class="vh" for="srate-' + esc(s.id) + '">Speed</label>' +          // playback speed, in place of the caption
           '<input type="range" class="srate" id="srate-' + esc(s.id) + '" min="0.5" max="2" step="0.25" value="' + this.rate + '">' +
           '<output class="sratev" for="srate-' + esc(s.id) + '"></output></span><span class="sbtns">' +
-          '<button class="btn sm slesson" data-act="unit" data-unit="' + esc(s.unit) + '" data-tab="learn">' + ICON.lesson + "Lesson</button></span></div>" +
+          '<button class="btn sm slesson" data-act="unit" data-unit="' + esc(s.unit) + '" data-tab="learn">' + ICON.lesson + "Lesson</button>" +
+          (!SOCIAL || this.pl ? "" : this.mode === "liked"
+            ? '<button class="btn sm sliked on" data-act="sliked" aria-pressed="true">' + ICON.back + "All shorts</button>"
+            : '<button class="btn sm sliked" data-act="sliked" aria-pressed="false">' + ICON.heart + "Liked</button>") + "</span></div>" +
         "</article>";
     }).join("") + (this.pl ? this.endCard() : "");
     return '<section class="sfeed' + (this.pl ? " splmode" : "") + '">' + chips + '<div class="sscroll" id="sscroll" tabindex="-1">' + items + "</div></section>";
@@ -2069,7 +2323,7 @@ const Shorts = {
   mount(startId){
     this.mounted = true;
     const box = $("#sscroll"); if (!box) return;
-    this.fit(); this.paintSound(); this.paintPlayback();
+    this.fit(); this.paintCounts(); this.paintSound(); this.paintPlayback();
     box.addEventListener("input", e => { if (e.target.classList.contains("srate")) this.setRate(+e.target.value); });
     this.io = new IntersectionObserver(ents => {
       ents.forEach(e => { if (e.isIntersecting && e.intersectionRatio >= 0.6) this.activate(e.target); });
@@ -2082,8 +2336,11 @@ const Shorts = {
       const mine = () => this.cur === v.closest(".sitem").dataset.sid;
       ["playing", "seeked", "volumechange"].forEach(ev => v.addEventListener(ev, () => { if (mine()) this.syncMusic(true); }));
       ["pause", "waiting", "emptied"].forEach(ev => v.addEventListener(ev, () => { if (mine()) Music.stop(); }));
-      v.addEventListener("timeupdate", () => { if (mine()) this.syncMusic(false); });
-      v.addEventListener("ended", () => { if (mine() && this.autoNext) this.next(); });   // only fires with auto-play on (otherwise the video loops)
+      v.addEventListener("timeupdate", () => { if (mine()) { this.syncMusic(false); Views.tick(v); } });
+      v.addEventListener("ended", () => {             // only fires with auto-play on (otherwise the video loops)
+        if (Views.cur && Views.cur.v === v) Views.cur.looped = true;      // watched to the end
+        if (mine() && this.autoNext) this.next();
+      });
       v.addEventListener("timeupdate", () => {
         if (!v._seen && mine() && v.duration && v.currentTime >= Math.min(8, v.duration / 2)) { v._seen = true; Mine.markSeen(v.closest(".sitem").dataset.sid); }
       });
@@ -2092,6 +2349,7 @@ const Shorts = {
     if (target) box.scrollTop = target.offsetTop; else box.scrollTop = 0;
     box.addEventListener("scroll", () => { clearTimeout(this._st); this._st = setTimeout(() => this.syncFromScroll(), 140); }, { passive: true });
     setTimeout(() => this.syncFromScroll(), 80);
+    if (SOCIAL) Social.init().then(() => this.paintCounts());
   },
   syncFromScroll(){
     const box = $("#sscroll"); if (!box || !this.mounted) return;
@@ -2103,9 +2361,11 @@ const Shorts = {
   unmount(){
     if (!this.mounted) return;
     this.mounted = false; this.cur = null;
+    Views.end(); Views.flush();
     if (this.io) this.io.disconnect(); this.io = null;
     document.querySelectorAll("#sscroll video").forEach(v => { try { v.pause(); } catch(e) {} });
     Music.stop();
+    this.closeComments();
   },
   fit(){
     const box = $("#sscroll"); if (!box) return;
@@ -2116,23 +2376,25 @@ const Shorts = {
     const cur = this.cur && box.querySelector('.sitem[data-sid="' + CSS.escape(this.cur) + '"]');
     if (cur) box.scrollTop = cur.offsetTop;
   },
-  pop(el){
+  pop(el, extra){
     if (!el) return;
-    el.classList.remove("pop"); void el.offsetWidth;
-    el.classList.add("pop");
-    clearTimeout(el._popT); el._popT = setTimeout(() => el.classList.remove("pop"), 600);
+    el.classList.remove("pop", "burst"); void el.offsetWidth;
+    el.classList.add("pop"); if (extra) el.classList.add(extra);
+    clearTimeout(el._popT); el._popT = setTimeout(() => el.classList.remove("pop", "burst"), 600);
   },
+  likeBtn(id){ return document.querySelector('#sscroll .sitem[data-sid="' + CSS.escape(id) + '"] [data-act="slike"]'); },
   activate(item){
     const id = item.dataset.sid;
     if (!id) {                                       // a playlist's end card
       if (this.cur === null) return;
-      this.cur = null; Music.stop();
+      Views.end(); this.cur = null; Music.stop();
       document.querySelectorAll("#sscroll video").forEach(v => { try { v.pause(); } catch(e) {} });
       this.paintPl(); return;
     }
     if (this.cur === id) return;
     this.cur = id;
     const box = $("#sscroll");
+    Views.begin(id, item.querySelector("video"));
     box.querySelectorAll(".sitem").forEach(el => {
       const v = el.querySelector("video");
       if (!v) return;
@@ -2156,6 +2418,22 @@ const Shorts = {
     const prev = item.previousElementSibling, pv = prev && prev.querySelector("video"); if (pv && !pv.poster) pv.poster = pv.dataset.poster;
     try { history.replaceState(null, "", this.pl ? (this.pl.kind === "cram" ? "#cram." + this.pl.unit : "#shorts") : "#short." + id); } catch(e) {}
     this.paintPl();
+    if (this.openId) this.openComments(id);
+  },
+  paintCounts(){
+    if (!SOCIAL) return;
+    document.querySelectorAll("#sscroll .sitem[data-sid]").forEach(el => {
+      const id = el.dataset.sid;
+      const like = el.querySelector('[data-act="slike"]'); if (!like) return;
+      like.classList.toggle("on", Social.myLikes.has(id));
+      const sh = Social.shares[id] || 0;
+      [["like", fmtCount(Social.likeCount(id))], ["comm", fmtCount(Social.commentCount(id))], ["share", sh ? fmtCount(sh) : "Share"]].forEach(([k, v]) => {
+        const n = el.querySelector('[data-n="' + k + '"]'); if (!n || n.textContent === v) return;
+        const bump = n.textContent !== ""; n.textContent = v;
+        if (bump) { n.classList.remove("bump"); void n.offsetWidth; n.classList.add("bump"); }
+      });
+    });
+    if (this.openId) this.paintComments();
   },
   /* one sound button that steps through: muted, then voice and music, then voice only (shorts without music: muted, sound) */
   paintSound(){
@@ -2212,6 +2490,7 @@ const Shorts = {
   },
   next(){
     const v = this.curVideo();
+    if (this.openId && v) { v.currentTime = 0; v.play().catch(() => {}); return; }   // reading comments: replay instead of moving on
     const box = $("#sscroll"), item = v && v.closest(".sitem"), n = item && item.nextElementSibling;
     if (!n) return;
     box.scrollTo({ top: n.offsetTop, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
@@ -2234,22 +2513,85 @@ const Shorts = {
   },
   _mt: 0,
   curVideo(){ return this.cur ? document.querySelector('#sscroll .sitem[data-sid="' + CSS.escape(this.cur) + '"] video') : null; },
-  tap(id, el){
+  tap(id, el, dbl){
+    if (dbl) { if (!Social.myLikes.has(id)) this.like(id); else this.pop(this.likeBtn(id)); const h = el.querySelector(".sheart"); if (h) { h.classList.remove("pop"); void h.offsetWidth; h.classList.add("pop"); } return; }
     const v = el.querySelector("video");
     if (!this.sound) { this.toggleSound(); return; }
     if (v.paused) v.play().catch(() => {}); else v.pause();
   },
-  /* a plain link to the short on the course's own site (course.json site.url): the phone's share sheet, else copy */
+  async like(id){
+    this.pop(this.likeBtn(id), Social.myLikes.has(id) ? null : "burst");
+    const r = await Social.toggleLike(id); if (!r.ok && r.reason) toast(r.reason);
+  },
+  /* Social off: a plain link to the short on the course's own site (course.json site.url). Social on with the API
+     answering: the share page at site.shareBase shows a preview card in chat apps, then opens this short; without
+     the API that path does not exist, so the link goes straight to the short. Then the phone's share sheet, else copy. */
+  shareUrl(id){
+    const e_id = encodeURIComponent(id);
+    if (SOCIAL && Social.mode === "server" && SHARE_BASE) return new URL(SHARE_BASE + e_id, location.href).href;
+    if (SITE_URL) return SITE_URL + "#short." + e_id;
+    return SOCIAL ? location.href.split("#")[0] + "#short." + e_id : "";
+  },
   async share(id){
-    if (!SITE_URL) return;
-    const s = SHM[id], url = SITE_URL + "#short." + encodeURIComponent(id);
-    if (navigator.share) { try { await navigator.share({ title: s.title, url }); return; } catch(e) { if (e && e.name === "AbortError") return; } }
-    try { await navigator.clipboard.writeText(url); toast("Link copied"); return; } catch(e) {}
-    this.showLink(url);
+    const s = SHM[id], url = this.shareUrl(id);
+    if (!url) return;
+    let done = false;
+    /* url only, no text: share sheets join text and url into one string, so "Copy" there gave a link that
+       pasted into the address bar as a search */
+    if (navigator.share) { try { await navigator.share({ title: s.title, url }); done = true; } catch(e) { if (e && e.name === "AbortError") return; } }
+    if (!done) { try { await navigator.clipboard.writeText(url); done = true; toast("Link copied"); } catch(e) {} }
+    if (!done) { this.showLink(url); return; }
+    if (SOCIAL) Social.countShare(id);
   },
   showLink(url){
     lb.innerHTML = '<div class="bar"><span>Copy this link</span><span class="sp"></span><button data-act="lbclose">Close</button></div><div class="linkbox"><input id="sharelink" readonly value="' + esc(url) + '"></div>';
     lbShow("Share link"); const i = $("#sharelink"); i.focus(); i.select();
+  },
+  openComments(id){
+    if (!SOCIAL) return;
+    this.openId = id; clearTimeout(this._closeT);
+    let sh = $("#csheet"), bk = $("#cback");
+    if (!sh) { sh = document.createElement("div"); sh.id = "csheet"; sh.className = "csheet"; sh.hidden = true; document.body.appendChild(sh); }
+    if (!bk) { bk = document.createElement("div"); bk.id = "cback"; bk.className = "cback"; bk.hidden = true; bk.dataset.act = "cclose"; document.body.appendChild(bk); }
+    sh.innerHTML = '<div class="chead"><b>Comments</b><span class="ccount"></span><span class="sp"></span><button class="btn sm ghost" data-act="cclose" aria-label="Close comments">Close</button></div>' +
+      '<div class="clist" id="clist"></div>' +
+      '<form class="cform" id="cform"><div class="cas" id="cas"></div><label class="vh" for="ctext">Add a comment</label><textarea id="ctext" dir="auto" maxlength="300" rows="2" placeholder="Add a comment"></textarea>' +
+      '<div class="crow2"><span class="cstatus" id="cstatus" role="status"></span><button class="btn sm primary" id="cpost" type="submit">Post</button></div></form>';
+    this.paintComments();
+    if (!sh.classList.contains("open")) {          // slide in (from the right on wide screens, up from the bottom on phones)
+      sh.hidden = false; bk.hidden = false; void sh.offsetWidth;
+      sh.classList.add("open"); bk.classList.add("open");
+    }
+  },
+  closeComments(){
+    if (!SOCIAL) return;
+    this.openId = null;
+    const sh = $("#csheet"), bk = $("#cback");
+    if (sh) sh.classList.remove("open"); if (bk) bk.classList.remove("open");
+    clearTimeout(this._closeT);
+    this._closeT = setTimeout(() => { if (this.openId) return; if (sh) { sh.hidden = true; sh.innerHTML = ""; } if (bk) bk.hidden = true; }, 330);
+  },
+  paintComments(){
+    const id = this.openId; const sh = $("#csheet"); if (!id || !sh) return;
+    const list = Social.comments[id] || [];
+    sh.querySelector(".ccount").textContent = list.length ? " · " + list.length : "";
+    const box = $("#clist");
+    box.innerHTML = (Social.note ? '<p class="cnote">' + esc(Social.note) + "</p>" : "") +
+      (list.length ? list.map((c, i) => '<div class="citem' + (i === 0 && c.mine && this._fresh ? " new" : "") + '"><div class="cmeta">' + who(c) + "<span>" + ago(c.at) + "</span>" +
+        ((c.mine || Social.admin) ? '<button class="clink" data-act="cdel" data-i="' + i + '">Delete</button>' : "") + "</div><p dir=\"auto\">" + esc(c.text) + "</p></div>").join("")
+        : (Social.canComment ? '<p class="empty">No comments yet. Ask a question or share a tip.</p>' : ""));
+    const f = $("#cform"); if (f) f.hidden = !Social.canComment;
+    const as = $("#cas"); if (as) as.innerHTML = Social.myName ? "Posting as " + handleHTML(Social.myName) : "Everyone posts anonymously.";
+    this._fresh = false;
+  },
+  async submit(){
+    const ta = $("#ctext"), btn = $("#cpost"), stl = $("#cstatus");
+    btn.disabled = true; stl.textContent = Social.mode === "local" ? "Saving..." : "Checking your comment...";
+    this._fresh = true;                              // the comment that comes back slides in
+    const r = await Social.post(this.openId, ta.value);
+    this._fresh = false; btn.disabled = false;
+    if (r.ok) { ta.value = ""; stl.textContent = Social.mode === "local" ? "Saved on this device." : "Posted."; }
+    else stl.textContent = r.reason;
   },
   key(e){
     const box = $("#sscroll"); if (!box) return false;
@@ -2258,15 +2600,24 @@ const Shorts = {
     if (e.key === "ArrowUp" || e.key === "k") { if (items[i - 1]) box.scrollTo({ top: items[i - 1].offsetTop, behavior: "smooth" }); return true; }
     if (e.key === " ") { const v = this.curVideo(); if (v) { if (v.paused) v.play().catch(() => {}); else v.pause(); } return true; }
     if (e.key === "m") { this.cycleAudio(); return true; }
+    if (SOCIAL && e.key === "l" && this.cur) { this.like(this.cur); return true; }
+    if (e.key === "Escape" && this.openId) { this.closeComments(); return true; }
     return false;
   }
 };
+Social.on(() => { if (Shorts.mounted) Shorts.paintCounts(); });
 
 let toastT;
 function toast(msg){
   let t = $("#toast"); if (!t) { t = document.createElement("div"); t.id = "toast"; t.className = "toast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
   t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 2200);
 }
+/* a commenter's handle comes from the API; a trailing code-like tag (":8080", "<<<4, 256>>>") shows in the code font */
+function handleHTML(name){
+  const m = /^(.*?)(<<<.*>>>|:\d{1,5})$/.exec(name || "");
+  return m ? '<b class="cname">' + esc(m[1]) + '</b><code class="ccfg">' + esc(m[2]) + "</code>" : '<b class="cname">' + esc(name || "Anonymous") + "</b>";
+}
+function who(c){ return c.name ? handleHTML(c.name) + (c.mine ? '<em class="cyou">you</em>' : "") : "<b>" + (c.mine ? "You" : "Anonymous") + "</b>"; }
 /* music beds play through Web Audio, locked to the video's clock (the video file carries the narration) */
 const Music = {
   ctx: null, gain: null, bufs: new Map(), src: null, srcId: null, t0: 0, rate: 1,
@@ -2302,10 +2653,23 @@ const Music = {
 };
 function viewShorts(){ return Shorts.view(); }
 
+let lastTap = 0, tapTimer = null;
 document.addEventListener("click", e => {
   const el = e.target.closest("[data-act]"); if (!el) return;
   const a = el.dataset.act;
-  if (a === "stap") { if (!e.target.closest(".slesson")) Shorts.tap(el.dataset.id, el); }
+  if (a === "stap") {
+    if (e.target.closest(".slesson")) return;
+    if (!SOCIAL) { Shorts.tap(el.dataset.id, el); return; }
+    const now = Date.now(); const dbl = now - lastTap < 300; lastTap = now;      // a double-tap likes the short
+    clearTimeout(tapTimer);
+    if (dbl) Shorts.tap(el.dataset.id, el, true);
+    else tapTimer = setTimeout(() => Shorts.tap(el.dataset.id, el, false), 260);
+  }
+  else if (a === "slike") Shorts.like(el.dataset.id);
+  else if (a === "scomm") { Shorts.pop(el); if (Shorts.openId === el.dataset.id) Shorts.closeComments(); else Shorts.openComments(el.dataset.id); }
+  else if (a === "sliked") Shorts.toggleLiked();
+  else if (a === "cclose") Shorts.closeComments();
+  else if (a === "cdel") { const list = Social.comments[Shorts.openId] || []; const c = list[+el.dataset.i]; if (c) Social.remove(Shorts.openId, c); }
   else if (a === "sshare") { Shorts.pop(el); Shorts.share(el.dataset.id); }
   else if (a === "saudio") { Shorts.pop(el); Shorts.cycleAudio(); }
   else if (a === "sauto") { Shorts.pop(el); Shorts.toggleAuto(); }
@@ -2314,6 +2678,8 @@ document.addEventListener("click", e => {
   else if (a === "sweak") Shorts.openPlaylist(Shorts.weak());
   else if (a === "splclose") Shorts.closePlaylist();
 });
+document.addEventListener("submit", e => { if (e.target.id === "cform") { e.preventDefault(); Shorts.submit(); } });
+document.addEventListener("keydown", e => { if (e.target.id === "ctext" && e.key === "Enter" && !e.shiftKey) { e.preventDefault(); Shorts.submit(); } });
 window.addEventListener("resize", () => { if (Shorts.mounted) Shorts.fit(); });
 
 /* ---------- render ---------- */
@@ -2338,7 +2704,7 @@ function restoreFocus(key, act, qid){
   }
   if (!el && (moved || key)) {
     /* a new section page focuses its heading, anything else the page heading */
-    el = (st.view === "unit" && st.tab === "learn" && st.sec != null && main.querySelector(".lsec h3")) || main.querySelector("h2");
+    el = (st.view === "unit" && st.tab === "learn" && st.sec != null && (main.querySelector("#s-" + CSS.escape(st.unit) + "-" + (st.sec - 1) + " h3") || main.querySelector(".lsec h3"))) || main.querySelector("h2");
     if (el) el.setAttribute("tabindex", "-1");
   }
   if (el) { try { el.focus({ preventScroll: true }); } catch(e) {} }
@@ -2439,12 +2805,15 @@ document.addEventListener("click", e => {
       st.tab = el.dataset.tab || (store.last && store.last.unit === st.unit ? store.last.tab : "learn") || "learn"; ensureTabState(); go("unit", {}); break;
     /* the Learn tab pressed while already on Learn goes back to the unit overview */
     case "tab": if (el.dataset.tab === "learn" && st.tab === "learn") st.sec = null; st.tab = el.dataset.tab; ensureTabState(); go("unit", { keepScroll: false }); break;
+    case "layout":
+      LEGACY = !LEGACY; try { localStorage.setItem(LS + "layout", LEGACY ? "legacy" : "new"); } catch(err) {}
+      paintLayoutBtn(); render(); window.scrollTo(0, 0); scrollToSec(); break;
     case "sec": { const n = +el.dataset.sec; go("unit", { unit: el.dataset.unit, tab: "learn", sec: n > 0 ? n : null }); break; }
     case "secread": {
       const u = UM[el.dataset.unit], i = +el.dataset.sec - 1, k = secKey(u, i);
       if (store.read[k]) delete store.read[k]; else store.read[k] = true;
       save();
-      if (store.read[k] && i + 1 < u.sections.length) go("unit", { unit: u.id, tab: "learn", sec: i + 2 });   // done: on to the next section
+      if (store.read[k] && i + 1 < u.sections.length && !LEGACY) go("unit", { unit: u.id, tab: "learn", sec: i + 2 });   // done: on to the next section
       else render(true);
       break;
     }
@@ -2474,6 +2843,16 @@ document.addEventListener("click", e => {
     case "xreveal": st.paper.qs.forEach(q => q.parts.forEach(x => st.openSol["x:" + paperItem(x).id] = true)); render(true); break;
     case "xgrade": st.paper.graded[el.dataset.id] = +el.dataset.v; store.practice[el.dataset.id] = +el.dataset.v; save(); render(true); break;
     case "pgrade": store.practice[el.dataset.id] = +el.dataset.v; save(); render(true); break;
+    case "mcq": case "mcqreset": {
+      const id = el.dataset.id, P = allPractice().find(x => x.p.id === id), v = el.dataset.act === "mcq" ? +el.dataset.i : null;
+      if (!P) break;
+      if (v == null) { delete pickStore(el.dataset.k)[el.dataset.k]; delete store.practice[id]; if (el.dataset.g === "xgrade" && st.paper) delete st.paper.graded[id]; }
+      else {
+        pickStore(el.dataset.k)[el.dataset.k] = v; const g = v === P.p.choice ? 1 : 0; store.practice[id] = g;
+        if (el.dataset.g === "xgrade" && st.paper) st.paper.graded[id] = g;
+      }
+      save(); render(true); break;
+    }
     case "allcards": { const items = []; U.forEach(u => u.cards.forEach((c, i) => items.push({ u: u.id, i }))); st.cards = newCards("all", items, "All units"); go("allcards"); break; }
     case "slide": openSlide(el.dataset.deck, +el.dataset.page); break;
     case "zoom": lbOpen(el.dataset.deck, +el.dataset.page); break;
@@ -2587,7 +2966,7 @@ function fromHash(){
   else if (h === "allcards") { const items = []; U.forEach(u => u.cards.forEach((c, i) => items.push({ u: u.id, i }))); st.cards = newCards("all", items, "All units"); st.view = "allcards"; }
   else if (!h) st.view = "home";
   else if (/^s-/.test(h)) return;
-  render(); window.scrollTo(0, 0);
+  render(); window.scrollTo(0, 0); scrollToSec();
 }
 window.addEventListener("hashchange", fromHash);
 fromHash();

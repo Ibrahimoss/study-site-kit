@@ -111,6 +111,16 @@ class Build:
             self.p(f"course.json: code.language {lang!r} is not one of {', '.join(LANG_NAMES)}")
             lang = "none"
         c["_lang"] = lang
+        feats = c.get("features") or {}
+        if feats.get("social"):
+            # likes, comments, shares and watch stats talk to the site's own API (specs/SOCIAL_API.md); both paths are
+            # taken from the site's origin, so they start with "/"
+            for k, dflt in (("api", "/api/"), ("shareBase", "/s/")):
+                v = site.get(k, dflt)
+                if not isinstance(v, str) or not v.startswith("/") or "//" in v or any(ch in v for ch in "\"'<> "):
+                    self.p(f"course.json: site.{k} must be a path from the site's origin, such as {dflt!r} (got {v!r})")
+            if not feats.get("shorts"):
+                self.notes.append("features.social is on but features.shorts is off: the page shows no social controls")
         if not c.get("decks"):
             self.p("course.json: no decks")
         if not c.get("units"):
@@ -224,6 +234,64 @@ class Build:
                             self.check_ref(lk, f"{where} card {n + 1} link", decks)
                     self.check_blocks(card.get("blocks"), f"{where} card {n + 1}", decks, units, langs)
 
+    def find_choices(self, pr, where):
+        """A practice item with lettered options ("A. ...", "B. ...") as a list in qblocks and "Answer: C" in its
+        model answer becomes clickable: choices (the option texts) and choice (0-based index of the right one).
+        Items can also set choices and choice themselves."""
+        if "choices" in pr:
+            ok = isinstance(pr["choices"], list) and isinstance(pr.get("choice"), int) and 0 <= pr["choice"] < len(pr["choices"])
+            if not ok:
+                self.p(f"{where} {pr.get('q', '')[:40]!r}: choices needs choice, the 0-based index of the right option")
+                pr.pop("choices", None)
+            return
+        qb = pr.get("qblocks")
+        if not isinstance(qb, list):
+            return
+        for bi, b in enumerate(qb):
+            items = b.get("list") if isinstance(b, dict) else None
+            if not isinstance(items, list) or len(items) < 2:
+                continue
+            ms = [re.match(r"\s*\(?([A-Ha-h])[.)]\s*(\S.*)", str(x)) for x in items]
+            if not all(ms) or [m.group(1).upper() for m in ms] != [chr(65 + i) for i in range(len(ms))]:
+                continue
+            k = self.answer_letter(pr.get("a"), [m.group(2).strip() for m in ms])
+            if k is None:
+                continue
+            pr["choices"] = [m.group(2).strip() for m in ms]
+            pr["choice"] = k
+            rest = qb[:bi] + qb[bi + 1:]
+            if rest:
+                pr["qblocks"] = rest
+            else:
+                pr.pop("qblocks")
+            return
+
+    @staticmethod
+    def answer_letter(a, opts):
+        """Index of the right option from a model answer: "Answer: C", a bold "**b) ...**" key line, or a key line
+        that repeats one option's text. None when it cannot tell."""
+        lines = []
+        for b in a or []:
+            if isinstance(b, dict):
+                lines += [str(x) for x in b.get("list") or []] + [str(b[k]) for k in ("p",) if k in b]
+        n = len(opts)
+        for ln in lines:
+            m = re.search(r"\bAnswer\s*:?\s*\**\s*\(?([A-Ha-h])(?:[.)]|\s|\*|$)", ln)
+            if m and ord(m.group(1).upper()) - 65 < n:
+                return ord(m.group(1).upper()) - 65
+        for ln in lines:
+            m = re.match(r"\s*\*\*\s*\(?([A-Ha-h])[.)]\s", ln)
+            if m and ord(m.group(1).upper()) - 65 < n:
+                return ord(m.group(1).upper()) - 65
+        norm = lambda t: re.sub(r"[^a-z0-9]+", " ", t.lower()).strip()
+        no = [norm(o) for o in opts]
+        for ln in lines[:2]:
+            t = norm(re.sub(r"^\s*(\*\*)?\s*(answer\s*:?)?", "", ln, flags=re.I))
+            hits = [i for i, o in enumerate(no) if o and o == t]
+            if len(hits) == 1:
+                return hits[0]
+        return None
+
     def check_ref(self, ref, where, decks):
         if not ref or ref.get("deck") not in decks:
             self.ref(f"{where}: bad ref {ref}")
@@ -266,6 +334,7 @@ class Build:
             for pr in u["practice"]:   # later papers can repeat a question word for word, so their ids include the paper
                 pfx = pr["paper"] + "|" + str(pr.get("plabel", "")) + "|" if pr.get("paper") and pr["paper"] != first_paper else ""
                 pr["id"] = sid("p", pfx + pr.get("q", "") + "|" + (pr.get("qcode") or ""))
+                self.find_choices(pr, f"{uid} practice")
             for kind, arr in (("quiz", u["quiz"]), ("card", u["cards"]), ("practice", u["practice"])):
                 ids = [x["id"] for x in arr]
                 if len(ids) != len(set(ids)):
@@ -385,7 +454,7 @@ class Build:
         c = self.read_course()
         if c is None:
             return self.finish(None)
-        feat = {"audio": False, "shorts": False, "mockExam": True, "studyPlan": True}
+        feat = {"audio": False, "shorts": False, "mockExam": True, "studyPlan": True, "social": False}
         feat.update(c.get("features") or {})
         os.makedirs(self.site, exist_ok=True)
 
@@ -446,7 +515,8 @@ class Build:
             self.p(f"code blocks use lang {x!r}; the page knows {', '.join(LANGS)} and text")
         site, ex = c.get("site") or {}, c.get("exam") or {}
         meta = {"title": site.get("title", ""), "subtitle": site.get("subtitle", ""), "slug": slug(site.get("title", "")),
-                "url": site.get("url", ""), "exam": {"name": ex.get("name") or "Exam", "at": ex.get("at", ""), "covers": ex.get("covers", "")},
+                "url": site.get("url", ""), **({"api": site.get("api", "/api/"), "shareBase": site.get("shareBase", "/s/")} if feat["social"] else {}),
+                "exam": {"name": ex.get("name") or "Exam", "at": ex.get("at", ""), "covers": ex.get("covers", "")},
                 "language": lang, "papers": [{"id": x["id"], "name": x["name"]} for x in c.get("papers") or [] if x.get("id")],
                 "features": feat, "audioUnits": (c.get("audio") or {}).get("units") or {}, "skills": c.get("skills") or []}
         data = {"course": meta, "units": units, "decks": decks, "text": text, "exam": exam, "shorts": shorts, "audio": audio,
@@ -458,11 +528,13 @@ class Build:
         tpl = open(os.path.join(HERE, "template.html"), encoding="utf-8").read()
         assert "/*DATA*/null" in tpl
 
+        def fill(t, blob):
+            return (t.replace("__SITE_TITLE__", html.escape(meta["title"])).replace("__SITE_SUBTITLE__", html.escape(meta["subtitle"]))
+                    .replace("/*DATA*/null", blob))
+
         def write(data):
             blob = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
-            page = (tpl.replace("__SITE_TITLE__", html.escape(meta["title"])).replace("__SITE_SUBTITLE__", html.escape(meta["subtitle"]))
-                    .replace("/*DATA*/null", blob))
-            out = standalone(page)
+            out = standalone(fill(tpl, blob))
             open(os.path.join(self.site, "index.html"), "w", encoding="utf-8", newline="\n").write(out)
             return len(out.encode("utf-8"))
         size = write(data)
