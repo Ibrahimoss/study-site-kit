@@ -43,6 +43,7 @@ Paths are always relative to the repo root. Nothing outside the repo is read, ex
               { "id": "paper-a", "file": "materials/Spring 2026 midterm", "short": "Spring 2026 paper", "title": "Spring 2026 midterm (graded)", "publish": false } ],
   "units":  [ { "id": "u1", "code": "U1", "title": "Cells", "deck": "u1", "tutorials": [] } ],
   "papers": [ { "id": "A", "name": "Spring 2026" } ],
+  "redact": [ "BIO 101", "Dr. Jane Smith" ],
   "features": { "audio": false, "shorts": false, "mockExam": true, "studyPlan": true, "social": false },
   "audio":  { "engine": "kokoro-local", "voice": "af_heart", "speed": 0.96, "units": { "u1": "u1" } },
   "shorts": { "engine": "kokoro-local", "background": "gameplay", "backgroundFile": "shorts/backgrounds/minecraft-parkour.mp4" },
@@ -54,6 +55,7 @@ Paths are always relative to the repo root. Nothing outside the repo is read, ex
 - `code.language`: `none`, `c`, `cuda`, `cpp`, `python`, `java`, `javascript`, `sql`. Drives code highlighting; `none` hides code-specific UI.
 - `decks[].file`: a PDF, a PowerPoint or Word file (needs LibreOffice), one photo (JPG, PNG, HEIC with `pillow-heif`), or a folder of photos (one page each, sorted by name). Photos are combined into a PDF in `.cache/img/` and treated as scanned.
 - `decks[].first`: first page to show (skips a title slide). `units[].deck` names the unit's own deck; `tutorials` lists extra deck ids.
+- `redact` (optional): phrases extract.py removes from every PDF deck before it writes text and images (case-insensitive, text layer only). Changing the list re-extracts every deck.
 - Past papers are decks too: each has its own deck id and is listed in `decks`, never in a unit's `tutorials`. Their parts become practice items (PAPER_SPEC).
 - `decks[].publish` (default `true`): `false` keeps the deck private. Graded scans show a student's handwriting and possibly names, so past-paper decks default to `false`. extract.py writes its page images to `.cache/slides/<deck>/` (the AI reads them there); the build leaves them out of `site/`, the page data (no text, no search hits) and the publish plan, and the page shows no slide link to it. A unit's own deck or tutorial cannot be unpublished, and no `figure` may show one of its pages.
 - `papers`: display names of fixed mock papers; practice items carry `"paper": "<id>"` (see PAPER_SPEC). Order here is the button order.

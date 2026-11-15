@@ -51,9 +51,10 @@ For short videos: ask them to search for a **free-to-use Minecraft parkour gamep
 
 1. Add every deck to `course.json` `decks`: lecture slides, tutorials, and past papers. A past paper is a deck too: give it its own id (for example `paper-a`) and list it in `decks` only, never in a unit's `tutorials`. A deck's `file` can be a PDF, a PowerPoint or Word file, one photo, or a folder of photos (pages in name order; they are combined into a PDF in `.cache/`).
 2. **Privacy for papers:** graded scans show a student's handwriting and possibly names. By default give every past-paper deck `"publish": false`: its page images then stay in `.cache/slides/<deck>/` for you to read, the site ships none of them, and no slide link points at it. Turn it on only if the person asks and the pages show no names.
-3. Run `python -I engine/tools/extract.py`. It writes the slide text and images. Decks flagged "scanned" (all photo decks) have no text layer: read their page images.
-4. Read the material and propose the list of units (usually one per chapter or slide deck), with short titles, and which tutorials belong to which unit. Show the list to the person, confirm it, and write it into `course.json` `units`.
-5. If a deck starts with a title slide, set `first` to skip it.
+3. **Names on the slides:** ask whether the site may show the course code, the school's name and the teachers' names. If not, list those phrases (each spelling the slides use) in `course.json` `"redact": ["CSC 101", "Dr. Jane Smith", ...]`. The extract step removes them from the text and from the page images, keeping the background. It works on text only: check title pages and scans for logos or names in pictures.
+4. Run `python -I engine/tools/extract.py`. It writes the slide text and images. Decks flagged "scanned" (all photo decks) have no text layer: read their page images.
+5. Read the material and propose the list of units (usually one per chapter or slide deck), with short titles, and which tutorials belong to which unit. Show the list to the person, confirm it, and write it into `course.json` `units`.
+6. If a deck starts with a title slide, set `first` to skip it.
 
 ## Step 4: write the lessons
 

@@ -97,11 +97,28 @@ def slide_dir(root, deck):
     return os.path.join(root, ".cache" if deck.get("publish", True) is False else "site", "slides", deck["id"])
 
 
-def extract(deck, pdf, root, photos=False):
+def redact_doc(doc, phrases):
+    """Remove every phrase in course.json "redact" (a course code, a school, a teacher's name) from the pages: the
+    words go from the text layer and from the page images, and the background under them stays as it was.
+    Matching ignores case. Returns how many places were removed."""
+    import fitz
+    n = 0
+    for pg in doc:
+        rects = [r for ph in phrases for r in pg.search_for(ph)]
+        for r in rects:
+            pg.add_redact_annot(r, fill=False)
+        if rects:
+            pg.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE, graphics=fitz.PDF_REDACT_LINE_ART_NONE)
+            n += len(rects)
+    return n
+
+
+def extract(deck, pdf, root, photos=False, redact=()):
     import fitz
     from PIL import Image
     did = deck["id"]
     doc = fitz.open(pdf)
+    removed = redact_doc(doc, redact) if redact and not photos else 0
     texts = [pg.get_text() for pg in doc]
     blank = [len("".join(t.split())) < MIN_TEXT for t in texts]
     scanned = photos or (doc.page_count > 0 and sum(blank) >= max(1, 0.8 * doc.page_count))
@@ -129,7 +146,7 @@ def extract(deck, pdf, root, photos=False):
     for f in os.listdir(dd):                     # pages left over from a longer, older version of the deck
         if f.startswith("p") and f.endswith(".webp") and f[1:4].isdigit() and int(f[1:4]) > doc.page_count:
             os.remove(os.path.join(dd, f))
-    return {"pages": doc.page_count, "w": w, "h": h, "bytes": tot, "scanned": scanned, "blank": sum(blank)}
+    return {"pages": doc.page_count, "w": w, "h": h, "bytes": tot, "scanned": scanned, "blank": sum(blank), "redacted": removed}
 
 
 def main(argv):
@@ -148,6 +165,8 @@ def main(argv):
     with open(cj, encoding="utf-8") as f:
         course = json.load(f)
     decks = course.get("decks") or []
+    redact = [str(x) for x in course.get("redact") or [] if str(x).strip()]
+    rkey = "|r" + hashlib.sha1(json.dumps(redact).encode()).hexdigest()[:10] if redact else ""
     if not decks: raise SystemExit("course.json has no \"decks\" yet")
     mp = os.path.join(root, "site", "slides", "_manifest.json")
     old = {}
@@ -162,7 +181,7 @@ def main(argv):
             print(f"{did}: file not found: {rel}"); failed.append(did)
             if did in old: man.append(old[did])
             continue
-        fp = fingerprint(src)
+        fp = fingerprint(src) + rkey
         prev = old.get(did)
         have = prev and os.path.exists(os.path.join(root, "course", "text", did + ".txt")) and \
             os.path.exists(os.path.join(slide_dir(root, deck), "p001.webp"))
@@ -191,12 +210,12 @@ def main(argv):
         elif not src.lower().endswith(".pdf"):
             print(f"{did}: {rel} is not a PDF, PowerPoint or Word file, a photo, or a folder of photos"); failed.append(did); continue
         try:
-            r = extract(deck, pdf, root, photos)
+            r = extract(deck, pdf, root, photos, redact)
         except Exception as e:
             print(f"{did}: could not read {rel}: {e}"); failed.append(did); continue
         man.append({"id": did, "file": os.path.basename(rel), "pages": r["pages"], "w": r["w"], "h": r["h"], "bytes": r["bytes"],
                     "first": int(deck.get("first", 1)), "scanned": r["scanned"], "publish": deck.get("publish", True) is not False, "sha": fp})
-        line = f"{did}: {r['pages']} pages, {r['w']}x{r['h']}, {r['bytes'] // 1024} KB"
+        line = f"{did}: {r['pages']} pages, {r['w']}x{r['h']}, {r['bytes'] // 1024} KB" + (f", {r['redacted']} redacted" if r["redacted"] else "")
         if r["scanned"]:
             scanned.append(did)
             line += f"  SCANNED: no text layer, read the page images in {os.path.relpath(slide_dir(root, deck), root).replace(os.sep, '/')}/"

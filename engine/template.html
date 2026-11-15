@@ -614,6 +614,12 @@ body.music-playing .smusbtn .sic svg{animation:mpulse 1.1s ease-in-out infinite}
 .crow2{display:flex;gap:8px;align-items:center}
 .cstatus{flex:1;font-size:13px;color:var(--ink-2)}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.nidlg{border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);padding:22px 22px 18px;max-width:min(420px,calc(100vw - 32px));box-shadow:0 18px 50px rgba(0,0,0,.25)}
+.nidlg::backdrop{background:rgba(10,16,13,.45)}
+.nidlg h3{margin:0 0 8px;font:700 19px/1.25 var(--f-display,inherit)}
+.nidlg p{margin:0 0 16px;color:var(--ink-2);line-height:1.5}
+.nidlg .actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.nibadge{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:var(--bad-soft);color:var(--bad);font:600 11px/1.6 var(--f-body);vertical-align:middle}
 .toast{position:fixed;z-index:60;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 28px);background:var(--ink);color:var(--bg);font:600 14px var(--f-body);padding:10px 16px;border-radius:999px;box-shadow:var(--shadow)}
 .linkbox{flex:1;display:flex;align-items:center;justify-content:center;padding:20px}
 .linkbox input{width:min(560px,100%);font:14px var(--f-mono);padding:10px;border-radius:8px;border:0}
@@ -754,6 +760,23 @@ const UM = Object.fromEntries(U.map(u => [u.id, u]));
 /* everything that names the subject comes from course.json through the data blob */
 const C = S.course || {};
 const TITLE = C.title || "Study Lab", EXAM = (C.exam && C.exam.name) || "Exam", EXAM_L = EXAM.toLowerCase();
+/* units the exam does not cover (course.json exam.notIn): opening one shows a short notice once per visit */
+const NOT_IN = new Set((C.exam && C.exam.notIn) || []);
+const notInSeen = new Set();
+function niBadge(u){ return NOT_IN.has(u.id) ? '<span class="nibadge">Not in ' + esc(EXAM) + "</span>" : ""; }
+function notInNotice(u){
+  if (!u || !NOT_IN.has(u.id) || notInSeen.has(u.id)) return;
+  notInSeen.add(u.id);
+  let d = document.getElementById("nidlg");
+  if (!d) { d = document.createElement("dialog"); d.id = "nidlg"; d.className = "nidlg"; d.setAttribute("aria-labelledby", "nidlgh"); document.body.appendChild(d); }
+  d.innerHTML = '<h3 id="nidlgh">Not in ' + esc(EXAM) + "</h3><p>" + esc(u.code) + " " + esc(u.title) + " is not part of " + esc(THE_EXAM) + "." +
+    (C.exam && C.exam.covers ? " " + esc(THE_EXAM_C) + " covers " + esc(C.exam.covers) + "." : "") + " You can still study it for later.</p>" +
+    '<div class="actions"><button class="btn" data-ni="home">Back to the overview</button><button class="btn primary" data-ni="ok">Got it</button></div>';
+  d.onclick = e => { const b = e.target.closest("[data-ni]"); if (b || e.target === d) { d.close(); if (b && b.dataset.ni === "home") go("home"); } };
+  try { d.showModal(); d.querySelector('[data-ni="ok"]').focus(); } catch(e) { d.setAttribute("open", ""); }
+}
+/* "the final exam", but "Midterm 2" (a name that ends in a number is a proper name: no "the", keep its case) */
+const THE_EXAM = /\d\s*$/.test(EXAM) ? EXAM : "the " + EXAM_L, THE_EXAM_C = THE_EXAM.charAt(0).toUpperCase() + THE_EXAM.slice(1);
 const FEAT = Object.assign({ audio: false, shorts: false, mockExam: true, studyPlan: true, social: false }, C.features || {});
 const HAS = { audio: !!FEAT.audio, shorts: !!FEAT.shorts, mockExam: !!FEAT.mockExam, studyPlan: !!FEAT.studyPlan, brief: !!S.brief, revise: !!S.revise };
 HAS.social = HAS.shorts && !!FEAT.social;            /* likes, comments, shares, watch stats: needs the API in specs/SOCIAL_API.md */
@@ -1007,7 +1030,7 @@ function homeLede(){
   if (HAS.shorts && (S.shorts || []).length) bits.push("short videos");
   if (HAS.audio && (S.audio || []).length) bits.push("audio lessons");
   bits.push("quizzes and flashcards");
-  return "Everything for the " + esc(EXAM_L) + " in one place: " + bits.slice(0, -1).join(", ") + " and " + bits[bits.length - 1] + "." +
+  return "Everything for " + esc(THE_EXAM) + " in one place: " + bits.slice(0, -1).join(", ") + " and " + bits[bits.length - 1] + "." +
     (C.exam && C.exam.covers ? " Covers " + esc(C.exam.covers) + "." : "");
 }
 function viewHome(){
@@ -1026,7 +1049,7 @@ function viewHome(){
     "</div></section>" +
     '<section class="ugrid">' + U.map((u, i) =>
       '<article class="ucard"><div class="head"><span class="code">' + esc(u.code) + '</span><span class="idx">' + (i + 1) + " of " + U.length + "</span></div>" +
-      "<h3>" + esc(u.title) + "</h3><p>" + inl(u.summary) + "</p>" +
+      "<h3>" + esc(u.title) + niBadge(u) + "</h3><p>" + inl(u.summary) + "</p>" +
       '<div class="meta">' + nPages(D[u.deck]) + " slides · " + (u.tutorial.length + (u.practice || []).length) + " practice · " + u.quiz.length + " quiz · " + u.cards.length + " cards</div>" +
       '<div class="go"><button class="btn sm primary" data-act="unit" data-unit="' + u.id + '" data-tab="learn">Learn</button>' +
       '<button class="btn sm" data-act="unit" data-unit="' + u.id + '" data-tab="slides">Slides</button>' +
@@ -1045,7 +1068,7 @@ function viewUnit(){
   else if (st.tab === "practice") body = viewPractice(u);
   else if (st.tab === "quiz") body = viewQuiz();
   else if (st.tab === "cards") body = viewCards();
-  return '<section class="uhead"><div class="row"><span class="code">' + esc(u.code) + "</span><h2>" + esc(u.title) + "</h2></div>" +
+  return '<section class="uhead"><div class="row"><span class="code">' + esc(u.code) + "</span><h2>" + esc(u.title) + niBadge(u) + "</h2></div>" +
     (st.tab === "learn" ? "<p>" + inl(u.summary) + "</p>" : "") + Shorts.cramButton(u.id) + Listen.button(u.id) + "</section>" +
     '<nav class="tabs" role="tablist">' + TABS.map(t => '<button role="tab" aria-selected="' + (st.tab === t[0]) + '" class="tab' + (st.tab === t[0] ? " cur" : "") +
       '" data-act="tab" data-tab="' + t[0] + '">' + t[1] + '<span class="n">' + counts[t[0]] + "</span></button>").join("") + "</nav>" +
@@ -1411,6 +1434,7 @@ function unitWeight(u){ return (u.practice || []).reduce((a, p) => a + (p.marks 
 function planRows(){
   const mw = Math.max.apply(null, U.map(unitWeight)) || 1, rows = [];
   U.forEach(u => {
+    if (NOT_IN.has(u.id)) return;               // not in this exam: no place in the plan
     const w = unitWeight(u) / mw;
     u.sections.forEach((s, i) => {
       const m = SEC(u, i);
@@ -1456,7 +1480,7 @@ function viewPlan(){
   }).join("");
   const ms = msToExam();
   return '<section class="uhead"><div class="row"><span class="code">Plan</span><h2>What to cover before the exam</h2></div>' +
-      "<p>" + (ms > 0 ? "The " + esc(EXAM_L) + " is on " + EXAM_AT.toLocaleString("en-GB", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }) +
+      "<p>" + (ms > 0 ? esc(THE_EXAM_C) + " is on " + EXAM_AT.toLocaleString("en-GB", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }) +
         ", <b>" + fmtCountdown(ms) + "</b> from now. " : "") +
       "The lab holds " + fmtH(totalLeft) + " of unread material" + (doneMin ? " (" + fmtH(doneMin) + " already marked done)" : "") +
       ", so this orders it and cuts where your hours run out. Sections in the plan carry a copper dot in a unit's section index.</p></section>" +
@@ -1585,7 +1609,7 @@ function viewPage(doc, code, fallback){
       (heads.length > 1 ? '<div class="rjump">' + heads.map(h => '<button class="btn sm" data-act="jump" data-jump="' + esc(h[0]) + '">' + inl(h[1]) + "</button>").join("") + "</div>" : "") +
     '</section><div class="blocks rpage">' + blocks(bs) + "</div>";
 }
-function viewBrief(){ return viewPage(S.brief, "Brief", "What the " + EXAM_L + " usually looks like"); }
+function viewBrief(){ return viewPage(S.brief, "Brief", "What " + THE_EXAM + " usually looks like"); }
 function viewRevise(){ return viewPage(S.revise, "Revision", "Final revision"); }
 
 /* ---------- recommended triage on the Practice tab: one problem per distinct skill, within a time budget ---------- */
@@ -2748,6 +2772,7 @@ function render(keepScroll){
   mountSW();
   measureTop();
   restoreFocus(fkey, fact, fqid);
+  if (st.view === "unit") notInNotice(UM[st.unit]);
 }
 /* keep the open section visible in a scrolling section index (the rail, or the list above the text on narrow screens) */
 function scrollCur(box, sel){
