@@ -69,7 +69,8 @@ After writing, validate it:
   marks. `slot` groups interchangeable problems for the random mock paper (`course/exam_blueprint.json`
   picks one problem per slot); use `"extra"` for problems not in the blueprint. Items transcribed from past
   papers carry the extra fields in `specs/PAPER_SPEC.md`. Optional `"examstyle": true` with `"sec"` (1-based
-  section) shows the problem under that lesson section.
+  section) shows the problem under that lesson section. When a section has past-paper questions, it shows
+  only those, each badged with its paper and question number, and leaves the written ones to the Practice tab.
 - `answerSource` on every practice item: whose answer the model answer is. `"marked"` only when the material
   shows the teacher marked that answer correct (a solved tutorial, an answer key, full marks on a graded
   paper); `"slides"` otherwise (you worked it out from the slides). The page shows a badge for each; an item

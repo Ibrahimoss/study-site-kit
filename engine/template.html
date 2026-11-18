@@ -462,6 +462,7 @@ body.shorts-on .lplayer{display:none}
 .pfilter .btn{border-style:dashed}
 .xsbadge{padding:2px 8px;border-radius:999px;background:var(--tip-soft);color:var(--tip);border:1px solid var(--tip);font:700 10px/1.5 var(--f-body);
   letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
+.xsbadge.exam{background:var(--ok-soft,rgba(88,204,148,.14));color:var(--ok);border-color:var(--ok);text-transform:none;letter-spacing:0;white-space:normal}
 
 /* written-answer boxes */
 details.ansbox{margin:0}
@@ -1093,8 +1094,10 @@ function viewUnit(){
 /* minutes for one written practice problem, by kind; marks break ties */
 function pracMinutes(p){
   const t = (p.topic || "").toLowerCase(), m = p.marks || 2;
+  /* a multiple-choice part or one worth half a mark or less takes about as long as a quiz question */
+  if (p.choices || m <= 0.5) return 1;
   if (/index|figure|diagram|draw/.test(t)) return 6;
-  if (/code|program|loop|write a|implement/.test(t)) return 10;
+  if (/\b(code|program|loop)\b|write a|implement/.test(t)) return 10;
   if (/calculat|compute|work out/.test(t)) return 4;
   if (/definition|terms|give the|enumerate|list/.test(t)) return 3;
   return Math.max(3, Math.min(10, Math.round(m * 1.8)));
@@ -1119,7 +1122,11 @@ const SEC = (() => {
     /* an item may name its section outright (sec, 1-based); otherwise it belongs to the section whose slides
        include the page it refers to. Sections without slide pages can only be reached through sec. */
     const on = it => it.sec != null ? +it.sec === i + 1 : !!(it.ref && it.ref.deck === u.deck && pages.has(+it.ref.page));
-    const quiz = (u.quiz || []).filter(on), prac = (u.practice || []).filter(on), cards = (u.cards || []).filter(on);
+    const quiz = (u.quiz || []).filter(on), cards = (u.cards || []).filter(on);
+    /* where past papers asked about this section, the section shows those questions instead of ones written for
+       the site; the Practice tab still has every problem */
+    let prac = (u.practice || []).filter(on);
+    if (prac.some(p => p.paper)) prac = prac.filter(p => p.paper);
     /* one careful read at 170 words a minute, every question attempted, extra dwell on tables and must-know
        sections, and a buffer (6 min on must-know sections, 2 otherwise) */
     const read = words(s.blocks) / 170;
@@ -1330,7 +1337,17 @@ function seededOrder(n, seed){
   for (let i = n - 1; i > 0; i--) { h = (Math.imul(h, 1103515245) + 12345) >>> 0; const j = h % (i + 1); [a[i], a[j]] = [a[j], a[i]]; }
   return a;
 }
-function xsBadge(p){ return p.examstyle ? '<span class="xsbadge" title="Written like a full exam question, with a full-marks checklist in the model answer">Exam-style</span>' : ""; }
+/* a past-paper question says which paper and question it is; one written for the site says it is exam-style */
+function examQLabel(p){
+  const l = String(p.plabel || "").trim(), q = p.pq != null ? String(p.pq) : "";
+  if (!q || l.includes(".") || l === q) return l || q;
+  return l ? q + (/^\d/.test(l) ? "." : "") + l : q;
+}
+function xsBadge(p){
+  if (p.paper) { const ql = examQLabel(p);
+    return '<span class="xsbadge exam" title="This is the question as it appeared in a past paper">' + (/quiz/i.test(paperName(p.paper)) ? "From " : "From exam: ") + esc(paperName(p.paper)) + (ql ? ", Q" + esc(ql) : "") + "</span>"; }
+  return p.examstyle ? '<span class="xsbadge" title="Written like a full exam question, with a full-marks checklist in the model answer">Exam-style</span>' : "";
+}
 function secQuestionsHTML(u, i){
   const m = SEC(u, i);
   if (!m.quiz.length && !m.prac.length) return "";
