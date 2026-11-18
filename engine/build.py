@@ -517,7 +517,8 @@ class Build:
         meta = {"title": site.get("title", ""), "subtitle": site.get("subtitle", ""), "slug": slug(site.get("title", "")),
                 "url": site.get("url", ""), **({"api": site.get("api", "/api/"), "shareBase": site.get("shareBase", "/s/")} if feat["social"] else {}),
                 "exam": {"name": ex.get("name") or "Exam", "at": ex.get("at", ""), "covers": ex.get("covers", ""),
-                         "notIn": [x for x in ex.get("notIn") or [] if x in um]},
+                         "notIn": [x for x in ex.get("notIn") or [] if x in um],
+                         "units": [x for x in ex.get("units") or [] if x in um]},
                 "language": lang, "papers": [{"id": x["id"], "name": x["name"]} for x in c.get("papers") or [] if x.get("id")],
                 "features": feat, "audioUnits": (c.get("audio") or {}).get("units") or {}, "skills": c.get("skills") or []}
         data = {"course": meta, "units": units, "decks": decks, "text": text, "exam": exam, "shorts": shorts, "audio": audio,

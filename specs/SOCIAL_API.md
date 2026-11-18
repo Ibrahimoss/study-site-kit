@@ -96,6 +96,18 @@ Anonymous watch stats, sent in batches of up to 20 with `navigator.sendBeacon` (
 - Sent every 30 seconds, after 10 views, and when the page is hidden or closed.
 - The server should keep only totals (for example per short per day) and ignore unknown shorts. The page ignores the answer.
 
+### `POST <api>visit`
+
+Anonymous page views for the site's owner, one `navigator.sendBeacon` per page change, only after `<api>health` answered. Body:
+
+```json
+{ "page": "unit:t4-2:learn", "start": true, "back": false, "phone": true }
+```
+
+- `page` is the view (`home`, `shorts`, `exam`, `quick`, `plan`, ...) or `unit:<unit id>:<tab>`, lower case, at most 60 characters of `a-z 0-9 . _ : -`.
+- `start`, `back` and `phone` come only with the first page of a visit (a browser tab session): whether this browser has been on the site before (a flag kept on the device, not an id) and whether the screen is phone-sized.
+- The server should tell sites apart by the page's address (`Referer`), keep only daily totals (views per site and page; visits, returning visits and phone visits per site) and show them only to the admin. The page ignores the answer.
+
 ### `GET <shareBase><id>`
 
 Not called by the page itself: it is the link the Share button gives out while the API answers (`<origin><shareBase><id>`). It should answer an HTML page with a preview card for chat apps (`og:title`, `og:description`, `og:image` from the short's poster, `og:video` from its video, both as absolute URLs under the site that owns the short), then send the visitor to the short on that site: `<site path>/#short.<id>` (for example `/#short.<id>` for a site at the root, `/biology/#short.<id>` for one at `/biology/`). Unknown ids answer 404.
@@ -106,4 +118,5 @@ The short's title, caption, poster and video are in that site's `shorts/manifest
 
 - `<slug>-shorts`: shorts watched and liked on this device (used for the feed order and the Liked view, with or without the API).
 - `<slug>-anon-id`, `<slug>-admin`: see above.
+- `<slug>-been` (a "came before" flag) and, for the tab session, `<slug>-visit`: used only for the visit counts.
 - When the API does not answer, likes, shares and comments go into the page's own progress store, on this device only.

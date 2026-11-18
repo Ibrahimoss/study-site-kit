@@ -614,6 +614,14 @@ body.music-playing .smusbtn .sic svg{animation:mpulse 1.1s ease-in-out infinite}
 .crow2{display:flex;gap:8px;align-items:center}
 .cstatus{flex:1;font-size:13px;color:var(--ink-2)}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.progcard{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:16px 18px 14px;margin:18px 0}
+.pchead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.pclab{font:700 12px/1.4 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.pcval{color:var(--ink-2);font-size:15px}.pcval b{color:var(--ink);font-size:20px}
+.pcpct{display:inline-block;margin-left:6px;padding:1px 9px;border-radius:999px;background:var(--copper);color:var(--copper-ink);font:700 13px/1.6 var(--f-body)}
+.pcbar{height:8px;border-radius:999px;background:var(--surface-2);margin:12px 0 10px;overflow:hidden}
+.pcbar i{display:block;height:100%;border-radius:inherit;background:var(--copper);transition:width .3s}
+.pcsub{margin:0;color:var(--ink-3);font-size:13.5px}
 .nidlg{border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--ink);padding:22px 22px 18px;max-width:min(420px,calc(100vw - 32px));box-shadow:0 18px 50px rgba(0,0,0,.25)}
 .nidlg::backdrop{background:rgba(10,16,13,.45)}
 .nidlg h3{margin:0 0 8px;font:700 19px/1.25 var(--f-display,inherit)}
@@ -1041,6 +1049,7 @@ function viewHome(){
     "<h1>" + esc(TITLE) + "</h1>" +
     '<p class="lede">' + homeLede() + "</p>" +
     '<div class="stats"><span><b>' + U.length + "</b> unit" + (U.length === 1 ? "" : "s") + "</span><span><b>" + T.s + "</b> original pages</span><span><b>" + T.t + "</b> practice problems</span><span><b>" + T.q + "</b> quiz questions</span><span><b>" + T.c + "</b> flashcards</span></div>" +
+    examProgCard() +
     '<div class="actions">' + (HAS.revise ? '<button class="btn primary" data-act="revise">Final revision</button>' : "") + (HAS.shorts ? '<button class="btn primary" data-act="shorts">Watch shorts</button>' : "") +
       (HAS.mockExam ? '<button class="btn" data-act="exam">Take a mock exam</button>' : "") + '<button class="btn" data-act="quick">Quick quiz</button>' + Shorts.weakButton() + '<button class="btn" data-act="allcards">Review all flashcards</button>' +
     (lastU ? (store.last.tab === "learn" && store.last.sec && lastU.sections[store.last.sec - 1]
@@ -1130,6 +1139,27 @@ const isRead = (u, i) => !!store.read[secKey(u, i)];
 const readCount = u => u.sections.reduce((n, s, i) => n + (isRead(u, i) ? 1 : 0), 0);
 const unitMinLeft = u => u.sections.reduce((n, s, i) => n + (isRead(u, i) ? 0 : SEC(u, i).min), 0);
 const fmtH = m => m < 60 ? Math.round(m) + " min" : (Math.round(m / 6) / 10).toFixed(1).replace(/\.0$/, "") + " h";
+/* "Estimated time completed": the estimated minutes of the sections marked done, out of all of them. On the home
+   page it sums every unit the exam covers; at the top of a unit's lesson, that unit. */
+/* the home page card counts the exam's units: course.json exam.units when set, otherwise every unit not in exam.notIn */
+function examProgCard(){
+  const list = (C.exam && C.exam.units) || [];
+  const inExam = list.length ? U.filter(u => list.includes(u.id)) : U.filter(u => !NOT_IN.has(u.id));
+  if (inExam.length === U.length) return progCard(U);
+  const span = inExam.length > 1 ? inExam[0].code + " to " + inExam[inExam.length - 1].code : inExam.map(u => u.code).join("");
+  return progCard(inExam, "counts " + span + ", the units in " + EXAM, EXAM);
+}
+function progCard(units, note, label){
+  let tot = 0, done = 0, n = 0, nd = 0;
+  units.forEach(u => u.sections.forEach((sct, i) => { const m = SEC(u, i).min; tot += m; n++; if (isRead(u, i)) { done += m; nd++; } }));
+  if (!n) return "";
+  const pct = tot ? Math.round(100 * done / tot) : 0;
+  return '<div class="progcard" role="group" aria-label="Estimated time completed">' +
+    '<div class="pchead"><span class="pclab">Estimated time completed' + (label ? " · " + esc(label) : "") + "</span>" + '<span class="pcval"><b>' + fmtH(done) + "</b> of " + fmtH(tot) +
+    ' <span class="pcpct">' + pct + "%</span></span></div>" +
+    '<div class="pcbar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '"><i style="width:' + pct + '%"></i></div>' +
+    '<p class="pcsub">' + nd + " of " + n + " section" + (n === 1 ? "" : "s") + " marked done · " + fmtH(tot - done) + " of the estimate left" + (note ? " · " + esc(note) : "") + "</p></div>";
+}
 function secScore(u, i){
   const ids = SEC(u, i).quiz.map(q => q.id), done = ids.filter(id => store.quiz[id] != null);
   if (!done.length) return null;
@@ -1273,7 +1303,7 @@ function viewChapter(u){
   const left = u.sections.length - readCount(u), o = unattached(u), bits = [];
   if (o.prac) bits.push(o.prac + " written");
   if (o.quiz) bits.push(o.quiz + " MCQ");
-  return '<div class="chov">' + obj +
+  return '<div class="chov">' + progCard([u]) + obj +
     '<div class="actions" style="padding-top:16px"><button class="btn primary" data-act="sec" data-unit="' + u.id + '" data-sec="' + (startI + 1) + '">' +
       (nextI < 0 ? "Review" : "Start") + " §" + SEC(u, startI).num + " " + inl(u.sections[startI].title) + "</button>" +
       '<button class="btn" data-act="tab" data-tab="practice">Practice</button>' +
@@ -1352,7 +1382,7 @@ function viewSection(u, i){
 }
 function viewAllSections(u){
   const obj = u.objectives && u.objectives.length ? '<div class="objectives"><h4>After this unit you can</h4><ul>' + u.objectives.map(o => "<li>" + inl(o) + "</li>").join("") + "</ul></div>" : "";
-  const body = obj + u.sections.map((s, i) => secBody(u, i) +
+  const body = progCard([u]) + obj + u.sections.map((s, i) => secBody(u, i) +
     '<nav class="secnav secdone"><span></span><button class="btn' + (isRead(u, i) ? " done" : "") + '" data-act="secread" data-unit="' + u.id + '" data-sec="' + (i + 1) + '" aria-pressed="' + isRead(u, i) + '">' +
       (isRead(u, i) ? "Done ✓" : "Mark as done") + "</button><span></span></nav>").join("") +
     '<nav class="secnav"><span></span><button class="btn primary" data-act="tab" data-tab="quiz">Take the ' + esc(u.code) + " quiz →</button><span></span></nav>";
@@ -2733,6 +2763,30 @@ function restoreFocus(key, act, qid){
   }
   if (el) { try { el.focus({ preventScroll: true }); } catch(e) {} }
 }
+/* Anonymous visit counts for the site's owner (POST /api/visit, only when the site's own API answers): the page
+   name when it changes, and on the first page of a visit whether this browser came before and whether it is a
+   phone. No id is sent and nothing identifies the visitor; the server keeps daily totals only. */
+const Visits = {
+  last: "", q: [], ok: null,
+  key(){ return (st.view === "unit" ? "unit:" + st.unit + ":" + st.tab : st.view || "home").toLowerCase().replace(/[^a-z0-9._:-]/g, "-").slice(0, 60); },
+  track(){
+    if (!(SOCIAL && navigator.sendBeacon)) return;
+    const k = this.key(); if (!k || k === this.last) return;
+    this.last = k;
+    const b = { page: k };
+    let started = true; try { started = sessionStorage.getItem(LS + "visit") === "1"; sessionStorage.setItem(LS + "visit", "1"); } catch(e) {}
+    if (!started) {
+      let back = false; try { back = localStorage.getItem(LS + "been") === "1"; localStorage.setItem(LS + "been", "1"); } catch(e) {}
+      Object.assign(b, { start: true, back, phone: matchMedia("(max-width: 700px)").matches });
+    }
+    this.q.push(b); this.flush();
+  },
+  flush(){
+    if (this.ok === null) { this.ok = Social.probeServer().then(v => { this.ok = v; this.flush(); }); return; }
+    if (this.ok !== true) { if (this.ok === false) this.q = []; return; }
+    while (this.q.length) { try { navigator.sendBeacon(API + "visit", new Blob([JSON.stringify(this.q.shift())], { type: "application/json" })); } catch(e) {} }
+  }
+};
 function render(keepScroll){
   const fa = document.activeElement, fkey = fa && fa !== document.body && !lb.contains(fa) ? focusKey(fa) : null, fact = fa && fa.dataset ? fa.dataset.act : null;
   const fqid = fa && fa.dataset ? fa.dataset.qid : null;
@@ -2758,6 +2812,7 @@ function render(keepScroll){
   Gloss.hide();
   main.innerHTML = html;
   setHash();
+  try { Visits.track(); } catch(e) {}
   if (st.view === "shorts") { const sid = st.shortStart; st.shortStart = null; Shorts.mount(sid); }
   if (st.view === "unit" && st.tab === "slides") {
     const t = $("#thumbs .cur"); if (t) t.scrollIntoView({ block: "nearest", inline: "center" });
