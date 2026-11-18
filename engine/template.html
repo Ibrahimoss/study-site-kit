@@ -1346,13 +1346,15 @@ function examQLabel(p){
 function xsBadge(p){
   if (p.paper) { const ql = examQLabel(p);
     return '<span class="xsbadge exam" title="This is the question as it appeared in a past paper">' + (/quiz/i.test(paperName(p.paper)) ? "From " : "From exam: ") + esc(paperName(p.paper)) + (ql ? ", Q" + esc(ql) : "") + "</span>"; }
-  return p.examstyle ? '<span class="xsbadge" title="Written like a full exam question, with a full-marks checklist in the model answer">Exam-style</span>' : "";
+  return p.examstyle ? '<span class="xsbadge" title="Written for this site, not taken from a past paper; the model answer lists what earns full marks">Written for practice</span>' : "";
 }
 function secQuestionsHTML(u, i){
   const m = SEC(u, i);
   if (!m.quiz.length && !m.prac.length) return "";
   let h = '<div class="secqs">';
-  if (m.prac.length) h += '<h4>Written practice <span class="shaped">the shape of the exam</span></h4>' + m.prac.map(p =>
+  const fromExam = m.prac.length && m.prac.every(p => p.paper);
+  if (m.prac.length) h += (fromExam ? '<h4>From past exams <span class="shaped">as they appeared in past papers</span></h4>'
+    : '<h4>Written practice <span class="dimh">written for this site, not from a past exam</span></h4>') + m.prac.map(p =>
     '<article class="titem"><div class="th"><b>' + esc(p.topic || "Problem") + "</b>" +
     (p.marks ? '<span class="marks">' + fmtMarks(p.marks) + " mark" + (p.marks === 1 ? "" : "s") + "</span>" : "") + xsBadge(p) +
     "</div>" + practiceBody(p, "sp:" + p.id, store.practice, "pgrade") + "</article>").join("");
