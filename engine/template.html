@@ -459,6 +459,7 @@ body.shorts-on .lplayer{display:none}
 .srcbadge.sl{background:var(--tip-soft);color:var(--tip);border-color:var(--tip)}
 .ans .srcbadge{margin-bottom:2px}
 .xmodes{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.pfilter .btn{border-style:dashed}
 .xsbadge{padding:2px 8px;border-radius:999px;background:var(--tip-soft);color:var(--tip);border:1px solid var(--tip);font:700 10px/1.5 var(--f-body);
   letter-spacing:.05em;text-transform:uppercase;white-space:nowrap}
 
@@ -1869,6 +1870,25 @@ function paperIds(){
   const have = new Set(allPractice().map(x => x.p.paper).filter(Boolean)), order = Object.keys(PAPER_NAMES);
   return [...have].sort((a, b) => ((order.indexOf(a) + 1) || 99) - ((order.indexOf(b) + 1) || 99) || a.localeCompare(b));
 }
+/* past papers grouped by kind from their names ("Mid 2 · 1447 S1" -> "Mid 2", "Final · ..." -> "Final",
+   "Quiz 1 ..." -> "Quizzes"), so the exam page can show only the papers for the exam being studied */
+function paperKind(name){
+  const n = String(name || "");
+  let m = /^mid(?:term)?\s*(\d)/i.exec(n); if (m) return "Mid " + m[1];
+  if (/^final/i.test(n)) return "Final";
+  if (/^quiz/i.test(n)) return "Quizzes";
+  return "Other";
+}
+function paperKinds(ids){
+  const order = ["Mid 1", "Mid 2", "Mid 3", "Final", "Quizzes", "Other"], have = new Set(ids.map(id => paperKind(paperName(id))));
+  return order.filter(k => have.has(k));
+}
+function paperFilter(kinds){
+  let v = null; try { v = localStorage.getItem(LS + "pfilter"); } catch(e) {}
+  if (v && (v === "All" || kinds.includes(v))) return v;
+  const mine = paperKind(EXAM);                     /* by default, the papers of the exam this site counts down to */
+  return kinds.includes(mine) ? mine : "All";
+}
 function viewExam(){
   if (!st.paper) st.paper = newPaper();
   const P = st.paper;
@@ -1887,8 +1907,12 @@ function viewExam(){
       }).join("") + "</article>";
   }).join("");
   const fixed = !!P.kind;
-  const ids = paperIds();
-  const modes = ids.length ? '<div class="xmodes" role="group" aria-label="Paper"><button class="btn sm' + (fixed ? "" : " on") + '" data-act="xmode" data-v="" aria-pressed="' + !fixed + '">Random paper</button>' +
+  const all = paperIds(), kinds = paperKinds(all), pf = paperFilter(kinds);
+  const ids = pf === "All" ? all : all.filter(id => paperKind(paperName(id)) === pf);
+  const filt = kinds.length > 1 ? '<div class="xmodes pfilter" role="group" aria-label="Show past papers from">' + ["All"].concat(kinds).map(k =>
+    '<button class="btn sm' + (k === pf ? " on" : "") + '" data-act="pfilter" data-v="' + esc(k) + '" aria-pressed="' + (k === pf) + '">' + esc(k === "All" ? "All papers" : k) +
+    (k === "All" ? "" : " (" + all.filter(id => paperKind(paperName(id)) === k).length + ")") + "</button>").join("") + "</div>" : "";
+  const modes = all.length ? filt + '<div class="xmodes" role="group" aria-label="Paper"><button class="btn sm' + (fixed ? "" : " on") + '" data-act="xmode" data-v="" aria-pressed="' + !fixed + '">Random paper</button>' +
     ids.map(id => '<button class="btn sm' + (P.kind === id ? " on" : "") + '" data-act="xmode" data-v="' + esc(id) + '" aria-pressed="' + (P.kind === id) + '">' + esc(paperName(id)) + "</button>").join("") + "</div>" : "";
   return '<section class="uhead"><div class="row"><span class="code">Exam</span><h2>' + esc(EXAM) + ' mock exam</h2></div>' +
     (fixed
@@ -1928,6 +1952,7 @@ function quickIntro(){
 function isRight(q, a){ return q.kind === "tf" ? a === q.answer : a === q.answer; }
 function viewQuiz(){
   const Q = st.quiz;
+  if (st.view === "unit" && UM[st.unit] && !(UM[st.unit].quiz || []).length) return '<p class="empty">This unit has no quiz questions. Its practice problems and flashcards are on the other tabs.</p>';
   if (!Q || !Q.items.length) return '<p class="empty">Every question in this set is already answered correctly. <button class="btn sm" data-act="qrestart" data-all="1">Run the full quiz again</button></p>';
   if (Q.done) return quizResult(Q);
   const it = Q.items[Q.pos], u = UM[it.u], q = u.quiz[it.i];
@@ -2918,6 +2943,7 @@ document.addEventListener("click", e => {
     case "shorts": go("shorts"); break;
     case "quick": st.quiz = mockQuiz(); go("quick"); break;
     case "exam": if (!st.paper) st.paper = newPaper(); go("exam"); break;
+    case "pfilter": try { localStorage.setItem(LS + "pfilter", el.dataset.v); } catch(err) {} render(true); break;
     case "xmode": st.paper = el.dataset.v ? fixedPaper(el.dataset.v) : newPaper(); Object.keys(st.openSol).forEach(k => { if (k.startsWith("x:")) delete st.openSol[k]; }); render(true); break;
     case "xnew": st.paper = newPaper(); Object.keys(st.openSol).forEach(k => { if (k.startsWith("x:")) delete st.openSol[k]; }); go("exam"); break;
     case "xreveal": st.paper.qs.forEach(q => q.parts.forEach(x => st.openSol["x:" + paperItem(x).id] = true)); render(true); break;
