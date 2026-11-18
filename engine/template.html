@@ -364,6 +364,7 @@ figure.cells figcaption{font-size:13px;color:var(--ink-2)}
 @media (max-width:360px){.sw .swe{display:none}}
 
 .secnav{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:30px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.qskip{display:flex;justify-content:flex-end;margin:0 0 12px}
 .secnav.secdone{justify-content:flex-end;margin:18px 0 34px}
 .secnav > span{flex:1}
 .secnav .btn{white-space:normal;text-align:left}
@@ -1395,8 +1396,8 @@ function viewSection(u, i){
       '<button class="btn' + (isRead(u, i) ? " done" : "") + '" data-act="secread" data-unit="' + u.id + '" data-sec="' + (i + 1) + '" aria-pressed="' + isRead(u, i) + '">' +
         (isRead(u, i) ? "Done ✓" : "Mark as done") + "</button>" +
       (next != null
-        ? '<button class="btn primary" data-act="sec" data-unit="' + u.id + '" data-sec="' + (next + 1) + '">§' + SEC(u, next).num + " " + inl(u.sections[next].title) + " →</button>"
-        : '<button class="btn primary" data-act="tab" data-tab="quiz">Take the ' + esc(u.code) + " quiz →</button>") +
+        ? '<button class="btn primary" data-act="sec" data-done="' + u.id + "|" + i + '" data-unit="' + u.id + '" data-sec="' + (next + 1) + '">§' + SEC(u, next).num + " " + inl(u.sections[next].title) + " →</button>"
+        : '<button class="btn primary" data-act="tab" data-tab="quiz" data-done="' + u.id + "|" + i + '">Take the ' + esc(u.code) + " quiz →</button>") +
     "</nav>";
   return '<div class="learn">' + tocHTML(u, i + 1) + '<div class="reading">' + body + "</div></div>";
 }
@@ -1969,7 +1970,21 @@ function quickIntro(){
   return n + " short question" + (n === 1 ? "" : "s") + " drawn at random" + (U.length > 1 ? ", from every unit" : "") + ".";
 }
 function isRight(q, a){ return q.kind === "tf" ? a === q.answer : a === q.answer; }
-function viewQuiz(){
+/* moving on with the forward button marks the section being left as done (going back never does) */
+function markLeft(el){
+  const d = el.dataset.done; if (!d) return;
+  const [uid, i] = d.split("|"), u = UM[uid];
+  if (u && u.sections[+i]) { store.read[secKey(u, +i)] = true; save(); }
+}
+/* on a unit's quiz, a way past it to the next unit's first section */
+function quizSkip(){
+  if (st.view !== "unit") return "";
+  const n = U[U.findIndex(x => x.id === st.unit) + 1];
+  return n ? '<div class="qskip"><button class="btn sm" data-act="sec" data-unit="' + n.id + '" data-sec="' + (n.sections.length ? 1 : 0) + '">Skip to the next part: ' +
+    esc(n.code) + " " + inl(n.title) + " →</button></div>" : "";
+}
+function viewQuiz(){ return quizSkip() + quizBody(); }
+function quizBody(){
   const Q = st.quiz;
   if (st.view === "unit" && UM[st.unit] && !(UM[st.unit].quiz || []).length) return '<p class="empty">This unit has no quiz questions. Its practice problems and flashcards are on the other tabs.</p>';
   if (!Q || !Q.items.length) return '<p class="empty">Every question in this set is already answered correctly. <button class="btn sm" data-act="qrestart" data-all="1">Run the full quiz again</button></p>';
@@ -2928,11 +2943,11 @@ document.addEventListener("click", e => {
     case "unit": st.view = "unit"; if (el.dataset.unit !== st.unit) { st.unit = el.dataset.unit; st.quiz = null; st.cards = null; st.deck = null; st.page = 1; st.sec = null; }
       st.tab = el.dataset.tab || (store.last && store.last.unit === st.unit ? store.last.tab : "learn") || "learn"; ensureTabState(); go("unit", {}); break;
     /* the Learn tab pressed while already on Learn goes back to the unit overview */
-    case "tab": if (el.dataset.tab === "learn" && st.tab === "learn") st.sec = null; st.tab = el.dataset.tab; ensureTabState(); go("unit", { keepScroll: false }); break;
+    case "tab": markLeft(el); if (el.dataset.tab === "learn" && st.tab === "learn") st.sec = null; st.tab = el.dataset.tab; ensureTabState(); go("unit", { keepScroll: false }); break;
     case "layout":
       LEGACY = !LEGACY; try { localStorage.setItem(LS + "layout", LEGACY ? "legacy" : "new"); } catch(err) {}
       paintLayoutBtn(); render(); window.scrollTo(0, 0); scrollToSec(); break;
-    case "sec": { const n = +el.dataset.sec; go("unit", { unit: el.dataset.unit, tab: "learn", sec: n > 0 ? n : null }); break; }
+    case "sec": { markLeft(el); const n = +el.dataset.sec; go("unit", { unit: el.dataset.unit, tab: "learn", sec: n > 0 ? n : null }); break; }
     case "secread": {
       const u = UM[el.dataset.unit], i = +el.dataset.sec - 1, k = secKey(u, i);
       if (store.read[k]) delete store.read[k]; else store.read[k] = true;
