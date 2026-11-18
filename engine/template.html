@@ -1576,8 +1576,13 @@ const Listen = {
     const au = this.au = box.querySelector("audio"), sel = box.querySelector(".lsecsel"), spd = box.querySelector(".lspeed"), lab = box.querySelector(".lsec");
     const setRate = r => { au.defaultPlaybackRate = au.playbackRate = r; try { au.preservesPitch = true; } catch(e) {} };
     setRate(this.rate());
-    au.addEventListener("loadedmetadata", () => setRate(this.rate()));
-    spd.addEventListener("change", () => { const r = +spd.value; try { localStorage.setItem(LS + "listen-rate", String(r)); } catch(e) {} setRate(r); });
+    const keepRate = r => { try { localStorage.setItem(LS + "listen-rate", String(r)); } catch(e) {} spd.value = String(r); setRate(r); };
+    /* the browser's own speed menu (in the audio controls) sets only playbackRate, so a reload of the stream
+       mid-lesson put it back to defaultPlaybackRate; take that speed as the chosen one, and put the chosen speed
+       back whenever playback (re)starts */
+    au.addEventListener("ratechange", () => { const r = au.playbackRate; if (r !== au.defaultPlaybackRate && RATES.includes(r)) keepRate(r); });
+    ["loadedmetadata", "play", "playing", "seeked"].forEach(ev => au.addEventListener(ev, () => { const r = this.rate(); if (au.playbackRate !== r || au.defaultPlaybackRate !== r) setRate(r); }));
+    spd.addEventListener("change", () => keepRate(+spd.value));
     let last = 0;
     const keep = () => { const a = AUM[this.cur]; if (a) this.savePos(a.id, au.currentTime > a.duration - 15 ? 0 : au.currentTime); };
     au.addEventListener("timeupdate", () => {
