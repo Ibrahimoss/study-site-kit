@@ -287,6 +287,23 @@ figure.fig figcaption{font-size:13px;color:var(--ink-2)}
 .crow .sp{flex:1}
 .btn.r-know{border-color:var(--ok);color:var(--ok)} .btn.r-learn{border-color:var(--bad);color:var(--bad)}
 .cstat{font:13px var(--f-mono);color:var(--ink-3);font-variant-numeric:tabular-nums}
+.mbank{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 8px}
+.mchip{border:1px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:999px;padding:6px 12px;font:inherit;font-size:14px;cursor:grab;touch-action:manipulation}
+.mchip:hover{border-color:var(--ink-3)}
+.mchip.on{border-color:var(--copper);background:var(--copper);color:var(--bg)}
+.mchip.used{opacity:.45}
+.mchip:disabled{cursor:default}
+.mhint{font-size:13px;color:var(--ink-3);margin:0 0 8px}
+.mslotc{width:38%;min-width:120px}
+.mslot{display:block;width:100%;min-height:36px;text-align:left;border:1px dashed var(--ink-3);border-radius:8px;background:transparent;color:var(--ink);font:inherit;font-size:14px;padding:6px 10px;cursor:pointer}
+.mslot.full{border-style:solid;border-color:var(--line);background:var(--surface-2)}
+.mslot.over,.mslot.want{border-color:var(--copper);border-style:dashed}
+.mslot.ok{border:1px solid var(--ok);background:var(--ok-soft)}
+.mslot.no{border:1px solid var(--bad);background:var(--bad-soft)}
+.mslot:disabled{cursor:default;color:var(--ink)}
+.mph{color:var(--ink-3);font-size:13px}
+.mfix{font-size:13px;color:var(--ok);margin-top:4px}
+.mfix::before{content:"Answer: ";color:var(--ink-3)}
 
 /* search */
 .sres{display:grid;gap:18px;max-width:84ch}
@@ -1833,8 +1850,57 @@ function choiceBody(p, k, graded, act){
       : '<button class="btn sm' + (open ? " on" : "") + '" data-act="sol" data-k="' + esc(k) + '">' + (open ? "Hide model answer" : "Show model answer") + "</button>") + "</div>" +
     (open ? '<div class="ans blocks">' + (srcBadge(p) ? "<div>" + srcBadge(p) + "</div>" : "") + blocks(p.a) + (p.ref ? "<div>" + refChip(p.ref) + "</div>" : "") + "</div>" : "");
 }
+/* a matching question ("Match each ...") whose question table has an empty last column and whose model answer
+   has the same table filled in: the filled-in values become chips to drop (or tap, then tap a slot) into each row */
+function matchSpec(p){
+  if (p.choices || !/\bmatch/i.test(p.q || "") || !Array.isArray(p.qblocks) || !Array.isArray(p.a)) return null;
+  const qi = p.qblocks.findIndex(b => b && b.table), ab = p.a.find(b => b && b.table);
+  if (qi < 0 || !ab) return null;
+  const qt = p.qblocks[qi].table, at = ab.table, last = qt.head.length - 1;
+  if (last < 1 || !qt.rows.length || qt.rows.length !== at.rows.length) return null;
+  if (!qt.rows.every(r => r.length === qt.head.length && !String(r[last]).trim())) return null;
+  const key = qt.rows.map((r, i) => { const ar = at.rows[i]; return ar && String(ar[0]).trim() === String(r[0]).trim() ? String(ar[ar.length - 1]).trim() : ""; });
+  if (key.some(x => !x)) return null;
+  const num = x => { const m = /\d+/.exec(x); return m ? +m[0] : Infinity; };
+  const opts = [...new Set(key)].sort((a, b) => num(a) - num(b) || a.localeCompare(b));
+  return { qi, qt, last, key, opts };
+}
+function matchState(k){ const v = pickStore(k)[k]; return v && Array.isArray(v.m) ? v : null; }
+function matchBody(p, m, k, graded, act){
+  const s = matchState(k) || { m: [] }, chk = !!s.c, sel = st.mSel && st.mSel.k === k ? st.mSel.o : null;
+  const used = new Set(s.m.filter(x => x != null)), oneEach = m.opts.length >= m.key.length;
+  const right = m.key.filter((a, i) => s.m[i] != null && m.opts[s.m[i]] === a).length, open = !!st.openSol[k];
+  const ek = esc(k), id = esc(p.id);
+  const head = "<tr>" + m.qt.head.map(h => "<th>" + inl(h) + "</th>").join("") + "</tr>";
+  const rows = m.qt.rows.map((r, i) => {
+    const v = s.m[i], ok = chk && v != null && m.opts[v] === m.key[i];
+    return "<tr>" + r.slice(0, m.last).map(c => "<td>" + inl(c) + "</td>").join("") +
+      '<td class="mslotc"><button class="mslot' + (v != null ? " full" : "") + (sel != null && !chk ? " want" : "") + (chk ? (ok ? " ok" : " no") : "") +
+      '" data-act="mdrop" data-k="' + ek + '" data-id="' + id + '" data-r="' + i + '"' + (chk ? " disabled" : "") + ' aria-label="Answer for: ' + esc(String(r[0])) + '">' +
+      (v != null ? inl(m.opts[v]) : '<span class="mph">' + (sel != null ? "Tap to place" : "Drop an answer here") + "</span>") + "</button>" +
+      (chk && !ok ? '<div class="mfix">' + inl(m.key[i]) + "</div>" : "") + "</td></tr>";
+  }).join("");
+  return '<div class="q">' + inl(p.q) + "</div>" + (p.qcode ? codeBlock(p.qcode) : "") +
+    (p.qblocks.length > 1 ? '<div class="blocks">' + blocks(p.qblocks.filter((b, i) => i !== m.qi)) + "</div>" : "") +
+    '<div class="mbank" role="group" aria-label="Answers to place">' + m.opts.map((o, i) =>
+      '<button class="mchip' + (i === sel ? " on" : "") + (oneEach && used.has(i) ? " used" : "") + '" draggable="' + !chk + '" data-act="mpick" data-k="' + ek + '" data-o="' + i + '" aria-pressed="' + (i === sel) + '"' + (chk ? " disabled" : "") + ">" + inl(o) + "</button>").join("") + "</div>" +
+    (chk ? "" : '<p class="mhint">Drag an answer onto a row, or tap an answer and then tap the row. Tap a filled row to empty it.</p>') +
+    '<div class="tbl"><table><thead>' + head + "</thead><tbody>" + rows + "</tbody></table></div>" +
+    '<div class="actions">' + (chk
+      ? '<span class="cstat">' + right + " / " + m.key.length + " correct</span>" + '<button class="btn sm" data-act="mreset" data-k="' + ek + '" data-id="' + id + '" data-g="' + act + '">Try again</button>'
+      : '<button class="btn sm" data-act="mcheck" data-k="' + ek + '" data-id="' + id + '" data-g="' + act + '"' + (used.size ? "" : " disabled") + ">Check answers</button>" +
+        (used.size ? '<button class="btn sm" data-act="mreset" data-k="' + ek + '" data-id="' + id + '" data-g="' + act + '">Clear</button>' : "")) +
+      '<button class="btn sm' + (open ? " on" : "") + '" data-act="sol" data-k="' + ek + '">' + (open ? "Hide model answer" : "Show model answer") + "</button></div>" +
+    (open ? '<div class="ans blocks">' + (srcBadge(p) ? "<div>" + srcBadge(p) + "</div>" : "") + blocks(p.a) + (p.ref ? "<div>" + refChip(p.ref) + "</div>" : "") + "</div>" : "");
+}
+function matchPlace(k, id, r, o){
+  const P = allPractice().find(x => x.p.id === id); if (!P || !matchSpec(P.p)) return;
+  const s = matchState(k) || { m: [] }; if (s.c) return;
+  s.m[r] = o; pickStore(k)[k] = s; st.mSel = null; save(); render(true);
+}
 function practiceBody(p, k, graded, act){
   if (Array.isArray(p.choices) && p.choices.length) return choiceBody(p, k, graded, act);
+  { const m = matchSpec(p); if (m) return matchBody(p, m, k, graded, act); }
   const open = !!st.openSol[k], txt = store.ans[k] || "", has = !!txt.trim();
   const boxOpen = st.ansOpen[k] != null ? st.ansOpen[k] : has, tid = "ans-" + k.replace(/[^\w-]/g, "_");
   return '<div class="q">' + inl(p.q) + "</div>" + (p.qcode ? codeBlock(p.qcode) : "") + (p.qblocks ? '<div class="blocks">' + blocks(p.qblocks) + "</div>" : "") +
@@ -2933,6 +2999,22 @@ function ensureTabState(){
   if (st.tab === "cards" && (!st.cards || st.cards.key !== "unit:" + u.id)) st.cards = newCards("unit:" + u.id, u.cards.map((c, i) => ({ u: u.id, i })), "");
 }
 
+/* drag and drop for matching questions; tapping works too (see mpick / mdrop) */
+document.addEventListener("dragstart", e => {
+  const c = e.target.closest && e.target.closest(".mchip"); if (!c) return;
+  st.mDrag = { k: c.dataset.k, o: +c.dataset.o };
+  try { e.dataTransfer.setData("text/plain", c.textContent); e.dataTransfer.effectAllowed = "copy"; } catch(err) {}
+});
+document.addEventListener("dragend", () => { st.mDrag = null; document.querySelectorAll(".mslot.over").forEach(x => x.classList.remove("over")); });
+document.addEventListener("dragover", e => {
+  const t = e.target.closest && e.target.closest(".mslot"); if (!t || !st.mDrag || st.mDrag.k !== t.dataset.k || t.disabled) return;
+  e.preventDefault(); try { e.dataTransfer.dropEffect = "copy"; } catch(err) {} t.classList.add("over");
+});
+document.addEventListener("dragleave", e => { const t = e.target.closest && e.target.closest(".mslot"); if (t) t.classList.remove("over"); });
+document.addEventListener("drop", e => {
+  const t = e.target.closest && e.target.closest(".mslot"); if (!t || !st.mDrag || st.mDrag.k !== t.dataset.k) return;
+  e.preventDefault(); const d = st.mDrag; st.mDrag = null; matchPlace(d.k, t.dataset.id, +t.dataset.r, d.o);
+});
 document.addEventListener("click", e => {
   const el = e.target.closest("[data-act]"); if (!el) return;
   const a = el.dataset.act;
@@ -2982,6 +3064,25 @@ document.addEventListener("click", e => {
     case "xreveal": st.paper.qs.forEach(q => q.parts.forEach(x => st.openSol["x:" + paperItem(x).id] = true)); render(true); break;
     case "xgrade": st.paper.graded[el.dataset.id] = +el.dataset.v; store.practice[el.dataset.id] = +el.dataset.v; save(); render(true); break;
     case "pgrade": store.practice[el.dataset.id] = +el.dataset.v; save(); render(true); break;
+    case "mpick": { const k = el.dataset.k, o = +el.dataset.o; st.mSel = st.mSel && st.mSel.k === k && st.mSel.o === o ? null : { k, o }; render(true); break; }
+    case "mdrop": {
+      const k = el.dataset.k, r = +el.dataset.r;
+      if (st.mSel && st.mSel.k === k) { matchPlace(k, el.dataset.id, r, st.mSel.o); break; }
+      const s = matchState(k); if (s && !s.c && s.m[r] != null) { s.m[r] = null; save(); render(true); }
+      break;
+    }
+    case "mcheck": case "mreset": {
+      const k = el.dataset.k, id = el.dataset.id, P = allPractice().find(x => x.p.id === id), m = P && matchSpec(P.p);
+      if (!m) break;
+      st.mSel = null;
+      if (el.dataset.act === "mreset") { delete pickStore(k)[k]; delete store.practice[id]; if (el.dataset.g === "xgrade" && st.paper) delete st.paper.graded[id]; }
+      else {
+        const s = matchState(k) || { m: [] }; s.c = true; pickStore(k)[k] = s;
+        const g = Math.round(m.key.filter((a, i) => s.m[i] != null && m.opts[s.m[i]] === a).length / m.key.length * 100) / 100;
+        store.practice[id] = g; if (el.dataset.g === "xgrade" && st.paper) st.paper.graded[id] = g;
+      }
+      save(); render(true); break;
+    }
     case "mcq": case "mcqreset": {
       const id = el.dataset.id, P = allPractice().find(x => x.p.id === id), v = el.dataset.act === "mcq" ? +el.dataset.i : null;
       if (!P) break;
