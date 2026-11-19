@@ -192,3 +192,11 @@ the page draws one practice problem from them every time a new paper is made:
 ```
 
 `title` is shown above every random paper. Every slot named here needs at least one practice item; the build checks it.
+
+## Charts page (optional)
+
+`course/content/charts.json` adds a "Charts" button (its label is `title`) and a page that shows chosen
+slides together, for example every state machine and flowchart:
+`{"title": "...", "intro": "...", "groups": [{"title": "...", "note": "...", "items": [{"deck": "t3-4", "page": 17, "title": "...", "note": "..."}]}]}`.
+Each item shows the slide large, opens full screen when tapped, and links to the lesson section that covers it.
+The build checks every deck and page.

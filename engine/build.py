@@ -492,6 +492,15 @@ class Build:
                 else:
                     self.check_blocks(doc["blocks"], name, decks, um, langs)
             pages[name] = doc
+        charts = self.load(os.path.join(content, "charts.json"), "course/content/charts.json")
+        if charts is not None:
+            if not isinstance(charts, dict) or not isinstance(charts.get("groups"), list):
+                self.p("course/content/charts.json: needs a groups list")
+                charts = None
+            else:
+                for g in charts["groups"]:
+                    for it in g.get("items") or []:
+                        self.check_ref(it, f"charts {g.get('title', '')!r}", decks)
         gloss = self.load(os.path.join(content, "glossary.json"), "course/content/glossary.json")
         if gloss is not None and not (isinstance(gloss, dict) and all(isinstance(v, list) and len(v) == 2 and all(isinstance(x, str) for x in v) for v in gloss.values())):
             self.p('course/content/glossary.json: must be {"term": ["short meaning", "one-line note"]}')
@@ -522,7 +531,7 @@ class Build:
                 "language": lang, "papers": [{"id": x["id"], "name": x["name"]} for x in c.get("papers") or [] if x.get("id")],
                 "features": feat, "audioUnits": (c.get("audio") or {}).get("units") or {}, "skills": c.get("skills") or []}
         data = {"course": meta, "units": units, "decks": decks, "text": text, "exam": exam, "shorts": shorts, "audio": audio,
-                "brief": pages["brief"], "revise": pages["revise"], "glossary": gloss or {},
+                "brief": pages["brief"], "revise": pages["revise"], "charts": charts, "glossary": gloss or {},
                 "hl": {k: LANGS[k] for k in sorted(used) if k in LANGS}, "thumbs": self.target != "artifact"}
         if packs is not None:
             data["packs"] = {did: [[x["n"], x["from"], x["to"], x["v"]] for x in ps] for did, ps in packs.items()}

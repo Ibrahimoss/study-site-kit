@@ -287,6 +287,16 @@ figure.fig figcaption{font-size:13px;color:var(--ink-2)}
 .crow .sp{flex:1}
 .btn.r-know{border-color:var(--ok);color:var(--ok)} .btn.r-learn{border-color:var(--bad);color:var(--bad)}
 .cstat{font:13px var(--f-mono);color:var(--ink-3);font-variant-numeric:tabular-nums}
+.chh{font:600 13px var(--f-mono);letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2);margin:26px 0 10px}
+.chh:first-child{margin-top:4px}
+.chnote{display:block;font-size:13px;color:var(--ink-3);margin:0 0 10px}
+.chgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr));gap:14px}
+.chcard{margin:0;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);overflow:hidden;display:flex;flex-direction:column}
+.chimg{display:block;width:100%;padding:0;border:0;border-bottom:1px solid var(--line);background:#fff;cursor:zoom-in}
+.chimg img{display:block;width:100%;height:auto}
+.chcard figcaption{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:10px 12px}
+.chcard figcaption b{flex:1 1 100%;font-weight:600}
+.chcard figcaption .chnote{flex:1 1 100%;margin:0}
 .mbank{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 8px}
 .mchip{border:1px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:999px;padding:6px 12px;font:inherit;font-size:14px;cursor:grab;touch-action:manipulation}
 .mchip:hover{border-color:var(--ink-3)}
@@ -758,6 +768,7 @@ html,button,a,input,textarea,summary,[data-act]{-webkit-tap-highlight-color:tran
       <button class="btn primary" data-act="revise" data-need="revise" title="The whole exam on one page">Final revision</button>
       <button class="btn primary" data-act="shorts" data-need="shorts">Shorts</button>
       <button class="btn" data-act="brief" data-need="brief" title="What the exam usually looks like">Exam brief</button>
+      <button class="btn" data-act="charts" data-need="charts" title="Every state machine and flowchart slide on one page">Charts</button>
       <button class="btn" data-act="listen" data-need="audio" title="Audio lessons">Listen</button>
       <button class="btn cdbtn" data-act="plan" data-need="studyPlan" id="cdbtn" title="Your study plan: what to cover before the exam">Study plan</button>
       <button class="btn" data-act="exam" data-need="mockExam">Mock exam</button>
@@ -806,13 +817,14 @@ function notInNotice(u){
 /* "the final exam", but "Midterm 2" (a name that ends in a number is a proper name: no "the", keep its case) */
 const THE_EXAM = /\d\s*$/.test(EXAM) ? EXAM : "the " + EXAM_L, THE_EXAM_C = THE_EXAM.charAt(0).toUpperCase() + THE_EXAM.slice(1);
 const FEAT = Object.assign({ audio: false, shorts: false, mockExam: true, studyPlan: true, social: false }, C.features || {});
-const HAS = { audio: !!FEAT.audio, shorts: !!FEAT.shorts, mockExam: !!FEAT.mockExam, studyPlan: !!FEAT.studyPlan, brief: !!S.brief, revise: !!S.revise };
+const HAS = { audio: !!FEAT.audio, shorts: !!FEAT.shorts, mockExam: !!FEAT.mockExam, studyPlan: !!FEAT.studyPlan, brief: !!S.brief, revise: !!S.revise, charts: !!(S.charts && (S.charts.groups || []).some(g => (g.items || []).length)) };
 HAS.social = HAS.shorts && !!FEAT.social;            /* likes, comments, shares, watch stats: needs the API in specs/SOCIAL_API.md */
 const LANG = C.language || "none";
 const LS = (C.slug || "study-lab") + "-";           /* prefix of every localStorage key */
 const KEY = (C.slug || "study-lab") + ":v2";
 document.title = TITLE;
 document.querySelectorAll("[data-need]").forEach(b => { if (!HAS[b.dataset.need]) b.remove(); });
+if (HAS.charts && S.charts.title) document.querySelectorAll('[data-act="charts"]').forEach(b => { b.textContent = S.charts.title; });
 if (LANG === "none") document.body.classList.add("nocode");
 /* read: sections marked done ("unit:index"), sw: stopwatch ms per section ("sw:unit:index"), ans: written answers */
 let store = {quiz:{}, cards:{}, practice:{}, read:{}, sw:{}, ans:{}, pick:{}, last:null};
@@ -1684,6 +1696,23 @@ function viewPage(doc, code, fallback){
 }
 function viewBrief(){ return viewPage(S.brief, "Brief", "What " + THE_EXAM + " usually looks like"); }
 function viewRevise(){ return viewPage(S.revise, "Revision", "Final revision"); }
+/* course/content/charts.json: chosen slides (state machines, flowcharts) grouped on one page; tap one to open it full screen */
+function viewCharts(){
+  const c = S.charts || {};
+  return '<section class="uhead"><div class="row"><span class="code">Charts</span><h2>' + inl(c.title || "Charts") + "</h2></div>" +
+    (c.intro ? "<p>" + inl(c.intro) + "</p>" : "") + '</section><div class="pane">' + (c.groups || []).map(g => {
+      const items = (g.items || []).filter(it => D[it.deck] && !D[it.deck].hidden);
+      if (!items.length) return "";
+      return '<h3 class="chh">' + inl(g.title || "") + "</h3>" + (g.note ? '<p class="chnote">' + inl(g.note) + "</p>" : "") + '<div class="chgrid">' + items.map(it => {
+        const d = D[it.deck], u = U.find(x => x.deck === it.deck), si = u ? sectionForSlide(u, +it.page) : -1;
+        return '<figure class="chcard"><button class="chimg" data-act="zoom" data-deck="' + esc(it.deck) + '" data-page="' + (+it.page) + '" aria-label="Open ' + esc(it.title || "slide") + ' full screen">' +
+          '<img loading="lazy" ' + slideImg(it.deck, +it.page) + ' alt="' + esc(it.title || "") + '" width="' + d.w + '" height="' + d.h + '"></button>' +
+          "<figcaption><b>" + inl(it.title || "") + "</b>" + (it.note ? '<span class="chnote">' + inl(it.note) + "</span>" : "") +
+          '<span class="kbd">' + esc(deckName(it.deck)) + " · p." + (+it.page) + "</span>" +
+          (si >= 0 ? '<button class="btn sm" data-act="sec" data-unit="' + esc(u.id) + '" data-sec="' + (si + 1) + '">Open the lesson →</button>' : "") + "</figcaption></figure>";
+      }).join("") + "</div>";
+    }).join("") + "</div>";
+}
 
 /* ---------- recommended triage on the Practice tab: one problem per distinct skill, within a time budget ---------- */
 /* skills come from course.json "skills": [[regex, name], ...]; a problem whose topic matches none is its own skill */
@@ -2933,6 +2962,7 @@ function render(keepScroll){
   else if (st.view === "brief") html = viewBrief();
   else if (st.view === "listen") html = viewListen();
   else if (st.view === "revise") html = viewRevise();
+  else if (st.view === "charts") html = viewCharts();
   Gloss.hide();
   main.innerHTML = html;
   setHash();
@@ -3049,6 +3079,7 @@ document.addEventListener("click", e => {
     case "slideto": st.deck = el.dataset.deck; st.page = +el.dataset.page; go("unit", { unit: st.unit, tab: "slides" }); break;
     case "plan": go("plan"); break;
     case "brief": go("brief"); break;
+    case "charts": go("charts"); break;
     case "listen": go("listen"); break;
     case "lplay": Listen.play(el.dataset.id); break;
     case "lseek": Listen.play(el.dataset.id, +el.dataset.t); break;
@@ -3186,7 +3217,7 @@ document.addEventListener("keydown", e => {
 
 /* deep link: #<unit>.quiz, #<unit>.s3 (a Learn section), #mock, #allcards, #plan, #brief, #revise; pages a course
    switched off (course.json features, a missing brief.json or revise.json) fall back to the home page */
-const VIEW_NEED = Object.assign(Object.create(null), { plan: "studyPlan", brief: "brief", revise: "revise", listen: "audio" });
+const VIEW_NEED = Object.assign(Object.create(null), { plan: "studyPlan", brief: "brief", revise: "revise", listen: "audio", charts: "charts" });
 function fromHash(){
   let h = ""; try { h = decodeURIComponent((location.hash || "").slice(1)); } catch(e) {}
   const [uid, tab] = h.split(".");
